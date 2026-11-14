@@ -582,3 +582,48 @@ These can be adjusted without changing the main architecture:
 - Whether the hero finder panel is always visible or opens as a focused search interaction on narrow screens.
 
 No real application code should be implemented until the visual blueprint and revised architecture have been reviewed.
+
+## 17. Performance-friendly visual implementation rules
+
+The luxury design must be achieved with image quality, composition and detail—not expensive runtime effects.
+
+### Photography
+- Use one carefully art-directed static hero image with a dark gradient overlay.
+- Use a separate mobile crop when necessary, sized for the phone viewport.
+- Use consistent 16:10 or 3:2 image frames on vehicle cards.
+- Reserve image dimensions so cards never jump as photographs load.
+- Give high priority only to the actual above-the-fold hero image; lazy-load below-fold cards and non-active gallery images.
+- Keep first-screen content meaningful while the hero loads; use a quiet dark placeholder rather than a large animated shimmer.
+- Do not add an autoplay background video or rotating full-screen hero carousel.
+
+### Effects and animation
+- Use static gradients for image contrast, not continuously animated gradients.
+- Prefer solid charcoal surfaces to broad backdrop blur.
+- Use short opacity/transform transitions for buttons, menus, cards, and selected states.
+- Avoid parallax, scroll-jacking, 3D, particle effects, and continuously moving background elements.
+- Do not delay text or actions until entrance animations complete.
+- Respect reduced-motion settings.
+
+### Page weight
+- Homepage must not download AI model code, Design Studio assets, or every inventory image.
+- Concierge code loads only on its dedicated route or when its interface is explicitly opened.
+- Design Studio code and preview assets load only when a customer enters the screen or selects an option.
+- Inventory initially renders 12 results; further results use server pagination.
+- Mobile navigation and filters use lightweight drawers/sheets.
+
+### Responsiveness and visual stability
+- Every image has a known aspect ratio or reserved dimensions.
+- Header, card, and content dimensions remain stable while loading.
+- Forms show immediate local feedback without blocking the whole page.
+- Search debounces requests and keeps the existing layout stable while new data loads.
+- Use skeletons only where they clarify structure; continuous shimmer is unnecessary.
+- On small screens, prioritise readable controls and one-column flows over desktop-like density.
+
+### Performance acceptance gates
+- Target Core Web Vitals "good" thresholds at the 75th percentile: LCP ≤ 2.5s, INP ≤ 200ms, CLS ≤ 0.1.
+- Check Lighthouse on mobile and desktop.
+- Verify hero and initial card payload sizes at realistic viewport widths.
+- Verify homepage browsing does not load AI or Design Studio route bundles.
+- Verify the AI response streams while the interface remains responsive.
+- Verify reduced-motion mode and throttled mobile-network behaviour.
+- Every rich effect or new dependency must justify its impact and have a measured reason to remain.
