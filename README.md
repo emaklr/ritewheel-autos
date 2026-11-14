@@ -92,7 +92,7 @@ A managed PostgreSQL host such as Neon or Supabase-hosted PostgreSQL can be used
 
 ## Architecture
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for the system design, application structure, database entities, API contract, AI tool restrictions, security model, testing approach, and deployment plan. See [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md) for the screen-by-screen visual direction, page layouts, component inventory, and interaction states.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the system design, application structure, database entities, API contract, AI tool restrictions, security model, testing approach, and deployment plan. See [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md) for the screen-by-screen visual direction, page layouts, component inventory, interaction states, and performance-friendly visual rules. Performance is a product requirement: responsive optimised imagery, server-rendered pages, route-level code splitting, CSS-first motion, and Core Web Vitals targets are defined in `ARCHITECTURE.md`.
 
 At a glance:
 
