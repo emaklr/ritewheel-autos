@@ -795,3 +795,23 @@ Approved choices:
 These selections supersede the earlier homepage description that placed the finder within the hero and are the implementation source of truth for V1.
 
 The homepage is approved as a visual direction for implementation once this document set is merged. Final implementation still needs to pass the performance and factual-content acceptance criteria.
+
+
+## 23. Approved Inventory page decisions
+
+The Inventory screen is specified in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md#5-screen-2--inventory).
+
+Approved direction:
+- Use a compact title/intro rather than a second full-size cinematic hero.
+- Desktop filter sidebar and three-column vehicle grid on wide screens.
+- Search and sort above results; filters remain shareable through URL parameters.
+- Default to 12 records per server-paginated result page.
+- Use large, consistent vehicle cards with a concise set of specifications.
+- Compare is a local browser feature limited to three vehicles.
+- Mobile filters open in an accessible drawer.
+- AI Concierge is a floating launcher and on-demand drawer, never a permanent third column.
+- Do not load AI or Design Studio code on initial Inventory render.
+- Do not fetch the full catalogue, use infinite scroll, or rely on client-side filtering.
+- Currency-specific price filters must not mix NGN, USD, or other currencies.
+
+These decisions are the V1 implementation contract and are subject to the same performance budget as the homepage.
