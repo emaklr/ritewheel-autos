@@ -646,3 +646,134 @@ Before application implementation, review the six-screen concept and `docs/VISUA
 - Link saved builds to enquiries.
 
 The release is complete only when the relevant gate's acceptance checks pass; a page existing in the UI is not proof that its workflow works.
+
+
+## 21. Performance-first design and engineering requirements
+
+Performance is a product requirement, not a post-launch optimisation task. Ritewheel must preserve its premium visual quality on mid-range phones, modest laptops, and constrained mobile connections.
+
+### 21.1 Experience targets
+
+Use the "good" Core Web Vitals thresholds as the production target, assessed at the 75th percentile and separated by mobile and desktop where field data is available:
+
+| Metric | Target | What it protects |
+| --- | ---: | --- |
+| Largest Contentful Paint (LCP) | ≤ 2.5 seconds | Perceived loading speed |
+| Interaction to Next Paint (INP) | ≤ 200 milliseconds | Responsiveness to taps, clicks, and typing |
+| Cumulative Layout Shift (CLS) | ≤ 0.1 | Visual stability |
+
+These are targets to measure, not guaranteed outcomes. Before sufficient field traffic exists, use Lighthouse/PageSpeed Insights and Chrome DevTools under mobile CPU/network throttling as lab checks. Add Vercel Speed Insights for ongoing real-user monitoring after deployment.
+
+### 21.2 Image strategy
+
+- Use Next.js `next/image` for vehicle and hero images, with explicit dimensions or aspect ratios and accurate `sizes` values.
+- Use AVIF/WebP output through the image pipeline where supported; keep an appropriately compressed source asset.
+- Set a fixed image frame/aspect ratio before the image loads to prevent content shifts.
+- Preload or give high fetch priority only to the actual above-the-fold LCP hero image. Never preload every hero or gallery image.
+- Lazy-load below-the-fold images and vehicle gallery images that are not initially visible.
+- Inventory cards request correctly sized thumbnails, not full-resolution detail-gallery images.
+- Use responsive image variants or art direction for mobile when a desktop crop would be too large or obscure the subject.
+- Prefer one strong static hero image. Do not use autoplaying video backgrounds in V1.
+- Store and serve curated images from an image host/CDN or optimised public assets. Avoid arbitrary hotlinked URLs.
+- Provide a neutral fallback and reserve space when an image fails or has not loaded.
+
+Initial image budgets are implementation targets to validate visually and with real measurements, not hard limits that justify blurry photography:
+- Hero image: aim for approximately 300 KB or less on desktop and 180 KB or less for a mobile-specific crop.
+- Vehicle card image: aim for approximately 100–140 KB or less at its rendered size.
+- Detail gallery: load the lead image first; load remaining full-size gallery images on demand.
+If the source image pipeline can produce smaller assets at visually acceptable quality, prefer the smaller result.
+
+### 21.3 JavaScript and rendering strategy
+
+- Keep public pages as React Server Components by default.
+- Introduce Client Components only for interactive islands: filter controls, compare tray, favourite control, chat composer, configurator controls, and admin forms.
+- Do not place the entire page tree behind a top-level `"use client"` directive.
+- Split route-specific functionality so the inventory, Concierge, Design Studio, and admin code do not all load on the homepage.
+- Dynamically load expensive or rarely used client interfaces, such as a chat workspace opened on demand, image lightbox, and optional admin charts.
+- Keep shared client state small and local to the feature that needs it.
+- Prefer native HTML controls and small reusable components over large dependencies that add no meaningful value.
+- CSS transitions are the default for simple hover, selected, and disclosure states. Any animation library must justify its bundle and runtime cost and be isolated to the screens that need it.
+- Avoid repeated state updates during scroll and resize. Do not attach heavy work to every scroll event.
+- Avoid client-side fetching where a server-rendered page or route handler can provide the data with less JavaScript.
+
+### 21.4 Motion and visual-effects policy
+
+Allowed by default:
+- Short transitions on opacity and transform.
+- Small card lift or image-scale changes on hover for devices that support hover.
+- Simple menu and drawer transitions.
+- Subtle skeleton/placeholder states without a continuous shimmer requirement.
+- Gentle, once-per-view section entrance where it does not delay content.
+
+Avoid in V1:
+- Autoplay video, animated video backgrounds, and large looping GIFs.
+- 3D rendering, WebGL, canvas-based particles, or complex real-time vehicle rendering.
+- Continuous parallax, scroll-jacking, and large animated gradients.
+- Heavy blur filters applied to large areas or multiple stacked glass panels.
+- Continuous animation of layout properties such as width, height, top, or left.
+- Excessive simultaneous entrance animations.
+- Motion that hides content until an animation finishes.
+
+Use transforms and opacity for motion where possible. Respect `prefers-reduced-motion`; important information and actions must never depend on animation.
+
+### 21.5 Premium appearance without heavy rendering
+
+- Create luxury through image quality, dark tonal separation, spacing, typography, and composition.
+- Use solid or mostly opaque charcoal panels for the vehicle finder and AI surfaces. A restrained translucent treatment is permitted, but do not rely on large-area backdrop blur.
+- Keep shadows soft and limited; avoid expensive stacked shadows and glowing borders.
+- Use CSS gradients as static overlays to protect text contrast over hero photography.
+- Use SVG icons for small interface symbols; do not use emoji as the primary icon system.
+- Use a consistent image crop and object position for vehicle cards.
+- Use a high-quality, curated asset set for the first Design Studio demonstration vehicle rather than shipping dozens of large variants immediately.
+
+### 21.6 Data and backend efficiency
+
+- Inventory queries return only fields needed for the current view.
+- Paginate in PostgreSQL; default to 12 vehicles per inventory page, with a validated maximum page size.
+- Apply filters and sorting on the server. Keep URL search parameters shareable and restorable.
+- Debounce free-text search (approximately 250–350 ms) and cancel/ignore stale responses when a newer query supersedes them.
+- Add database indexes for real query patterns, including public status, make, body type, year, price, and commonly combined filters. Confirm with query plans instead of adding every possible index blindly.
+- Avoid N+1 query patterns; fetch only the relations needed for the requested screen.
+- Cache public vehicle data where safe, and invalidate affected data when admin changes inventory.
+- Do not poll the database or AI service for updates when the page does not need them.
+- Limit recommendation results and server payload sizes.
+
+### 21.7 AI performance and cost controls
+
+- Do not load the AI chat UI, model SDK, or conversation logic on the homepage before the customer uses the Concierge.
+- Make model calls only after an explicit customer action, never on each keystroke or page render.
+- Stream assistant responses so the customer receives feedback while generation continues.
+- Bound message history, request size, model output length, tool-call count, and recommendation count.
+- Use server-side timeouts, rate limits, and graceful provider-unavailable states.
+- AI inventory tools return small structured records and reuse the same indexed vehicle search services as the ordinary inventory page.
+- Do not send images to a vision model or generate custom images in V1.
+- Never place the Gemini API key in the browser bundle.
+
+### 21.8 Design Studio performance
+
+- V1 uses curated image assets and option mapping only; no 3D engine or canvas rendering.
+- Load the base vehicle image first, then load a selected preview asset only when the customer changes an option.
+- Preload only the small set of likely first-view options for the showcase vehicle. Other variants load on demand.
+- Avoid composing many huge transparent layers in the browser.
+- Keep the selected option summary visible even while a preview image is loading.
+- If an exact combined preview is unavailable, use the approved fallback without blocking the interaction.
+
+### 21.9 Font strategy
+
+- Use the chosen Manrope/Inter pairing through `next/font` (or local font files) so runtime page views do not require a separate third-party font request.
+- Load only the Latin subset required for V1.
+- Prefer variable font files or a minimal set of weights; avoid downloading many near-identical font weights.
+- Set sensible fallback fonts and preserve layout to reduce font-related shifts.
+
+### 21.10 Monitoring and regression checks
+
+For every major route, check:
+- Mobile and desktop Lighthouse performance.
+- LCP, INP, and CLS where field data exists.
+- Initial JS bundle and largest route-specific chunks.
+- Hero and card image transfer size.
+- Layout stability while fonts and images load.
+- Search, filter, chat, and configurator interaction responsiveness.
+- Performance on a mid-range Android profile and throttled mobile network.
+
+A visually richer change must not be merged if it introduces avoidable regressions to these checks. Record the before/after results for material changes.
