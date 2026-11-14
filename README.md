@@ -22,6 +22,17 @@ Customers can browse and submit enquiries as guests. A protected admin portal ma
 
 The visual identity is inspired by premium automotive dealerships:
 
+### Approved homepage layout
+
+- One static cinematic hero image with headline and two clear actions.
+- Full-width Make / Body Type / Budget finder immediately below the hero.
+- Browse by Category before Featured Vehicles.
+- Three large featured-vehicle cards per desktop row.
+- Guest-first shopping: no customer sign-in in V1.
+- AI Concierge and Design Studio are lightweight promotional links; their feature code loads only when opened.
+
+
+
 - Obsidian and charcoal surfaces.
 - Restrained amber/gold accents.
 - Large, cinematic vehicle photography.
