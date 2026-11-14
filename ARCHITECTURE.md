@@ -1,9 +1,9 @@
 # Ritewheel Autos — Application Architecture
 
-**Status:** Proposed architecture for the first public portfolio release  
+**Status:** Proposed architecture with visual blueprint defined; implementation not yet begun  
 **Product:** Ritewheel Autos  
 **Document owner:** Product and Engineering  
-**Last updated:** 14 November 2026
+**Last updated:** 14 November 2026 — visual architecture revision
 
 ## 1. Purpose
 
@@ -559,3 +559,90 @@ The first release should prioritise a finished customer journey over a long list
 ---
 
 **Implementation rule:** When code and this document disagree, update the document or code deliberately through review. Do not silently expand V1 scope.
+
+---
+
+## 19. Detailed visual experience specification (v1.1)
+
+The companion screen-by-screen visual specification lives in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md). It is part of the implementation contract, not a decorative reference.
+
+The visual specification defines:
+- Global public navigation, footer, typography, colour tokens, image treatment, spacing, and responsive behaviour.
+- Homepage, inventory, vehicle detail, AI Concierge, Design Studio, and admin screen layouts.
+- Vehicle card contents, filters, recommendation cards, configurator controls, admin navigation, and reusable components.
+- Loading, empty, error, disabled-AI, unavailable vehicle, form-validation, and success states.
+- The customer journey from discovery to vehicle/build enquiry.
+- Currency, mock data, and factual-content rules.
+
+### 19.1 Canonical public routes
+
+The canonical public routes are:
+- `/` — homepage.
+- `/inventory` — searchable and filterable catalogue.
+- `/vehicles/[slug]` — vehicle detail.
+- `/compare` — compare up to three vehicles.
+- `/concierge` — dedicated AI Car Concierge.
+- `/studio/[slug]` — vehicle-specific Design Studio.
+- `/about` and `/contact` — dealership information and contact.
+
+The previous structure mentioned a Design Studio but did not specify a dedicated Concierge route or About/Contact screens. These are now explicit. The header navigation should expose Home, Inventory, AI Concierge, Design Studio, and About, with Contact in the footer and relevant calls to action.
+
+### 19.2 Interaction-state requirements
+
+Every primary screen must be designed for its full state lifecycle:
+- Initial/loading state.
+- Normal populated state.
+- Empty/no-results state.
+- Request failure and retry state.
+- Disabled AI/provider-unavailable state, without disabling ordinary marketplace use.
+- Validation failure and successful submission state.
+- Unavailable/reserved/sold vehicle state where applicable.
+- Authenticated and unauthenticated admin states.
+
+### 19.3 Lightweight customer preferences
+
+V1 favourites and compare selections may be stored locally in the browser; they do not require customer accounts or new database entities. Compare is capped at three vehicles. These local selections must be cleared or reconciled if a vehicle is no longer publicly available.
+
+Concierge conversation history is session-scoped in V1. Do not persist customer identity or contact information in AI conversation records.
+
+### 19.4 Demonstration data and visual concepts
+
+The generated six-screen design concept is illustrative only. Values such as vehicle counts, customer counts, revenue, growth percentages, prices, availability badges, and sample vehicle details must never become hardcoded production claims. The live UI must source these values from the database or clearly label them as demo data.
+
+### 19.5 Design review gate
+
+Before application implementation, review the six-screen concept and `docs/VISUAL_BLUEPRINT.md`. Changes to the approved layout, navigation, colours, or core interactions should be reflected in both the visual blueprint and this architecture before coding proceeds.
+
+## 20. Updated delivery gates
+
+### Gate 0 — Product and visual approval
+- Confirm the six-screen visual blueprint and global design system.
+- Confirm public routes and customer journey.
+- Confirm the single-dealership V1 scope, currency rules, and demo-data policy.
+- Confirm the Design Studio preview-asset limitations.
+
+### Gate 1 — Technical foundation
+- Consolidate the legacy root app and nested starter into one canonical Next.js app.
+- Preserve useful assets and inspect existing dependencies/configuration before replacing files.
+- Provision PostgreSQL, Prisma schema/migrations, and deterministic demo seed.
+- Implement Auth.js admin session and protected admin routes.
+
+### Gate 2 — Customer marketplace
+- Implement homepage, inventory, vehicle detail, compare, About, and Contact.
+- Implement enquiries and test-drive request persistence.
+- Implement admin inventory, enquiry, and test-drive workflows.
+- Deploy and verify the public marketplace.
+
+### Gate 3 — AI Concierge
+- Add Gemini via the provider adapter and Vercel AI SDK.
+- Expose read-only, validated inventory tools.
+- Build the dedicated Concierge screen and recommendation UI.
+- Verify grounded results and the no-provider fallback.
+
+### Gate 4 — Design Studio
+- Add vehicle-specific option groups and curated preview assets.
+- Build the interactive configurator and option summary.
+- Add validated AI-to-option proposals and saved builds.
+- Link saved builds to enquiries.
+
+The release is complete only when the relevant gate's acceptance checks pass; a page existing in the UI is not proof that its workflow works.
