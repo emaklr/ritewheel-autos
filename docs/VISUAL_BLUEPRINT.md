@@ -109,69 +109,216 @@ Do not hardcode a business telephone number, address, opening time, or social ac
 ## 4. Screen 1 — Homepage
 
 **Route:** `/`  
-**Purpose:** Establish trust and visual quality immediately, then guide customers into vehicle discovery.
+**Status:** Approved design direction for V1; implementation not yet started.  
+**Purpose:** Establish a premium first impression, then move customers into real vehicle discovery with minimal friction.
+
+### Approved design decisions
+
+The homepage uses the three approved choices:
+
+1. One dominant cinematic vehicle photograph in the hero.
+2. A wide vehicle finder panel immediately **below** the hero, not floating over its right side.
+3. Three large featured-vehicle cards per desktop row.
+
+The result should feel like a luxury showroom editorial landing page, not a dense ecommerce homepage.
 
 ### Layout order
 
-1. Global header.
-2. Cinematic hero.
-3. Featured vehicles.
-4. Browse by category / body type.
-5. AI Concierge feature section.
-6. Design Studio feature section.
-7. About / dealership promise section.
-8. Contact call-to-action.
-9. Footer.
+1. Global navigation.
+2. Cinematic hero with one vehicle image.
+3. Full-width vehicle finder panel.
+4. Browse by category.
+5. Featured vehicles.
+6. AI Concierge promotional panel.
+7. Design Studio promotional panel.
+8. Short dealership/product promise section.
+9. Contact call-to-action and footer.
+
+### Global navigation on the homepage
+
+- Left: Ritewheel emblem and wordmark.
+- Centre: Home, Inventory, AI Concierge, Design Studio, About.
+- Right: compact compare shortcut and a gold **Get in Touch** action.
+- Do not include a customer sign-in control in V1; guest browsing and enquiries are the intended customer path.
+- Do not invent a telephone number, location, hours, or social links.
+- The header overlays the hero with a subtle dark background and becomes a solid dark sticky header after the hero.
 
 ### Hero composition
 
-Desktop uses a wide hero, approximately 600–720 px high depending on viewport:
-
-- Full-bleed automotive photograph with a dark left-to-right gradient.
-- Left column: small eyebrow label, strong two-line headline, short description, primary and secondary actions.
+**Desktop**
+- One static, wide cinematic image, approximately 560–640 px tall depending on the viewport.
+- The vehicle is prominent on the right or centre-right.
+- The headline and supporting copy sit on the left, protected by a static dark gradient.
 - Suggested headline: **"Find the car that moves you."**
-- Primary action: **Explore inventory**.
-- Secondary action: **Ask the AI Concierge**.
-- Right/centre-right: a dark, compact "Find your vehicle" panel containing Make, Body Type, and Budget selectors plus Search Vehicles.
-- Hero search is a shortcut into the full inventory page; it must use the same validated filters as the inventory UI.
+- Short supporting line: "Discover exceptional vehicles, get AI-powered recommendations, and make your next car feel like yours."
+- Primary action: **Explore Inventory**.
+- Secondary action: **Meet the AI Concierge**.
+- Do not add a rotating hero carousel, autoplay video, large animated overlay, or a statistics strip.
+- Do not place the vehicle finder inside the hero.
 
-The hero should not be overcrowded with paragraphs, badges, or made-up metrics.
+**Mobile**
+- Use a carefully art-directed crop of the same hero photography, not an unrelated second visual concept.
+- Present headline and actions first, with the vehicle visible without making text unreadable.
+- Keep the hero compact enough that customers reach the finder without excessive scrolling.
+- Stack the primary and secondary actions when the viewport cannot fit them comfortably side by side.
 
-### Featured inventory
+### Vehicle finder panel
 
-- Section eyebrow and heading: "Exceptional vehicles" or "Featured collection".
-- View all inventory link aligned to the right.
-- Three cards per desktop row, two per tablet row, one per mobile row.
-- Each card contains image, availability/condition badge when grounded in data, make/model/year, short specification row, displayed price, favourite control, and compare control.
-- Use consistent card heights and image crops.
+Place a wide, dark charcoal finder directly underneath the hero, visually connected to it through spacing and subtle borders.
 
-### Discovery categories
+V1 fields:
+- **Make** — defaults to Any Make.
+- **Body Type** — defaults to Any Type.
+- **Budget** — defaults to Any Budget and must make the selected currency explicit.
 
-A compact row or grid for body types (SUV, Sedan, Coupe, Pickup, Electric/Hybrid where available). Categories should be driven by supported inventory values. Hide categories with no matching published stock.
+Primary action: **Search Vehicles**.
 
-### Concierge and Studio promotional sections
+Secondary action: a quiet text/link action such as **Use AI to Find for Me**, linking to `/concierge`. The AI interface itself must not load on the homepage.
 
-Use two editorial feature blocks with contrasting vehicle imagery:
-- **Find your match:** introduces conversational AI discovery.
-- **Make it yours:** introduces the Design Studio and shows real, supported option previews.
+Interaction:
+- Each field uses values supported by the current inventory.
+- Submitting navigates to `/inventory` with URL search parameters.
+- The inventory page applies the same server-side validation and query service as all other searches.
+- Empty filters are omitted from the URL.
+- Finder options are populated from supported database values where practical; never invent makes or categories to fill empty menus.
+- Advanced filters (price range, year, fuel, transmission, mileage, seating, condition) belong on the Inventory page, not in this compact finder.
 
-Each block has one clear action. Do not repeat the same CTA in every section.
+**Mobile finder**
+- Full-width stacked controls.
+- Search button spans the panel width.
+- Keep labels visible; do not depend on placeholder text alone.
+- Use native/select controls or lightweight accessible selects; avoid a heavy third-party combobox for three fields.
+
+### Browse by category
+
+- Heading: **Browse by Category**.
+- Short line: "Explore vehicles by the style that fits your lifestyle."
+- Image-led category tiles for categories supported by published inventory, for example SUVs, Sedans, Coupes, Pickups, Luxury, and Electric.
+- Six tiles may appear across a wide desktop row; use a responsive grid below that width.
+- Each tile includes a representative image and readable category label.
+- Do not show category counts in V1 unless computed from the database and meaningful.
+- Hide categories that have no published matching vehicles.
+- Clicking a category opens Inventory with the category filter applied.
+
+### Featured vehicles
+
+- Heading: **Featured Vehicles** or **Exceptional Vehicles**.
+- Short description: "Handpicked vehicles from our collection."
+- View All Inventory link aligned opposite the heading.
+- Exactly three large cards per desktop row on the homepage.
+- Two cards per row on tablet when there is enough width; otherwise stack.
+- One card per row on narrow mobile.
+- A card shows:
+  - Optimised landscape vehicle photograph.
+  - A factual badge only when its database state supports it (for example Featured, New Arrival, Reserved, or Demo Listing).
+  - Make, model, trim and year where available.
+  - One concise specification line.
+  - Price with the record's currency, or "Price on request" when not set.
+  - Favourite and compare controls.
+  - A clear link to vehicle details.
+- Use a consistent image ratio and fixed card geometry to prevent layout shifts.
+- Do not hardcode vehicle prices, inventory counts, availability, customer totals, growth percentages, or fabricated social proof.
+- The section is driven by a small server query for published featured vehicles; it does not load the entire catalogue.
+
+### AI Concierge promotional panel
+
+- Editorial feature section with a concise benefit statement, such as **"Your personal car expert."**
+- Show one short illustrative prompt, clearly labelled as an example, rather than a fake customer testimonial.
+- Primary action: **Start a Conversation** linking to `/concierge`.
+- Use one lightweight static graphic or optimised still image.
+- Do not load model SDK, chat state, chat components, or AI requests on the homepage.
+
+### Design Studio promotional panel
+
+- Heading: **Design Your Dream Car**.
+- Explain that the customer can personalise supported colours, wheels, interior and styling options.
+- Primary action: **Start Designing**.
+- Show one curated preview image from a vehicle that actually has supported Design Studio assets.
+- If there is no configured showcase vehicle, show a branded non-interactive preview and do not invent a working configurator.
+- Design Studio code and option images load only after navigation to `/studio/[slug]`.
+
+### Product promise and contact
+
+A restrained information strip can explain the real customer value:
+- Explore vehicle information in one place.
+- Get help comparing suitable vehicles.
+- Send an enquiry or request a test drive.
+
+These are descriptions of implemented features, not claims of mechanical certification, independent verification, secure payment, nationwide delivery, or guaranteed stock.
+
+A final contact CTA links to the configured contact route. Contact details are displayed only when real values have been configured.
 
 ### Homepage interactions
 
-- Header search opens inventory search or focuses search input.
-- Hero selectors update the destination inventory query.
-- Vehicle cards navigate to vehicle detail.
-- Compare toggles add/remove up to three vehicles.
+- Navigation links open their corresponding routes.
+- Hero actions lead to Inventory and Concierge.
+- Finder submits Make, Body Type and Budget into URL query parameters.
+- Category tiles apply the matching inventory filter.
+- Featured cards open the actual vehicle record.
 - Favourite toggles persist locally in the current browser.
-- Concierge CTA opens the dedicated AI Concierge page.
+- Compare toggles add/remove vehicles, with a maximum of three.
+- Concierge and Studio promotion panels are links only; their feature bundles are not loaded on the homepage.
+- Get in Touch opens Contact or the configured enquiry flow.
 
 ### Responsive behaviour
 
-- Hero becomes a stacked composition on mobile: text/actions first, search panel below or within the hero.
-- Hero photography remains visible without compromising text contrast.
-- Featured cards become horizontally scrollable only where that improves browsing; otherwise stack.
-- The header uses the mobile menu.
+**Wide desktop**
+- Max content width around 1,440 px.
+- Hero copy on left, vehicle visual on right/centre-right.
+- Finder fields in one horizontal row.
+- Category tiles in a compact image-led grid.
+- Featured vehicles in three columns.
+
+**Tablet**
+- Hero remains image-led, with the copy and actions protected by gradient/spacing.
+- Finder may wrap into two rows.
+- Category tiles use three columns.
+- Featured vehicles use two columns where possible.
+
+**Mobile**
+- Navigation collapses to a menu sheet.
+- Hero uses a phone-appropriate crop and stacked calls to action.
+- Finder fields stack vertically and retain explicit labels.
+- Categories use a two-column grid or compact horizontal scroll only if labels stay legible.
+- Featured vehicles use one card per row.
+- AI Concierge and Design Studio panels stack.
+- No horizontal page overflow.
+
+### Homepage performance constraints
+
+- One static hero image; no video or carousel.
+- Use `next/image`, responsive `sizes`, a reserved aspect ratio, and an appropriately compressed desktop/mobile crop.
+- Prioritise only the actual hero/LCP image.
+- Lazy-load category, featured, and promotional images below the fold.
+- Use three featured-vehicle records only; do not fetch the whole catalogue for the homepage.
+- Render page content as Server Components by default.
+- Keep favourite/compare controls as small client-side islands.
+- Do not load AI SDK, chat UI, configurator code, charting libraries, or admin code on the homepage.
+- Use CSS-first transitions and a static dark gradient overlay.
+- Avoid large-area blur, parallax, animated gradients, and layout animations.
+- Reserve image and component dimensions to prevent CLS.
+
+### Required homepage states
+
+- Loading state for featured vehicles with stable image/card dimensions.
+- No featured vehicles: display a designed empty state and a link to Inventory.
+- Finder options unavailable: keep defaults usable and allow navigation to Inventory.
+- Failed featured inventory request: show a small retryable message; do not fail the entire homepage.
+- Missing hero/vehicle image: use a neutral premium fallback.
+- AI provider unavailable: homepage remains fully usable; Concierge route explains its unavailable state.
+- Demo inventory: visible **Demo Listing** marker or a clear demo catalogue notice where appropriate.
+
+### Homepage acceptance criteria
+
+- The single-image hero and finder placement match the approved concept.
+- The finder is directly below the hero, not inside a floating right-hand hero panel.
+- Featured vehicles use three large desktop cards per row.
+- Mobile layout is intentionally designed and has no horizontal overflow.
+- All prices, vehicle details, categories and badges are database-backed or clearly labelled as demo content.
+- The homepage remains usable if Gemini is unavailable.
+- No AI/Design Studio runtime bundle is loaded before the customer opens those experiences.
+- Hero image dimensions are reserved and below-fold imagery is lazy-loaded.
+- No fake statistics, testimonials, verification, stock or delivery claims are displayed.
 
 ## 5. Screen 2 — Inventory
 
