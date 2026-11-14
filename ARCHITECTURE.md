@@ -776,3 +776,22 @@ For every major route, check:
 - Performance on a mid-range Android profile and throttled mobile network.
 
 A visually richer change must not be merged if it introduces avoidable regressions to these checks. Record before/after results for material changes.
+
+## 22. Approved homepage layout decisions
+
+The homepage preferences have been selected and recorded in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md#4-screen-1--homepage).
+
+Approved choices:
+1. One dominant static cinematic vehicle image; no rotating hero carousel or autoplay video.
+2. Hero copy and calls to action are placed over the image with a static dark contrast gradient.
+3. A wide, full-width vehicle finder sits immediately below the hero (not as a floating panel inside the hero).
+4. The compact finder contains Make, Body Type and Budget. Advanced filters remain on Inventory.
+5. Browse by Category follows the finder.
+6. Featured Vehicles uses three large cards per desktop row, two per tablet where possible, and one per narrow mobile row.
+7. Customer sign-in is omitted from V1; customers browse and enquire as guests.
+8. AI Concierge and Design Studio homepage panels are lightweight promotional links. Their feature code/assets load only when the customer enters those routes.
+9. Homepage metrics, vehicle prices, category counts and availability badges must come from database records or be explicitly labelled as demo content.
+
+These selections supersede the earlier homepage description that placed the finder within the hero and are the implementation source of truth for V1.
+
+The homepage is approved as a visual direction for implementation once this document set is merged. Final implementation still needs to pass the performance and factual-content acceptance criteria.
