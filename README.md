@@ -58,6 +58,14 @@ Initial palette:
 - Compare up to three vehicles.
 - Responsive mobile and desktop experience.
 
+### Inventory browsing experience
+
+- Compact premium catalogue page with server-side search, sorting, filters and pagination.
+- Desktop filter sidebar and three-column grid of large vehicle cards.
+- Mobile filter drawer and URL-shareable search state.
+- Compare up to three vehicles locally.
+- AI Concierge launcher opens an on-demand drawer rather than occupying a permanent sidebar.
+
 ### AI Car Concierge
 - Natural-language vehicle discovery.
 - Preference collection for budget, make, body type, seating, fuel, transmission, use case, and colour.
