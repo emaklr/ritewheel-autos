@@ -92,7 +92,7 @@ A managed PostgreSQL host such as Neon or Supabase-hosted PostgreSQL can be used
 
 ## Architecture
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for the system design, application structure, database entities, API contract, AI tool restrictions, security model, testing approach, and deployment plan.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the system design, application structure, database entities, API contract, AI tool restrictions, security model, testing approach, and deployment plan. See [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md) for the screen-by-screen visual direction, page layouts, component inventory, and interaction states.
 
 At a glance:
 
@@ -110,7 +110,7 @@ Next.js storefront and admin
 
 ## Getting started
 
-The repository is being consolidated into one canonical Next.js application. Setup instructions below will be completed alongside the application implementation.
+The repository is being consolidated into one canonical Next.js application. The product architecture and visual blueprint are design documents; the screens and workflows described there are planned and should not be treated as already implemented. Setup instructions below will be completed alongside the application implementation.
 
 Expected local setup:
 
