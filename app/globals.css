@@ -303,3 +303,41 @@ img { display: block; max-width: 100%; }
   .vehicle-detail-layout { grid-template-columns:1fr; gap:20px; padding-top:25px; }
   .vehicle-detail-summary { padding:20px; }
 }
+
+/* Guest Garage and compare */
+.vehicle-card-actions { display:flex; gap:8px; margin-top:14px; }
+.mini-action { min-height:33px; padding:0 11px; display:inline-flex; align-items:center; justify-content:center; gap:6px; border:1px solid var(--line); border-radius:7px; color:#c5cbc7; background:#1a1f1e; font-size:10px; cursor:pointer; }
+.mini-action:hover, .mini-action.is-active { color:var(--gold-light); border-color:rgba(245,160,0,.5); background:rgba(245,160,0,.07); }
+.local-collection { padding:54px 0 85px; }
+.local-collection .section-heading { margin-bottom:28px; }
+.local-collection .section-heading h1 { margin:6px 0 0; font-size:clamp(32px,4vw,46px); letter-spacing:-.05em; }
+.local-collection .section-heading p { color:var(--muted); }
+.collection-message { padding:20px; color:var(--muted); border:1px solid var(--line); border-radius:10px; }
+.collection-message button { color:var(--gold); text-decoration:underline; cursor:pointer; }
+.collection-card { padding:20px; border:1px solid var(--line); border-radius:13px; background:linear-gradient(145deg,#191e1d,#111414); display:grid; gap:14px; }
+.collection-card-title { display:grid; gap:5px; }
+.collection-card-title span { color:var(--gold); font-size:10px; text-transform:uppercase; letter-spacing:.12em; }
+.collection-card-title strong { font-size:18px; }
+.collection-card-details { display:grid; gap:7px; color:#c0c6c1; font-size:11px; }
+.collection-card-details small { color:#b08a4a; }
+.comparison-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; align-items:start; }
+.feature-page { min-height:65vh; padding-top:48px; padding-bottom:70px; }
+.feature-coming-soon { max-width:900px; margin:40px auto; padding:54px; border:1px solid var(--line); border-radius:18px; background:radial-gradient(circle at 85% 15%,rgba(245,160,0,.09),transparent 32%),linear-gradient(145deg,#171b1a,#101313); }
+.feature-coming-soon h1 { max-width:760px; margin:12px 0 15px; font-size:clamp(36px,5vw,60px); line-height:1.02; letter-spacing:-.055em; }
+.feature-coming-lead { max-width:680px; color:#c1c7c2; font-size:15px; line-height:1.8; }
+.feature-coming-detail { max-width:720px; margin-top:24px; padding:16px 18px; color:#b8c0ba; border:1px solid rgba(255,255,255,.1); border-radius:10px; background:rgba(255,255,255,.025); font-size:12px; line-height:1.75; }
+.coming-label { display:block; margin-top:38px; color:#767e78; font-size:9px; letter-spacing:.16em; }
+.about-principles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px; margin-top:26px; }
+.about-principles article { padding:16px; border:1px solid var(--line); border-radius:10px; background:rgba(255,255,255,.025); }
+.about-principles strong { font-size:12px; }
+.about-principles p { margin:7px 0 0; color:var(--muted); font-size:11px; line-height:1.65; }
+.status-line { display:flex; align-items:center; gap:8px; color:#c4cbc5; font-size:11px; }
+.status-dot { width:7px; height:7px; border-radius:50%; background:#d6a04c; }
+.status-dot-green { background:#43bd85; }
+.detail-back { margin-top:16px; }
+@media (max-width:760px) {
+  .feature-coming-soon { margin:12px auto; padding:28px 20px; }
+  .about-principles { grid-template-columns:1fr; }
+  .comparison-grid { grid-template-columns:1fr; }
+  .local-collection { padding:35px 0 60px; }
+}
