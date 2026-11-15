@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { VehicleSummary } from "@/lib/vehicles";
+import { VehicleCardActions } from "@/components/vehicle-card-actions";
 
 function formatPrice(price: number | null, currency: string) {
   if (price === null) return "Price on request";
@@ -38,6 +39,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: VehicleSum
           {vehicle.fuelType ? <span>{vehicle.fuelType}</span> : null}
           {vehicle.seats ? <span>{vehicle.seats} seats</span> : null}
         </div>
+        <VehicleCardActions vehicleId={vehicle.id} />
         <div className="vehicle-card-bottom">
           <div>
             <span className="price-label">Asking price</span>
