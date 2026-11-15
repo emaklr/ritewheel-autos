@@ -24,6 +24,7 @@ export function SiteHeader() {
         </nav>
 
         <div className="header-actions">
+          <Link href="/garage" className="header-compare">My Garage</Link>
           <Link href="/compare" className="header-compare">Compare</Link>
           <Link href="/contact" className="button button-gold button-small">Get in touch <span aria-hidden="true">↗</span></Link>
         </div>
@@ -34,6 +35,7 @@ export function SiteHeader() {
             {links.map((link) => (
               <Link key={link.href} href={link.href}>{link.label}</Link>
             ))}
+            <Link href="/garage">My Garage</Link>
             <Link href="/compare">Compare vehicles</Link>
             <Link href="/contact">Get in touch</Link>
           </nav>
