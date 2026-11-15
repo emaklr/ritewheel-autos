@@ -528,52 +528,216 @@ Rules:
 ## 6. Screen 3 — Vehicle detail
 
 **Route:** `/vehicles/[slug]`  
-**Purpose:** Give a customer enough accurate information to enquire or request a test drive.
+**Status:** Proposed V1 design direction; visual concept created for review.  
+**Purpose:** Help the customer understand the actual vehicle, decide whether it fits their needs, and take a clear next step with the dealership.
 
-### Above-the-fold layout
+### Approved design direction
 
-Desktop uses a two-column layout:
+Use the same premium black/charcoal and restrained amber-gold visual language as the homepage and Inventory.
 
-- Left (approximately 60–65%): lead gallery image and thumbnail strip; gallery navigation; image expand action.
-- Right (approximately 35–40%): availability status, vehicle name, year/trim, price, concise key facts, primary Enquire Now action, secondary Book a Test Drive action, and Open in Design Studio action where the vehicle supports configurations.
-- The right column may become sticky while the gallery/detail header scrolls.
-- Add breadcrumbs above the gallery.
+The page is a vehicle detail experience, not a cart/checkout page:
+- Large vehicle photography is the visual focus.
+- A compact information and action panel sits alongside the gallery on desktop.
+- Price and availability are prominent but must be factual and current.
+- Enquiry is the primary action; test-drive request is the clear secondary action.
+- Save, compare and Design Studio actions are available without competing with the main actions.
+- No payment button, checkout/cart or reservation promise appears in Release 1.
 
-### Below-the-fold sections
+### Desktop layout
 
-Use clear tabs or anchored sections:
+1. Global public header.
+2. Breadcrumbs: Home → Inventory → Body Type (when known) → Vehicle name.
+3. Main two-column area:
+   - Left: approximately 60–65% width for the image gallery.
+   - Right: approximately 35–40% for the vehicle summary/action card.
+4. A thin thumbnail strip below the main image.
+5. Vehicle information sections below the main two-column area.
+6. Similar available vehicles.
+7. Footer.
 
-1. Overview — concise vehicle description.
-2. Specifications — engine, drivetrain, transmission, fuel, mileage, seating, body type, condition, and other available facts.
-3. Features — data-backed feature list grouped by category.
-4. Gallery — full image set.
-5. Similar vehicles — real published inventory recommendations.
+The summary card may use sticky positioning while the gallery and main details are in view, but it must stop before colliding with the footer and must not create nested scroll areas.
 
-Omit unknown fields or label them "Not provided". Do not display empty specification labels.
+### Vehicle image gallery
 
-### Main actions
+- Show one large lead image with a stable landscape aspect ratio.
+- Use a dark neutral background and consistent image fit/crop.
+- Provide previous/next buttons only when multiple images exist.
+- Show a thumbnail strip with a clear selected state; show a remaining-image count if the gallery contains more thumbnails than fit.
+- Provide an accessible open-large-image/lightbox control.
+- Keyboard users can navigate the gallery and close the lightbox with Escape.
+- The image alt text comes from the vehicle's make/model and image description where available.
+- A neutral premium fallback is shown when the primary image is missing.
+- If there is only one image, hide unnecessary arrows and thumbnail controls.
+- Do not autoplay a gallery, video or 360-degree viewer in V1.
 
-- Enquire Now opens a form pre-filled with the selected vehicle reference.
-- Book a Test Drive opens a request form with vehicle preselected.
-- Build Your Version opens the Design Studio for this vehicle.
-- Compare toggles the vehicle in the compare tray.
-- Favourite saves locally in the current browser.
+### Vehicle summary and action panel
 
-### Enquiry form
+Display fields only when stored on the selected listing:
 
-Collect name, email, phone, and optional message. Show a concise summary of the vehicle and any attached saved build. Display a clear consent/notice explaining that the dealership will use the details to respond. Submit only after customer action.
+1. Listing/status badge: Available, Reserved, Sold or other configured public state.
+2. Demo Listing label where the vehicle is demonstration data.
+3. Make, model, trim and year.
+4. Condition where recorded (for example new or used).
+5. Price with currency, or **Price on request** if no price exists.
+6. A concise row of up to four key facts from available data: engine, power, fuel, transmission, drivetrain, seats or mileage.
 
-### Test-drive form
+Price rules:
+- Never infer currency from the browser, location or language.
+- Never invent or calculate a market price.
+- The price displayed is the current listing price; if it changes after the customer saved the vehicle, My Garage can show a price-changed notice.
+- Demonstration prices must carry a clear **Illustrative demo price** or Demo Listing marker.
+- A price on request must not be rendered as zero or as a fake placeholder amount.
 
-Collect name, email, phone, preferred date, preferred time, and optional note. State clearly that the request is pending until the dealership confirms it.
+### Primary customer actions
 
-### Required states
+**Enquire Now**
+- Primary gold full-width action in the summary card.
+- Opens an accessible modal/drawer or dedicated enquiry step.
+- The vehicle is preselected and shown in the form summary.
+- Collect customer name, email, phone and optional message.
+- Guest submissions are allowed.
+- Explain that the dealership will use the supplied contact details to respond.
+- On submit, create a persisted Enquiry and show a reference/acknowledgement.
+- Never imply that submitting an enquiry reserves the vehicle or locks its price.
 
-- Vehicle unavailable, reserved, or sold.
-- Price not provided.
-- Gallery image unavailable.
-- Enquiry submitted / validation failed / server error.
-- Test-drive request submitted and awaiting confirmation.
+**Request a Test Drive**
+- Secondary outlined action.
+- Opens a form prefilled with the vehicle.
+- Collect name, email, phone, preferred date, preferred time and optional note.
+- Clearly state that this is a request; the dealership confirms date/time separately.
+- Persist as REQUESTED and show an acknowledgement/reference.
+- Do not expose fake available appointment slots in V1.
+
+**Save to My Garage**
+- Guest: save the listing locally in the current browser and explain that cross-device sync requires an account in Release 2.
+- Registered customer (Release 2): persist under their authenticated account.
+- A saved vehicle remains in the customer's history if it later becomes sold or unavailable; show its actual current status.
+
+**Compare**
+- Add/remove the vehicle from the current local compare selection.
+- Maximum of three actual listings.
+- Provide a visible selected state and clear feedback if the limit is reached.
+
+**Build Your Version**
+- Show only if the vehicle has active Design Studio options and preview assets.
+- Navigate to `/studio/[slug]`.
+- If no options are configured, hide or disable the action with a brief explanation; do not imply unsupported configurability.
+
+**Request a Quote / Talk to a Specialist**
+- A quote request in Release 1 is an enquiry for dealership follow-up, not a formal payable quote.
+- Human contact uses configured business channels only.
+- A formal versioned quote and payment flow belong to Release 3.
+
+### Ask AI about this vehicle
+
+- A small secondary action can say **Ask AI about this vehicle** near the overview/specification content.
+- It opens the AI Concierge drawer or route only after the customer clicks.
+- Pass the vehicle ID and a limited set of safe public listing facts as context; the server re-fetches authoritative data.
+- The assistant can explain listed specifications, compare this listing with other actual inventory, describe relevant trade-offs and suggest questions to ask the dealership.
+- It must distinguish listing facts from general advice and identify fields that are missing.
+- It cannot confirm stock, negotiate/approve a price, reserve the vehicle, generate a formal quote, book a test drive or take payment.
+- Do not send customer name, email, phone or private enquiry content to Gemini.
+- Do not load the AI SDK or chat component with the initial vehicle detail page. Dynamically load only after explicit interaction.
+
+### Vehicle information sections
+
+Use a simple anchored tab row or section navigation:
+1. **Overview** — concise, factual description from the listing.
+2. **Specifications** — structured information grouped into engine/performance, dimensions/capacity, drivetrain, fuel/transmission, mileage and other supplied fields.
+3. **Features** — only features explicitly recorded for the vehicle, grouped where useful.
+4. **Gallery** — full image collection, loaded as the customer explores it.
+5. **Similar Vehicles** — a small number of relevant current Ritewheel listings.
+
+Do not show empty specification labels or generic feature lists that have not been verified. If a fact is unknown, omit it or state **Not provided** where its absence matters to the customer.
+
+### Similar vehicles
+
+- Recommend up to three actual published Ritewheel listings.
+- Use server-side matching based on a modest combination of body type, make, budget band, year, seats or other available facts.
+- Label recommendations as similar alternatives, not AI-confirmed equivalents.
+- Exclude the current vehicle.
+- Revalidate current status before display.
+- If there are no suitable alternatives, show a clear link back to Inventory rather than fabricated vehicles.
+
+### Status and unavailable states
+
+**Available**
+- Show current price and normal enquiry/test-drive actions.
+
+**Reserved**
+- Show a clear Reserved badge and explain that the vehicle may not be immediately obtainable.
+- Customer can ask for status clarification or similar alternatives.
+- Do not imply that a new customer can reserve it.
+
+**Sold**
+- Preserve the detail page when reached through an old link or saved item.
+- Show Sold / No longer available.
+- Disable actions that imply the vehicle can be purchased or test-driven now.
+- Offer similar current stock and a sourcing request.
+
+**Unpublished / archived / no longer publicly listed**
+- Do not expose private listing fields.
+- For a stale direct link, show a polite unavailable state and links to Inventory or Contact.
+
+**Missing price**
+- Show Price on request and allow a price enquiry.
+
+**Missing facts/images**
+- Omit empty facts, use a neutral image fallback, and never fabricate data.
+
+### Mobile layout
+
+- Header and breadcrumbs remain compact.
+- Main gallery is full width, followed by name, year/trim, status and price.
+- Show one row of concise key facts where space permits; otherwise use a compact two-column summary.
+- Primary actions remain easy to tap.
+- A restrained sticky bottom action bar may show Enquire and a secondary action while scrolling. It must account for safe-area insets and never cover content, gallery controls, forms or the mobile navigation.
+- Save, Compare and Design Studio actions move into the summary/action section rather than crowding the sticky bar.
+- Tabs/section links may horizontally scroll with accessible labels.
+- Similar vehicles stack as one card per row.
+- No horizontal page overflow.
+
+### Loading, empty and error states
+
+- Server-render the vehicle name, core summary and lead image when the listing is available.
+- If the slug does not exist or the listing is no longer public, return the correct not-found/unavailable state without leaking private fields.
+- Enquiry validation errors appear beside the corresponding fields.
+- Enquiry success shows a reference and next-step explanation.
+- Test-drive submission success explains that the dealership must confirm the request.
+- Failed submission preserves safe, non-sensitive form values so the customer does not have to start again.
+- Gallery image failure uses a dimension-preserving fallback.
+- Similar vehicles can fail independently; their failure must not break the detail page.
+- AI unavailable state must not affect ordinary vehicle content, enquiry or compare actions.
+
+### Performance constraints
+
+- Fetch one public vehicle record plus only the image/specification/feature relations required for this page.
+- Use Server Components for the primary page, summary and information sections by default.
+- Use small client-side islands for gallery selection, lightbox, compare, favourites and enquiry/test-drive forms.
+- Use Next.js image optimisation with explicit aspect ratios and accurate `sizes`.
+- Prioritise only the lead gallery image. Do not eagerly download every gallery image.
+- Load small thumbnails for the visible strip; lazy-load additional images and dynamically import the lightbox only when opened.
+- Avoid autoplay video, 3D models, large image compositing and heavy carousel packages.
+- Dynamically load AI code only after the customer chooses Ask AI.
+- Keep enquiry/test-drive forms lightweight and avoid loading them until opened if they are modal/drawer forms.
+- Do not poll the vehicle status. Revalidate server-side when a customer submits a new enquiry/test-drive request and again before future quote/reservation operations.
+- Reserve gallery and card geometry to avoid CLS.
+
+### Vehicle detail acceptance criteria
+
+- The actual listing name, price/currency, status, condition, specs and features are database-backed.
+- Demo data and demo prices are clearly labelled.
+- Desktop uses the gallery/action-panel layout; mobile has a deliberate stacked layout.
+- Enquiry and test-drive requests are persisted and show clear confirmation.
+- A test-drive request is never presented as confirmed before staff acceptance.
+- Save and Compare work without requiring an account.
+- Build Your Version only appears for supported vehicles.
+- AI is contextual and opens only when the customer chooses it.
+- Sold/reserved/unavailable/missing-price states are honest and useful.
+- Similar vehicles are actual listings.
+- Main vehicle content remains usable if Gemini is unavailable.
+- Gallery images, lightbox and feature code load on demand.
+- Mobile/desktop performance and accessibility checks pass.
 
 ## 7. Screen 4 — AI Concierge
 
