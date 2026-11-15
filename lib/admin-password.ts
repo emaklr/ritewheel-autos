@@ -1,5 +1,3 @@
-import "server-only";
-
 import { randomBytes, scrypt as scryptCallback, timingSafeEqual } from "node:crypto";
 import type { ScryptOptions } from "node:crypto";
 
