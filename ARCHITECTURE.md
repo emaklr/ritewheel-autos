@@ -820,3 +820,84 @@ These decisions are the V1 implementation contract and are subject to the same p
 ### 23.1 Inventory visual selection and AI visibility
 
 The selected second inventory concept is the visual reference for its compact panoramic banner, filter sidebar, search/sort toolbar, and vehicle-card composition. Its permanently visible right-hand AI chat column is intentionally excluded. The vehicle grid uses that space; AI is available through a small floating launcher and opens an on-demand drawer only after a customer clicks it. The launcher must not cover vehicle cards, pagination, or important mobile controls. AI UI and model code are not loaded before the drawer is opened.
+
+
+## 24. Approved full product experience
+
+The approved guest, customer, AI, My Garage, sourcing, human handover and dealership journey is specified in [docs/PRODUCT_EXPERIENCE.md](./docs/PRODUCT_EXPERIENCE.md).
+
+Product decisions:
+- My Garage, not a conventional cart, is the customer's shortlist/workspace.
+- Guest-first: customers browse, compare, use AI, configure and submit requests without registering.
+- Registered accounts and synchronised Garage are Release 2.
+- Distinguish actual Ritewheel listings, similar actual listings and not-currently-listed model suggestions.
+- Unlisted interest creates a SourcingRequest; it does not create a Vehicle listing or imply availability.
+- Customer chooses which AI summary/context to share with human staff.
+- Human follow-up is central. Release 1 uses enquiries, callback, test-drive, sourcing queues and configured contact links; CRM/lead assignment is Release 2.
+- AI has read-only inventory tools and cannot approve quotes, reserve inventory, confirm bookings, create purchases or accept payments.
+
+## 25. Expanded domain model by release
+
+The existing core entities (AdminUser, Vehicle, VehicleImage, VehicleOption, VehicleBuild, Enquiry, TestDriveRequest, AdminAuditLog) remain the initial Release 1 base.
+
+### Release 1
+**SourcingRequest:** guest contact snapshot, optional account reference for later, requested make/model/year/condition/preferences/budget/currency/notes, assigned staff, status and timestamps. This is a sourcing lead, not a Vehicle record.
+
+### Release 2
+- **CustomerAccount:** customer identity/profile, separate from V1 AdminUser unless a reviewed identity migration is approved.
+- **SavedVehicle:** unique account/vehicle pair and saved timestamp.
+- **CustomerPreference:** customer-approved vehicle discovery preferences.
+- **SavedRecommendation / SavedRecommendationItem:** explicitly saved AI recommendations. Current inventory items reference Vehicle; external model suggestions use a distinct external-interest type.
+- **SavedComparison:** account and up to three vehicle references.
+- **ConciergeConversation / ConciergeMessage:** bounded customer-controlled history; omit unnecessary personal/payment data.
+- **Lead:** customer or guest contact, source, owner staff, linked request/vehicle/build and sales lifecycle.
+- **LeadAssignment:** owner and assignment history.
+- **SalesActivity:** call/email/WhatsApp/meeting/test-drive/quote/internal note, next follow-up and visibility (INTERNAL or CUSTOMER_VISIBLE).
+- **CustomerNotification:** account-scoped in-app notification records.
+- Add nullable customerAccountId to VehicleBuild, Enquiry and TestDriveRequest when account sync is implemented. Guest builds remain shareable through unguessable public IDs.
+
+### Release 3
+See [docs/PAYMENTS_AND_TRANSACTIONS.md](./docs/PAYMENTS_AND_TRANSACTIONS.md) for Quote, QuoteLine, PaymentObligation, VehicleReservation, Purchase, Payment, PaymentAttempt, PaymentWebhookEvent, Refund, JournalTransaction and JournalEntry. These tables are not created in Release 1.
+
+## 26. Human handover and CRM
+
+Release 1 accepts customer enquiries, callbacks, test-drive requests and sourcing requests, and gives staff protected queues. Human contact uses configured channels.
+
+Release 2 adds staff identities/roles, customer/lead records, lead assignment, activity timeline, private internal notes, customer-visible updates, follow-up dates and customer-approved AI handover summaries. Never expose internal notes or full AI conversation by default.
+
+## 27. Quote, reservation and payment architecture
+
+Payment flow is formally designed in [docs/PAYMENTS_AND_TRANSACTIONS.md](./docs/PAYMENTS_AND_TRANSACTIONS.md) but live processing is Release 3, after Release 2 accounts and CRM.
+
+Flow:
+1. Customer expresses interest.
+2. Staff verifies the vehicle or sourcing offer, condition, price and terms.
+3. Staff issues a versioned quote.
+4. Customer accepts the exact quote version.
+5. Optional time-limited vehicle reservation is created server-side.
+6. Server creates a deposit/full/balance obligation and hosted checkout attempt.
+7. Signed provider webhook is verified and processed idempotently.
+8. Payment, append-only journal, reservation and purchase state update transactionally.
+9. Refund, reconciliation and handover are handled by authorised staff.
+
+Invariants:
+- No cart or listing-to-checkout shortcut.
+- Provider selection follows due diligence; no provider is selected in advance.
+- Amount/currency are server-calculated from the accepted quote.
+- Browser redirect alone cannot mark a payment successful.
+- Payment attempts, webhooks and refunds are idempotent.
+- A deposit is not a completed purchase.
+- No raw card number/CVV is stored.
+- Quote versions, reservations, payments, refunds and journal entries are auditable.
+- A vehicle cannot have two active holds.
+- A sourcing request becomes payable only after a real supply offer has been verified and quoted.
+
+## 28. Approved release boundaries
+
+| Release | Scope | Payment status |
+| --- | --- | --- |
+| Release 1 | Marketplace, AI, Design Studio, guest/local Garage, enquiries, sourcing, basic admin queues | No live payments |
+| Release 2 | Customer accounts, persistent Garage, notifications, staff roles, CRM and lead management | Quote preparation may be modelled; no live charges |
+| Release 3 | Verified quotes, reservation holds, payment obligations, hosted checkout, signed webhooks, transaction records, refunds, reconciliation and handover | Live payment implementation after release gates |
+
+Payment structure is designed now to avoid redesign. Gateway integration and real money movement are explicitly deferred to Release 3.
