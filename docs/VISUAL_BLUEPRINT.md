@@ -330,34 +330,36 @@ A final contact CTA links to the configured contact route. Contact details are d
 
 Use the same dark luxury language as the homepage, but make Inventory more functional and compact:
 
-- No second, oversized cinematic hero. The homepage already provides the visual introduction.
-- Compact page title and short description.
+- Use the selected second concept as the visual reference: a compact, shallow panoramic vehicle banner above the catalogue. It is a visual header, not a second full-height hero.
+- Place the page title and short description over the left side of the banner, with one optimised vehicle image on the right.
 - Search, result count and sort controls above the results.
 - Filter sidebar on the left on desktop.
 - Three large, readable vehicle cards per row on wide desktop.
 - A small floating AI Concierge launcher that opens a drawer only when clicked.
 - No permanently visible chatbot column beside the inventory grid.
 
-The inventory page should prioritise vehicle discovery and imagery. It should feel spacious rather than crammed with controls.
+The inventory page should prioritise vehicle discovery and imagery. It should feel spacious rather than crammed with controls. The second generated inventory concept is the selected visual reference, but its always-visible AI chat column is intentionally removed; the vehicle grid expands into that space.
 
 ### Desktop layout
 
 1. Global public header with Inventory selected.
-2. Compact title region:
+2. Compact panoramic banner (approximately 190–250 px tall on desktop):
+   - Static wide vehicle photograph, darkened for legible copy.
    - Eyebrow: "Premium Vehicle Inventory".
    - Heading: **"Exceptional vehicles. Real opportunities."**
    - One short sentence explaining that customers can browse or use filters to narrow the catalogue.
-   - Do not repeat the homepage hero or load another large banner photograph.
+   - Keep the banner much shorter than the homepage hero; do not add a carousel or video.
 3. Search and results toolbar:
    - Search by make, model, trim or keyword.
    - Current result count, for example "Showing 12 of 48 vehicles" only when those values come from the query result.
-   - Sort selector.
+   - Sort selector and compact compare shortcut.
    - Optional grid/list toggle only if both modes are fully implemented and tested.
 4. Main two-column content:
    - Left filter sidebar: approximately 240–270 px.
    - Right result area: three columns on wide desktop; two columns on medium desktop/tablet.
+   - Use the full result-area width for vehicle cards; do not reserve a permanent column for AI.
 5. Pagination below the grid.
-6. Footer and compact floating AI Concierge launcher.
+6. Footer and small floating AI Concierge launcher at the lower-right.
 
 ### Search and toolbar
 
@@ -400,6 +402,7 @@ Sidebar behaviour:
 - Replace the desktop sidebar with a Filters button opening an accessible bottom sheet or full-height drawer.
 - Show the active filter count on the button.
 - The drawer contains the same filter controls as desktop.
+- Keep the vehicle banner shallow and concise on mobile; the image may use a mobile-specific crop.
 - Provide Clear All and Apply Filters actions.
 - Keep applied filter chips and sort accessible above results.
 - The drawer must support keyboard focus, escape-to-close, scroll containment and touch-friendly controls.
