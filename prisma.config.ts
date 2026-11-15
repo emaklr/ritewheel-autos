@@ -13,6 +13,6 @@ export default defineConfig({
   datasource: {
     // The placeholder permits client generation during install/build.
     // Database commands require a real DATABASE_URL.
-    url: process.env.DATABASE_URL ?? fallbackUrl,
+    url: process.env.DIRECT_URL ?? process.env.DATABASE_URL ?? fallbackUrl,
   },
 });
