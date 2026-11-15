@@ -104,6 +104,16 @@ export function VehicleForm({
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (mode === "edit" && initial && form.status !== initial.status) {
+      const action = form.status === "AVAILABLE"
+        ? "publish this listing as available"
+        : form.status === "DRAFT"
+          ? "unpublish this listing as a draft"
+          : form.status === "ARCHIVED"
+            ? "archive this listing"
+            : `mark this listing as ${form.status.toLowerCase()}`;
+      if (!window.confirm(`Are you sure you want to ${action}?`)) return;
+    }
     setError("");
     setBusy(true);
 
