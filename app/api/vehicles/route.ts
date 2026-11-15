@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { searchVehicles } from "@/lib/vehicles";
+import { getVehiclesByIds, searchVehicles } from "@/lib/vehicles";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -17,6 +17,22 @@ const querySchema = z.object({
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
+  const idsRaw = url.searchParams.get("ids");
+  if (idsRaw !== null) {
+    const ids = idsRaw.split(",").map((id) => id.trim()).filter(Boolean);
+    if (ids.length > 3 || ids.some((id) => id.length > 40)) {
+      return NextResponse.json({ error: "A maximum of three valid vehicle IDs can be requested." }, { status: 400 });
+    }
+    try {
+      return NextResponse.json(await getVehiclesByIds(ids), {
+        headers: { "Cache-Control": "private, no-store" },
+      });
+    } catch (error) {
+      console.error("Vehicle lookup failed:", error instanceof Error ? error.message : "Unknown error");
+      return NextResponse.json({ error: "Vehicles could not be loaded." }, { status: 503 });
+    }
+  }
+
   const parsed = querySchema.safeParse(Object.fromEntries(url.searchParams.entries()));
 
   if (!parsed.success) {
