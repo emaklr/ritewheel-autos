@@ -346,20 +346,20 @@ export async function getVehicleBySlug(slug: string): Promise<VehicleSummary | n
 }
 
 
-export async function getVehiclesByIds(ids: string[]): Promise<{ items: VehicleSummary[]; dataSource: "demo" | "database" }> {
-  const safeIds = ids.filter((id) => typeof id === "string" && id.length <= 40).slice(0, 3);
-  if (safeIds.length === 0) return { items: [], dataSource: process.env.DATABASE_URL ? "database" : "demo" };
+export async function getVehiclesBySlugs(slugs: string[]): Promise<{ items: VehicleSummary[]; dataSource: "demo" | "database" }> {
+  const safeSlugs = [...new Set(slugs.filter((slug) => typeof slug === "string" && /^[a-z0-9-]{3,100}$/.test(slug)))].slice(0, 50);
+  if (safeSlugs.length === 0) return { items: [], dataSource: process.env.DATABASE_URL ? "database" : "demo" };
 
   if (!process.env.DATABASE_URL) {
-    const items = safeIds
-      .map((id) => demoVehicles.find((vehicle) => vehicle.id === id))
+    const items = safeSlugs
+      .map((slug) => demoVehicles.find((vehicle) => vehicle.slug === slug))
       .filter((vehicle): vehicle is VehicleSummary => Boolean(vehicle));
     return { items, dataSource: "demo" };
   }
 
   const prisma = getPrismaClient();
   const rows = await prisma.vehicle.findMany({
-    where: { id: { in: safeIds }, status: { in: ["AVAILABLE", "RESERVED", "SOLD"] } },
+    where: { slug: { in: safeSlugs }, status: { in: ["AVAILABLE", "RESERVED", "SOLD"] } },
     select: {
       id: true, slug: true, make: true, model: true, trim: true, year: true,
       bodyType: true, condition: true, mileage: true, transmission: true,
@@ -368,9 +368,9 @@ export async function getVehiclesByIds(ids: string[]): Promise<{ items: VehicleS
       images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1, select: { url: true, altText: true } },
     },
   });
-  const byId = new Map(rows.map((row) => [row.id, formatVehicle(row)]));
+  const bySlug = new Map(rows.map((row) => [row.slug, formatVehicle(row)]));
   return {
-    items: safeIds.map((id) => byId.get(id)).filter((vehicle): vehicle is VehicleSummary => Boolean(vehicle)),
+    items: safeSlugs.map((slug) => bySlug.get(slug)).filter((vehicle): vehicle is VehicleSummary => Boolean(vehicle)),
     dataSource: "database",
   };
 }
