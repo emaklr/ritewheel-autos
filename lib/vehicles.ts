@@ -170,6 +170,7 @@ export type VehicleFilters = {
   make?: string;
   bodyType?: string;
   maxBudget?: number;
+  currency?: string;
   sort?: "newest" | "price-low" | "price-high";
   page?: number;
   pageSize?: number;
@@ -177,6 +178,10 @@ export type VehicleFilters = {
 
 function filterDemoVehicles(filters: VehicleFilters) {
   let results = demoVehicles.filter((vehicle) => vehicle.status === "AVAILABLE");
+
+  if (filters.currency) {
+    results = results.filter((vehicle) => vehicle.currency === filters.currency);
+  }
 
   if (filters.q) {
     const query = filters.q.toLowerCase();
@@ -288,7 +293,8 @@ export async function searchVehicles(filters: VehicleFilters = {}) {
     } : {}),
     ...(filters.make ? { make: { equals: filters.make, mode: "insensitive" as const } } : {}),
     ...(filters.bodyType ? { bodyType: { equals: filters.bodyType, mode: "insensitive" as const } } : {}),
-    ...(filters.maxBudget ? { price: { lte: filters.maxBudget }, currency: "NGN" } : {}),
+    ...(filters.currency ? { currency: filters.currency } : {}),
+    ...(filters.maxBudget ? { price: { lte: filters.maxBudget }, currency: filters.currency ?? "NGN" } : {}),
   };
 
   const orderBy = filters.sort === "price-low"
@@ -393,4 +399,34 @@ export async function getAvailableVehicleCategories(): Promise<{ bodyType: strin
     orderBy: { bodyType: "asc" },
   });
   return rows.map((row) => ({ bodyType: row.bodyType, count: row._count._all }));
+}
+
+
+
+export async function getAvailableVehicleMakes(): Promise<string[]> {
+  if (!process.env.DATABASE_URL) {
+    return [...new Set(demoVehicles.filter((vehicle) => vehicle.status === "AVAILABLE").map((vehicle) => vehicle.make))].sort();
+  }
+
+  const prisma = getPrismaClient();
+  const rows = await prisma.vehicle.groupBy({
+    by: ["make"],
+    where: { status: "AVAILABLE", publishedAt: { not: null } },
+    orderBy: { make: "asc" },
+  });
+  return rows.map((row) => row.make);
+}
+
+export async function getAvailableVehicleCurrencies(): Promise<string[]> {
+  if (!process.env.DATABASE_URL) {
+    return [...new Set(demoVehicles.filter((vehicle) => vehicle.status === "AVAILABLE").map((vehicle) => vehicle.currency))].sort();
+  }
+
+  const prisma = getPrismaClient();
+  const rows = await prisma.vehicle.groupBy({
+    by: ["currency"],
+    where: { status: "AVAILABLE", publishedAt: { not: null } },
+    orderBy: { currency: "asc" },
+  });
+  return rows.map((row) => row.currency);
 }
