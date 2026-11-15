@@ -117,7 +117,8 @@ export function VehicleForm({
     setError("");
     setBusy(true);
 
-    const images = form.imageUrls
+    const { imageUrls, ...formFields } = form;
+    const images = imageUrls
       .split("\n")
       .map((url) => url.trim())
       .filter(Boolean)
@@ -130,7 +131,7 @@ export function VehicleForm({
       }));
 
     const payload = {
-      ...form,
+      ...formFields,
       year: Number(form.year),
       mileage: form.mileage.trim() ? Number(form.mileage) : null,
       seats: form.seats.trim() ? Number(form.seats) : null,
@@ -145,7 +146,6 @@ export function VehicleForm({
       features: form.features.split(",").map((item) => item.trim()).filter(Boolean),
       images,
     };
-    delete (payload as Partial<FormState>).imageUrls;
 
     try {
       const response = await fetch(
