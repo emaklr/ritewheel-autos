@@ -938,3 +938,18 @@ The detailed Design Studio screen contract is in [docs/VISUAL_BLUEPRINT.md](./do
 - Guest builds can be persisted with an unguessable public ID in Release 1; cross-device account ownership arrives in Release 2.
 - Build enquiry links the VehicleBuild and Vehicle; it does not create a quote, reservation or payment.
 - Load the base image first, fetch variants on demand, and lazy-load the AI helper/model only after an explicit action.
+
+
+## 32. Release 1 Dealership Workspace contract
+
+The complete dashboard UI and workflow specification is in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md#9-screen-6--dealership-dashboard). Release 1 provides a single-admin protected workspace for Overview, Inventory, Enquiries, Test Drives, Sourcing Requests and basic Settings.
+
+- KPI counts are database-derived (published/available inventory, NEW enquiries, REQUESTED test drives, active sourcing requests); no invented analytics or revenue metrics.
+- Inventory CRUD, publish/status changes and vehicle-option/image-reference management are server-validated and audited.
+- Enquiry and sourcing queues are distinct; an enquiry or sourcing request is not a sale or vehicle listing.
+- Test-drive request status remains REQUESTED until staff accept with a confirmed date/time. No calendar availability is claimed without a real scheduler.
+- Release 1 uses one AdminUser role. Staff roles, lead assignment, CRM timeline, internal notes and customer management belong to Release 2.
+- Quotes, reservations, transaction dashboards and payments belong to Release 3.
+- Each protected route and API handler checks the server-side admin session; hiding UI is not authorisation.
+- Paginate queues in PostgreSQL; do not load every record or add charts/table libraries without a demonstrated need.
+- Image binaries belong in configured object storage/CDN; PostgreSQL holds image references and metadata.
