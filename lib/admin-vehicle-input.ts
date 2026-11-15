@@ -47,7 +47,7 @@ export const adminVehicleInputSchema = z.object({
   featured: z.boolean(),
   isDemo: z.boolean(),
 }).superRefine((value, context) => {
-  if (value.status === "AVAILABLE" && value.images.length === 0) {
+  if (!["DRAFT", "ARCHIVED"].includes(value.status) && value.images.length === 0) {
     context.addIssue({
       code: "custom",
       path: ["images"],
