@@ -1,9 +1,9 @@
 # Ritewheel Autos — Application Architecture
 
-**Status:** Proposed architecture with visual blueprint defined; implementation not yet begun  
+**Status:** Approved architecture; Release 1 implementation in progress  
 **Product:** Ritewheel Autos  
 **Document owner:** Product and Engineering  
-**Last updated:** 14 November 2026 — visual architecture revision
+**Last updated:** 15 November 2026 — Release 1 implementation reconciliation
 
 ## 1. Purpose
 
@@ -953,3 +953,19 @@ The complete dashboard UI and workflow specification is in [docs/VISUAL_BLUEPRIN
 - Each protected route and API handler checks the server-side admin session; hiding UI is not authorisation.
 - Paginate queues in PostgreSQL; do not load every record or add charts/table libraries without a demonstrated need.
 - Image binaries belong in configured object storage/CDN; PostgreSQL holds image references and metadata.
+
+
+## 33. Enquiry persistence and vehicle gallery implementation
+
+The initial customer enquiry workflow is implemented on the Release 1 branch as `POST /api/enquiries` with the form at `/contact` and vehicle-specific preselection through `/contact?vehicle=[slug]`.
+
+- Request input is validated with Zod on the server.
+- The endpoint enforces a small request-body limit and same-origin check when an Origin header is supplied.
+- A honeypot field filters simple bot submissions.
+- A process-local rate limiter is defense-in-depth only; it is not distributed across Vercel/serverless instances. Configure an edge or distributed rate limiter before opening public submissions to broad traffic.
+- A real enquiry reference is returned only after PostgreSQL persists the record.
+- Vehicle-linked enquiries must reference a published, non-demo listing. Demo records cannot create real dealership enquiries.
+- Enquiry, TestDriveRequest and SourcingRequest now include unique public reference fields for customer-facing acknowledgements.
+- When `DATABASE_URL` is absent, the Contact page explains that submission is disabled; it does not pretend to accept or store requests.
+
+Vehicle Details now resolves all ordered VehicleImage records for its gallery. The lead image is prioritised, thumbnails load normally, and the full-screen viewer is only rendered after the customer opens it. Three small local demo photos are stored under `public/images/vehicles/`; they are explicitly demo imagery and are not claims of dealer stock.
