@@ -4,17 +4,17 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { VehicleCard } from "@/components/vehicle-card";
 import { VehicleFinder } from "@/components/vehicle-finder";
-import { getFeaturedVehicles } from "@/lib/vehicles";
+import { getAvailableVehicleCategories, getFeaturedVehicles } from "@/lib/vehicles";
 
-const categories = [
-  { label: "SUVs", type: "SUV", image: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=760&q=78" },
-  { label: "Sedans", type: "Sedan", image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=760&q=78" },
-  { label: "Coupes", type: "Coupe", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=760&q=78" },
-  { label: "Luxury", type: "Luxury", image: "https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?auto=format&fit=crop&w=760&q=78" },
-];
+const categoryImages: Record<string, string> = {
+  SUV: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=760&q=78",
+  Sedan: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=760&q=78",
+  Coupe: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=760&q=78",
+  Pickup: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=760&q=78",
+};
 
 export default async function HomePage() {
-  const vehicles = await getFeaturedVehicles();
+  const [vehicles, categories] = await Promise.all([getFeaturedVehicles(), getAvailableVehicleCategories()]);
 
   return (
     <>
@@ -60,12 +60,16 @@ export default async function HomePage() {
             <Link href="/inventory" className="text-link">Explore all vehicles <span aria-hidden="true">→</span></Link>
           </div>
           <div className="category-grid">
-            {categories.map((category) => (
-              <Link key={category.label} href={`/inventory?bodyType=${encodeURIComponent(category.type)}`} className="category-card">
-                <Image src={category.image} alt={`${category.label} vehicle category`} fill sizes="(max-width: 760px) 50vw, 25vw" />
-                <span>{category.label} <span aria-hidden="true">↗</span></span>
-              </Link>
-            ))}
+            {categories.map((category) => {
+              const label = category.bodyType === "SUV" ? "SUVs" : category.bodyType === "Sedan" ? "Sedans" : category.bodyType === "Coupe" ? "Coupes" : category.bodyType === "Pickup" ? "Pickups" : category.bodyType;
+              const image = categoryImages[category.bodyType] ?? categoryImages.SUV;
+              return (
+                <Link key={category.bodyType} href={`/inventory?bodyType=${encodeURIComponent(category.bodyType)}`} className="category-card">
+                  <Image src={image} alt={`${label} vehicle category`} fill sizes="(max-width: 760px) 50vw, 25vw" />
+                  <span>{label} <span aria-hidden="true">↗</span></span>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
