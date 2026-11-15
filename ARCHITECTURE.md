@@ -915,3 +915,12 @@ The full screen specification is in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLU
 - Formal payable quotes, reservations and checkout are not actions on the Vehicle Details page in Release 1; they belong to Release 3 and the quote/payment architecture.
 - Ask AI about this vehicle is on-demand and passes only safe public vehicle context. AI cannot approve price, stock, booking or payment.
 - Gallery uses an optimised lead image, lazy-loaded remaining images and an on-demand lightbox; no autoplay/3D gallery.
+
+
+## 30. Design source-of-truth governance
+
+Use [docs/DESIGN_SOURCE_OF_TRUTH.md](./docs/DESIGN_SOURCE_OF_TRUTH.md) as the project rule for resolving design and implementation references. `main` is the canonical merged baseline; open branches and pull requests remain proposals until merged.
+
+The approved design mockups are visual-only references. They do not authorise copying example prices, vehicle details, availability labels, metrics, testimonials or functions into the application. Written product, architecture, visual and performance requirements take precedence when a mockup conflicts with them.
+
+Keep mockups in `docs/design-reference/`, not `public/`. Keep actual approved vehicle photography, thumbnails and Design Studio previews in `public/images/` or an approved CDN/object store with appropriate rights, optimisation, alt text and stable references. Never use screen mockups as listing photographs.
