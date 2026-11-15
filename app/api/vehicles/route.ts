@@ -9,6 +9,7 @@ const querySchema = z.object({
   q: z.string().trim().max(80).optional(),
   make: z.string().trim().max(60).optional(),
   bodyType: z.string().trim().max(40).optional(),
+  currency: z.string().regex(/^[A-Z]{3}$/).optional(),
   maxBudget: z.coerce.number().positive().max(10_000_000_000).optional(),
   sort: z.enum(["newest", "price-low", "price-high"]).default("newest"),
   page: z.coerce.number().int().min(1).max(1000).default(1),
