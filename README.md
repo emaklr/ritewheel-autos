@@ -58,6 +58,14 @@ Initial palette:
 - Compare up to three vehicles.
 - Responsive mobile and desktop experience.
 
+### Vehicle detail experience
+
+- Large image gallery with optimised lead image and on-demand lightbox.
+- Verified vehicle summary, price/currency, availability and specifications.
+- Enquiry and test-drive request actions, guest save and compare.
+- Contextual AI help only when opened; Design Studio only for supported vehicles.
+- Sold, reserved, unavailable and demo listing states are clearly distinguished.
+
 ### Inventory browsing experience
 
 - Compact premium catalogue page with server-side search, sorting, filters and pagination.
