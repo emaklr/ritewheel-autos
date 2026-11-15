@@ -1149,72 +1149,262 @@ Price rules:
 - Preview images and AI code load on demand.
 - Performance checks pass on mid-range/mobile profiles.
 
-## 9. Screen 6 — Admin dashboard
+## 9. Screen 6 — Dealership Dashboard
 
-**Routes:** `/admin`, `/admin/vehicles`, `/admin/enquiries`, `/admin/test-drives`  
-**Purpose:** Demonstrate real dealership operations through a protected interface.
+**Routes:** `/admin`, `/admin/vehicles`, `/admin/enquiries`, `/admin/test-drives`, `/admin/sourcing-requests`, `/admin/settings`  
+**Status:** Release 1 dashboard concept created; design contract below.  
+**Purpose:** Give the dealership operator one clear place to maintain accurate vehicle listings and respond to incoming customer interest.
 
-### Desktop shell
+### Release 1 scope boundary
 
-- Fixed left sidebar with Ritewheel admin identity.
-- Navigation: Overview, Inventory, Enquiries, Test Drives, Settings.
-- Main content area with page title, current admin identity, and period/filter controls only where meaningful.
-- Dark charcoal surfaces with gold for selected nav/actions; use less cinematic imagery than the public site to prioritise operational clarity.
+This screen is a practical single-dealership operations workspace, not the full CRM.
 
-### Dashboard overview
+Release 1 includes:
+- One protected AdminUser access model (single administrator role initially).
+- Dashboard overview with real counts.
+- Vehicle inventory CRUD and publication/status controls.
+- Enquiry review and basic status updates.
+- Test-drive request review and confirmation/decline.
+- Vehicle sourcing request review and basic status progression.
+- Basic dealership contact/settings configuration.
 
-KPI cards should be calculated from the database:
+Release 1 does not include:
+- Sales representative accounts, role management or lead assignment.
+- Customer CRM profiles and sales activity timelines.
+- Private internal notes / full staff collaboration.
+- Formal quote management.
+- Reservations or payment management.
+- Revenue, conversion or advanced analytics dashboards.
 
-- Published/available inventory.
-- New/open enquiries.
-- Pending test-drive requests.
-- Reserved vehicles.
+Those features belong to Release 2 or Release 3 as defined in PRODUCT_EXPERIENCE.md.
 
-Below the KPIs:
+### Visual direction
 
-- Recent inventory table with vehicle, price, status, and updated date.
-- Recent enquiries list with customer, vehicle, date, and status.
-- Pending test-drive requests.
-- Quick action to add a vehicle.
+The dashboard uses the same Ritewheel identity but prioritises clarity over cinematic effects:
+- Charcoal/obsidian canvas and restrained amber active states.
+- A fixed desktop sidebar with concise navigation.
+- Compact header with current page, search, notification placeholder only if notifications are implemented, and signed-in administrator menu.
+- Data tables and request cards with clear statuses and predictable action placement.
+- Small vehicle thumbnails; no giant background photography in the working area.
+- Gold is reserved for primary actions and selected navigation, not every status badge.
+- Use neutral status chips paired with text; colour must never be the only status signal.
 
-Do not use fictional sales volume, revenue, customer count, growth percentages, or "vehicles in stock" claims. If a metric cannot be derived from stored records, omit it.
+The dashboard concept screenshot is illustrative. Its names, dates, counts, price and sample vehicles must not be copied into live data. Real KPI numbers are computed from PostgreSQL; sample records are marked as demo in the seed data and UI.
+
+### Desktop shell and navigation
+
+Sidebar:
+1. **Overview** — `/admin`.
+2. **Inventory** — `/admin/vehicles`, with an Add Vehicle action.
+3. **Enquiries** — `/admin/enquiries`.
+4. **Test Drives** — `/admin/test-drives`.
+5. **Sourcing Requests** — `/admin/sourcing-requests`.
+6. **Settings** — `/admin/settings`.
+
+The signed-in administrator identity appears in the top/right account menu with Sign Out. Do not show staff switching, role administration or multi-tenant controls in Release 1.
+
+A compact global search may search vehicle make/model, enquiry customer/contact and request references. It should be server-side, bounded and omitted if it adds complexity without a complete workflow. Do not add a heavy command-palette dependency for a simple search field.
+
+### Overview page
+
+Top metric cards:
+- **Available Vehicles** — count of vehicles whose public status is AVAILABLE and which are published.
+- **New Enquiries** — count of Enquiry records in NEW status.
+- **Pending Test Drives** — count of TestDriveRequest records in REQUESTED status.
+- **Sourcing Requests** — count of SourcingRequest records in active statuses such as NEW, REVIEWING or SOURCING.
+
+Rules:
+- Each number is computed from current database records.
+- Counts have a clear label and link to the corresponding filtered queue.
+- If no records exist, show 0 and a useful empty state; never fill cards with invented numbers.
+- Do not show revenue, profit, GMV, conversion, customer totals, growth or "sales this month" unless the underlying business events exist and are defined.
+- Avoid charts in V1; four actionable counts are more useful and cheaper than decorative graphs.
+
+Below the metric cards, use two practical columns:
+- **Recent Enquiries** — compact table with customer, vehicle, submitted date and status. Clicking opens the enquiry details.
+- **Pending Test Drives** — compact list with vehicle thumbnail/name, preferred date/time and Request status. Actions go to the request detail/review flow.
+- **Inventory Snapshot** — small table with thumbnail, make/model, year, stored price/currency, public status and updated date. Include View Inventory and Add Vehicle.
+- **Sourcing Requests** — a short list of recently submitted/active requests with requested model, budget/currency if provided, created date and status. Include View Requests.
+
+On smaller screens, stack the sections in this order: KPI cards, new enquiries, pending test drives, sourcing requests, inventory snapshot.
 
 ### Inventory management
 
-- Search/filter inventory.
-- Add vehicle action.
-- Table or compact list with thumbnail, vehicle, year, price, status, featured state, and last updated.
-- Row actions: Edit, Publish/Unpublish, Mark Reserved, Mark Sold, Archive.
-- Confirmation dialog for destructive/status-changing actions.
-- Vehicle create/edit form groups: identity, price/currency, specifications, images, features, configuration options, publishing.
+Route: `/admin/vehicles`.
 
-### Enquiries
+List view:
+- Search make/model/trim/slug.
+- Filter by draft, available, reserved, sold, archived and featured.
+- Table columns: image, make/model/trim, year, price/currency, public status, published state and last updated.
+- Row actions: Edit, Preview, Publish/Unpublish, Mark Reserved, Mark Sold, Archive.
+- Destructive and status-changing actions require confirmation.
+- Do not allow invalid status transitions or publishing a record without required listing fields.
 
-- Table/list with customer, vehicle/build reference, submitted date, contact method, and current status.
-- Detail drawer/page with message and linked build.
-- Status transitions: NEW, CONTACTED, QUALIFIED, CLOSED, SPAM.
-- Do not expose customer details to public endpoints or logs.
+Create/edit form sections:
+1. Vehicle identity — make, model, trim, slug, year, body type, new/used condition.
+2. Commercial details — price, currency, optional price-on-request.
+3. Main specifications — mileage, fuel, transmission, engine, drivetrain, seats and other supported facts.
+4. Description and features — concise factual content and structured feature selection.
+5. Images — primary image, gallery order, alt text and image removal/replacement.
+6. Design Studio options — vehicle-specific VehicleOption records, preview mapping and stored price adjustments where supported.
+7. Publication — draft/published, featured state and public availability.
 
-### Test drives
+Validation:
+- Use Zod on the server for every mutation.
+- Enforce required fields and valid currency/decimal handling.
+- Store money as Decimal and currency code.
+- Do not accept AI-generated specs without an administrator review.
+- Preserve audit entries for publish, unpublish, price and status changes.
+- Image upload/storage provider must be configured before implementation; store asset URLs/keys in VehicleImage, not binary image data in PostgreSQL. Do not hardcode an unconfigured provider.
 
-- List requests with vehicle, requested date/time, contact, and status.
-- Admin actions: Accept, Decline, Mark Completed, Cancel.
-- Clearly distinguish requested/preferred time from confirmed appointment time.
-- No calendar availability claim in V1 unless a real schedule and conflict check are implemented.
+### Enquiry management
 
-### Admin states
+Route: `/admin/enquiries`.
 
-- Unauthenticated redirect to admin login.
-- Empty inventory/enquiry state with a useful first action.
-- Loading skeleton.
-- Permission denied.
-- Failed save with field-level validation.
-- Success toast and refreshed server data.
-- Destructive action confirmation.
+List:
+- Customer name.
+- Email/phone according to the operator's permitted access.
+- Vehicle/build reference.
+- Message preview.
+- Submitted date/time.
+- Status: NEW, CONTACTED, QUALIFIED, CLOSED or SPAM.
 
-### Mobile admin
+Detail panel/page:
+- Full enquiry message.
+- Linked vehicle and saved build summary where present.
+- Contact method supplied by customer.
+- Status history/audit context.
+- Basic status update action.
 
-Admin remains usable on tablet and phone but desktop is the primary design target. Sidebar collapses to a drawer; dense tables become cards or horizontally scrollable tables with clear row actions.
+Release 1 behaviour:
+- An enquiry is a customer request, not a confirmed sale or quotation.
+- Status updates are recorded server-side and audited.
+- Do not add assignment, internal notes, communication timeline or automated follow-up tasks in V1; those arrive with CRM in Release 2.
+- Do not expose contact details through public endpoints or logs.
+
+### Test-drive management
+
+Route: `/admin/test-drives`.
+
+List:
+- Vehicle name/image.
+- Customer contact.
+- Customer's preferred date and time.
+- Request status.
+- Submission timestamp.
+
+Review flow:
+- Open a request.
+- Check actual dealership availability outside the application or through its configured process.
+- Accept with a confirmed date/time, decline with a customer-safe explanation, or cancel where appropriate.
+- Mark completed after the appointment has happened.
+- Keep requested/preferred date/time distinct from confirmed date/time.
+- Do not show open calendar slots or claim real-time availability in Release 1 without a real scheduling and conflict-check system.
+- A test-drive form submission remains REQUESTED until staff explicitly accept it.
+
+### Vehicle sourcing request management
+
+Route: `/admin/sourcing-requests`.
+
+List:
+- Requested make/model/trim or customer description.
+- Year/condition range where supplied.
+- Budget and currency.
+- Customer contact.
+- Created date.
+- Current sourcing status.
+
+Release 1 status actions:
+- NEW.
+- REVIEWING.
+- SOURCING.
+- MATCH_FOUND.
+- QUOTED (meaning a staff-prepared sourcing quote exists; no online payment).
+- UNAVAILABLE.
+- DECLINED.
+- CANCELLED.
+- CLOSED.
+
+A sourcing request is not an inventory listing. Staff must verify a real supplier/vehicle offer before marking a real match or preparing a quote. Release 1 does not include external supplier integrations, lead assignment or automated sourcing feeds.
+
+### Settings
+
+Route: `/admin/settings`.
+
+Release 1 settings are intentionally small:
+- Public dealership/display name.
+- Contact phone and email.
+- WhatsApp click-to-chat number/link where configured.
+- Public address/location and opening hours where supplied.
+- Basic public contact details used by footer and contact actions.
+
+Do not display fake details. No payment credentials, gateway secrets, staff accounts, or complex business rules are configured on this page in Release 1.
+
+### Authentication and access states
+
+- Unauthenticated requests to all /admin routes and APIs redirect to the admin login or return 401.
+- Every admin API handler independently verifies the authenticated admin session; hiding navigation is not authorisation.
+- Release 1 has one administrator role, not a visible role-management interface.
+- Password hashes and session secrets remain server-only.
+- Invalid/expired session returns to login with a clear message.
+- Add rate limiting to admin login.
+- Staff role/assignment authorisation arrives in Release 2.
+
+### Responsive behaviour
+
+Desktop is the primary admin design target:
+- Fixed sidebar approximately 250–270 px.
+- Main content uses a readable max-width and consistent table spacing.
+- Use compact data tables with clear row actions.
+
+Tablet/mobile:
+- Sidebar collapses to an accessible drawer.
+- Metric cards use two columns where space permits, then one column.
+- Tables become stacked records or carefully designed horizontal tables; never hide critical actions off-screen.
+- Forms are sectioned into vertical groups.
+- Destructive actions remain clearly labelled and require confirmation.
+- The admin workspace should remain usable on phone but is not optimised as a separate native app.
+
+### Loading, empty and error states
+
+- Dashboard metrics show skeletons with stable geometry while loading.
+- Empty queues explain what will appear there and link to the relevant workflow.
+- No inventory shows an Add Vehicle action.
+- Failed data load is isolated to the affected card/table and offers Retry.
+- Form validation is field-specific.
+- Successful updates show a concise confirmation and refresh the affected server data.
+- Permission denied and expired session have distinct states.
+- Destructive status changes use an explicit confirmation dialog.
+- Do not render raw server errors, stack traces or internal identifiers to the administrator.
+
+### Performance and security constraints
+
+- Admin pages are server-rendered/authenticated; do not prefetch all queues on initial page load.
+- Fetch only the fields needed for visible KPI cards and list rows.
+- Paginate inventory, enquiries, test drives and sourcing requests at the database layer.
+- Use indexed status/date/vehicle relationships for common queue filters.
+- Avoid charts and large client-side table libraries in V1.
+- Small client islands only for forms, confirmations, table filters and navigation drawer.
+- Do not load AI or public Design Studio client bundles in admin unless a specific later workflow needs them.
+- Validate all mutations on the server and enforce admin authentication on each API endpoint.
+- Audit inventory publication, price and status changes plus customer request status changes.
+- Never log raw customer messages, phone/email, passwords or secrets.
+- Store image binaries in an approved object store/CDN; PostgreSQL stores references and metadata only.
+
+### Dashboard acceptance criteria
+
+- Only an authenticated admin can view dashboard data or mutate records.
+- Overview counts match database query results.
+- No fabricated metrics or sample customers/vehicles appear as real records.
+- Admin can create/edit/publish/update/archive vehicles with server validation.
+- Enquiries, test-drive requests and sourcing requests are visible in separate queues.
+- Test-drive requests are not treated as confirmed appointments until accepted.
+- Sourcing matches require staff verification; unlisted models are not silently added to inventory.
+- Price, currency, status and image references are accurate.
+- All status-changing/destructive actions are confirmed and audited.
+- Mobile/tablet layouts remain usable.
+- Release 2 CRM and Release 3 quotation/payment controls are not shown in V1.
+- Admin screens pass access-control and performance checks.
 
 ## 10. Shared component inventory
 
@@ -1266,10 +1456,13 @@ Component APIs should use typed data models and should not embed database calls.
 | Design Studio | `/studio/[slug]` | Vehicle-specific options and preview asset mapping |
 | About | `/about` | Configured dealership profile and curated copy |
 | Contact | `/contact` | Configured contact details and enquiry form |
+| Admin login | `/admin/login` | Admin authentication |
 | Admin overview | `/admin` | Authenticated database aggregates |
 | Admin inventory | `/admin/vehicles` | Authenticated vehicle records |
 | Admin enquiries | `/admin/enquiries` | Authenticated enquiries |
 | Admin test drives | `/admin/test-drives` | Authenticated test-drive requests |
+| Admin sourcing | `/admin/sourcing-requests` | Authenticated sourcing request queue |
+| Admin settings | `/admin/settings` | Authenticated public dealership/contact settings |
 
 ## 14. Main customer journey
 

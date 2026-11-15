@@ -93,6 +93,11 @@ The concierge cannot invent stock, pricing, specifications, or booking availabil
 
 V1 is an interactive, asset-backed configurator. It does not use 3D rendering or generate photorealistic vehicle images.
 
+### Dealership dashboard
+- Protected Release 1 operations workspace for overview, inventory, enquiries, test-drive requests, sourcing requests and basic business contact settings.
+- Database-derived metrics only; no fabricated revenue or growth analytics.
+- Single-admin access initially; staff roles and full CRM are Release 2, quotations and payments are Release 3.
+
 ### Dealership admin
 - Protected admin login.
 - Inventory and enquiry overview.

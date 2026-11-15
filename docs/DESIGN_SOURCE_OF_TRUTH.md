@@ -56,9 +56,10 @@ The approved visual direction consists of:
 - Inventory: `inventory-approved.webp` — compact panoramic banner, left filter sidebar and full-width results grid; no permanent AI conversation panel.
 - Vehicle Details: `vehicle-details-concept.webp` — gallery, factual summary/action panel, details and specifications.
 - AI Concierge: `ai-concierge-concept.webp` — dedicated conversation/recommendation workspace with save, compare and sourcing actions.
+- Dealership Dashboard: `dealership-dashboard-concept.webp` — protected Release 1 operations workspace with database-derived overview metrics and queues for inventory, enquiries, test drives and sourcing.
 - Vehicle Design Studio: `design-studio-concept.webp` — asset-backed configurator with supported option groups, AI style proposal and build summary.
 
-The current downloadable design-reference pack is supplied with this design handoff. The WebP files are reference-only. They have not been added to the repository's `public/` assets and should not be imported into the production application as page backgrounds.
+The current downloadable design-reference pack is supplied with this design handoff. The latest pack contains six screens, including the Dealership Dashboard. The WebP files are reference-only. They have not been added to the repository's `public/` assets and should not be imported into the production application as page backgrounds.
 
 Before implementation begins, keep the pack with the project and place the approved reference files in `docs/design-reference/` if they are not already present. Do not put design screenshots in `public/`.
 
