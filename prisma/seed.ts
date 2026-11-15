@@ -160,7 +160,7 @@ async function main() {
         ...data,
         price: vehicle.price,
         status: "AVAILABLE",
-        featured: true,
+        featured: index < 3,
         isDemo: true,
         publishedAt: new Date(),
         images: {
