@@ -1,6 +1,19 @@
-const makes = ["Mercedes-Benz", "BMW", "Toyota", "Land Rover", "Lexus", "Porsche"];
+import Link from "next/link";
+import { getAvailableVehicleCategories, getAvailableVehicleMakes } from "@/lib/vehicles";
 
-export function VehicleFinder() {
+const budgetOptions = [
+  ["50000000", "Up to ₦50m"],
+  ["80000000", "Up to ₦80m"],
+  ["120000000", "Up to ₦120m"],
+  ["200000000", "Up to ₦200m"],
+];
+
+export async function VehicleFinder() {
+  const [makes, categories] = await Promise.all([
+    getAvailableVehicleMakes(),
+    getAvailableVehicleCategories(),
+  ]);
+
   return (
     <section className="finder-wrap" aria-labelledby="finder-title">
       <div className="finder-heading">
@@ -22,25 +35,20 @@ export function VehicleFinder() {
           <span>Body type</span>
           <select name="bodyType" defaultValue="">
             <option value="">Any body type</option>
-            <option value="SUV">SUV</option>
-            <option value="Sedan">Sedan</option>
-            <option value="Coupe">Coupe</option>
-            <option value="Pickup">Pickup</option>
+            {categories.map(({ bodyType }) => <option key={bodyType} value={bodyType}>{bodyType}</option>)}
           </select>
         </label>
         <label className="field">
-          <span>Maximum budget</span>
+          <span>Maximum budget (NGN)</span>
           <select name="maxBudget" defaultValue="">
             <option value="">Any budget</option>
-            <option value="50000000">Up to ₦50m</option>
-            <option value="80000000">Up to ₦80m</option>
-            <option value="120000000">Up to ₦120m</option>
-            <option value="200000000">Up to ₦200m</option>
+            {budgetOptions.map(([value, label]) => <option key={value} value={value}>{label}</option>)}
           </select>
         </label>
+        <input type="hidden" name="currency" value="NGN" />
         <button className="button button-gold finder-submit" type="submit">Search vehicles <span aria-hidden="true">→</span></button>
       </form>
-      <div className="finder-assist">Not sure what you need? <a href="/concierge">Let the AI Concierge help you <span aria-hidden="true">↗</span></a></div>
+      <div className="finder-assist">Not sure what you need? <Link href="/concierge">Let the AI Concierge help you <span aria-hidden="true">↗</span></Link></div>
     </section>
   );
 }
