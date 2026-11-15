@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { getPrismaClient } from "@/lib/db";
 
@@ -105,7 +106,7 @@ export default async function AdminOverviewPage() {
                       <div className="admin-vehicle-cell">
                         <div className="admin-vehicle-thumb">
                           {vehicle.images[0]?.url
-                            ? <img src={vehicle.images[0].url} alt={vehicle.images[0].altText ?? `${vehicle.make} ${vehicle.model}`} />
+                            ? <Image src={vehicle.images[0].url} alt={vehicle.images[0].altText ?? `${vehicle.make} ${vehicle.model}`} width={76} height={54} unoptimized />
                             : <span>{vehicle.make.slice(0, 1)}</span>}
                         </div>
                         <div>
