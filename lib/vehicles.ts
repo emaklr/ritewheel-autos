@@ -283,11 +283,17 @@ function formatVehicle(row: {
   description: string;
   images: { url: string; altText: string | null }[];
 }): VehicleSummary {
+  const images = row.images.map((image) => ({
+    url: image.url,
+    altText: image.altText ?? `${row.make} ${row.model}`,
+  }));
+
   return {
     ...row,
     price: row.price?.toNumber() ?? null,
-    image: row.images[0]?.url ?? "/images/vehicle-placeholder.svg",
-    imageAlt: row.images[0]?.altText ?? `${row.make} ${row.model}`,
+    image: images[0]?.url ?? "/images/vehicle-placeholder.svg",
+    imageAlt: images[0]?.altText ?? `${row.make} ${row.model}`,
+    images,
   };
 }
 
