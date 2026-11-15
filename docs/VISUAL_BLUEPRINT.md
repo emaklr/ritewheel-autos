@@ -742,70 +742,199 @@ Do not show empty specification labels or generic feature lists that have not be
 ## 7. Screen 4 — AI Concierge
 
 **Route:** `/concierge`  
-**Purpose:** Provide a guided, natural-language route into the real vehicle catalogue.
+**Status:** Proposed V1 design direction; dedicated visual concept created for review.  
+**Purpose:** Help customers describe what they need, discover real matching Ritewheel listings, understand trade-offs, save selected recommendations and reach a human representative when needed.
+
+### Approved design direction
+
+The Concierge is a dedicated workspace, not a persistent chatbot embedded across the marketplace.
+
+Use a two-panel desktop layout:
+- Left: conversation workspace, approximately 36–40% width.
+- Right: recommendations and match context, approximately 60–64% width.
+- Shared dark charcoal surfaces, restrained amber highlights, clear typography and premium vehicle imagery.
+- Keep the conversation readable and the vehicle results visually dominant.
+- The panel should not become a long generic support-chat transcript; the right side should turn the conversation into useful vehicle choices.
+
+The Inventory page retains only its small floating launcher. AI conversation UI and provider code load when the customer enters the Concierge or explicitly opens its drawer.
 
 ### Desktop layout
 
-Use a full-height workspace below the public header:
+1. Public header with AI Concierge selected.
+2. Two-column workspace below the header.
+3. **Conversation panel (left):**
+   - Small Ritewheel AI Concierge identity.
+   - Welcome headline: **"Find the car that fits your life."**
+   - Brief explanation of the assistant's role.
+   - Scrollable message history.
+   - Contextual prompt suggestions when the conversation is empty.
+   - Composer fixed to the bottom of the conversation panel.
+4. **Discovery/results panel (right):**
+   - Heading such as **"Your vehicle matches"**.
+   - Editable preference chips summarising extracted requirements.
+   - A concise match count, only when derived from the actual query.
+   - A small list of recommended actual inventory records.
+   - A distinct no-exact-match / source-a-vehicle area where relevant.
+5. Footer is optional within the workspace; avoid wasting vertical space.
 
-- Main left panel (approximately 60–65%): conversation.
-- Right panel (approximately 35–40%): structured preference summary and vehicle recommendations.
-- The chat and recommendation panel share the same dark surface system, separated by a subtle border.
+### Empty state and prompt suggestions
 
-### Empty state
-
-- Ritewheel Concierge title and one-sentence explanation.
-- Short prompt: "Tell me what kind of car you're looking for."
-- Prompt chips such as:
-  - Find a family SUV under my budget.
+When a new conversation begins:
+- Show a welcoming headline and an explanation that the AI searches Ritewheel's actual catalogue.
+- Offer optional prompt chips such as:
+  - Find a family SUV within my budget.
+  - Help me choose an economical daily driver.
   - Compare two luxury SUVs.
-  - I need an economical daily driver.
-  - Help me choose a first car.
-- A clear privacy note: do not include payment details or other sensitive personal information.
+  - Find a comfortable car for long journeys.
+- The customer can start with free text immediately; prompt chips are shortcuts, not required questions.
+- Keep privacy guidance concise: do not share payment details, passwords or other sensitive information with the assistant.
 
-### Conversation
+### Conversation panel
 
-- Distinguish customer and assistant messages clearly.
-- Assistant messages can contain a small set of structured vehicle result cards.
-- Stream responses with a visible generating state.
-- Show a retry action on model/provider errors.
-- Keep a concise conversation history in the active browser session; customer accounts and cross-device chat history are not part of V1.
-- Add a new conversation/reset control with confirmation if it would clear a current session.
+- Clearly distinguish customer messages from Ritewheel AI messages.
+- Stream model responses with a compact generating indicator.
+- Keep the composer visible at the bottom of the panel.
+- Support keyboard send, accessible send control and disabled/loading states.
+- Show relevant follow-up questions one at a time; do not present a long questionnaire.
+- Preserve the current guest conversation in the active browser session for Release 1.
+- Provide a New Conversation action; warn before clearing an active conversation.
+- Retry a failed response without duplicating the customer's message or creating multiple model requests.
+- Do not poll the AI service or issue model calls while the customer is typing.
 
-### Preference panel
+### Preference summary
 
-Show editable chips or fields for values the AI has extracted:
-
+Extracted preferences appear as editable chips or a compact summary above results:
 - Budget and currency.
-- Make(s).
+- Make/model.
 - Body type.
-- Seats.
-- Use case.
-- Fuel.
-- Transmission.
-- Exterior/interior preference.
-- Must-have features.
+- Seating.
+- Intended use.
+- Fuel and transmission.
+- Year and mileage.
+- Exterior/interior preferences.
+- Required features.
+- Must-have versus flexible criteria.
 
-The customer can edit these values directly. The AI's extracted preferences are suggestions, not final filters until the customer applies or confirms them.
+Rules:
+- AI-extracted values are proposals until the customer confirms or edits them.
+- Make it easy to remove or change a preference.
+- Clearly identify the currency of a budget.
+- Never infer budget currency from IP address, browser locale or assumed location.
+- Do not treat an unstated preference as a hard constraint.
+- The assistant should not repeatedly ask for information already provided.
 
-### Recommendation cards
+### Recommendation panel
 
-Each result shows vehicle image, exact catalogue name/year, stored price and currency, key matching specifications, and concise "Why this matches" reasons. Include View Details, Compare, and Design Studio actions when supported.
+Recommendations must be grounded in the current Ritewheel inventory.
 
-### AI behaviour in the UI
+Each recommended listing shows:
+- Vehicle image and Demo Listing marker where relevant.
+- Exact make, model, trim and year from the record.
+- Current database status.
+- Stored price and currency, or Price on request.
+- A concise subset of recorded specifications.
+- A short **Why this matches** explanation tied to the customer's stated preferences.
+- **View Vehicle**, **Compare**, and **Save to My Garage** actions.
+- **Open Design Studio** only when the vehicle has valid configuration options.
 
-- Ask one useful follow-up at a time.
-- Avoid re-asking information already supplied.
-- Display a clear no-match state and let the customer relax a filter.
-- Never display AI-generated price, stock badge, specification, or vehicle as if it were a real record.
-- When the model is unavailable, provide a link to normal inventory search; do not imitate an AI response.
+Show a small, limited set of results (normally up to three initially). A customer can ask for more or refine preferences. Do not return dozens of cards in the chat.
+
+### Three recommendation categories
+
+The interface must visually distinguish:
+
+1. **Available on Ritewheel** — a current published vehicle record with actual status.
+2. **Similar Ritewheel alternatives** — other real current listings that may satisfy the customer's needs, with clear trade-offs.
+3. **Not currently listed on Ritewheel** — general vehicle/model suggestions or external references. Use a separate section and explicit label. Do not show them with a Ritewheel stock badge, fabricated price, local seller or implied availability.
+
+For an unlisted suggestion, the customer can:
+- Explore a verified external reference only when a trusted source is available.
+- Ask Ritewheel to source this vehicle.
+- Save the model as an external interest in a registered Garage when that feature is available.
+
+Never create a fake Vehicle record for an unlisted model. If current external market/availability facts cannot be verified, say so.
+
+### No exact match and sourcing
+
+When no exact listing matches:
+- Explain the constraint causing the mismatch.
+- Suggest loosening a flexible preference.
+- Show similar actual Ritewheel listings where available.
+- Offer **Ask Ritewheel to source it**.
+
+The sourcing action opens the normal request flow. It collects the requested vehicle details, acceptable year/condition, budget/currency, important specifications and contact details. The customer reviews and submits the request. It is not a reservation, confirmed supply offer or purchase.
+
+### Saving AI recommendations
+
+- Do not save recommendations automatically.
+- The customer explicitly chooses **Save to My Garage** on a result.
+- Guest: save the current inventory vehicle locally in the browser; explain cross-device sync requires a Release 2 account.
+- Registered customer (Release 2): persist the vehicle recommendation, rationale/preference snapshot and saved timestamp to their account.
+- An unlisted model is stored as a distinct external interest or sourcing request, never as an available vehicle.
+- If a saved listing is later sold/unpublished, show its actual state in Garage and offer alternatives.
+
+### Human handover
+
+A visible **Talk to a Sales Specialist** action allows the customer to request human help.
+
+Before creating the callback/enquiry, show a customer-reviewable summary containing:
+- Stated vehicle needs.
+- Preferences and hard constraints.
+- Vehicles the customer selected/saved.
+- Questions they want answered.
+- Preferred contact method and time.
+
+The customer explicitly chooses to share this summary. Do not expose the full AI transcript or private guest session to staff automatically. Staff can later edit/use the summary in the CRM release.
 
 ### Mobile layout
 
-- Conversation occupies the main screen.
-- Preference summary and recommendations are accessible in a bottom drawer or switchable tab.
-- Composer remains visible above the mobile keyboard.
-- Result cards fit mobile width and remain easy to tap.
+- Use two switchable views or tabs: **Conversation** and **Matches**.
+- Conversation is the initial view; a match count indicator makes the results discoverable.
+- The composer stays visible above the mobile keyboard and respects safe-area insets.
+- Recommendation cards use a single-column layout with legible images, concise details and stacked actions.
+- Preference chips can wrap or live in a compact collapsible summary.
+- Do not compress both desktop panels into tiny side-by-side columns.
+- No horizontal page overflow.
+
+### Loading, empty and failure states
+
+- Empty conversation: welcome message and prompt suggestions.
+- Waiting for response: clear generating indicator and cancel/retry behaviour as supported.
+- Search in progress: distinguish model response generation from inventory lookup.
+- No matches: clear explanation and actions to relax filters or request sourcing.
+- AI provider unavailable or no API key: show a truthful disabled/unavailable state and a link to normal Inventory search. Never imitate an AI response.
+- Inventory query error: show retry and preserve conversation context.
+- Saved action success: clear confirmation; failure: explain that nothing was saved.
+- Sourcing request: explicit review, field validation and submission reference.
+- Human handover: customer reviews the summary and confirms before submission.
+
+### Performance and cost constraints
+
+- Load the Concierge experience only on its dedicated route or after an explicit launcher click.
+- Do not load Gemini SDK, conversation components or AI state on homepage, Inventory or ordinary Vehicle Details render.
+- Send a model request only on an explicit customer send/action.
+- Stream output to reduce perceived waiting.
+- Bound conversation history, input size, output tokens, tool calls and results.
+- Keep inventory lookup in server-side tools and return small structured records.
+- Use server timeouts, rate limits and a clear provider-unavailable fallback.
+- Do not send customer name, email, phone, passwords or payment details to the model.
+- Do not use model calls to generate visual previews in V1.
+- Keep recommendation cards and preference chips as lightweight components.
+- No continuous polling, animated particle effects or heavy charting.
+
+### Concierge acceptance criteria
+
+- Customer can start with free text or a prompt chip.
+- AI progressively gathers relevant preferences without repeating questions.
+- Preference summary is editable and currency-aware.
+- Current-inventory recommendations reference real database records.
+- Similar alternatives are real listings and clearly explained.
+- Unlisted model suggestions are visibly distinguished and never presented as stock.
+- Customer explicitly confirms saves, sourcing requests and human handover.
+- Guest Garage behaviour is clear; cross-device persistence waits for Release 2.
+- AI cannot create stock, quote, reservation, booking or payment records.
+- Mobile uses conversation/matches views rather than a compressed two-column layout.
+- AI route is not loaded by default on other pages and remains responsive on modest devices.
 
 ## 8. Screen 5 — Vehicle Design Studio
 
