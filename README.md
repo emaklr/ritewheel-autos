@@ -6,33 +6,33 @@ Ritewheel is a premium automotive discovery and dealership platform. It brings t
 
 ## Current implementation status
 
-**Release 1 foundation is in progress.** This branch establishes the root Next.js application, PostgreSQL/Prisma data model, server-side inventory query layer, initial customer-facing pages and guest-local Garage/compare interactions.
+**Release 1 foundation is in progress.** The public storefront, PostgreSQL/Prisma data layer, server-side vehicle catalogue, guest-local Garage/compare, and first protected dealership workspace are being delivered in small, reviewable steps.
 
 The current catalogue contains illustrative demo records only. Demo vehicles, photographs, specifications and prices are not real dealer stock or offers.
 
-### Implemented in this foundation branch
-- Premium responsive homepage with a single hero image, full-width finder, catalogue categories and featured vehicle cards.
-- Server-rendered inventory page with search, sorting, filters and database pagination (12 per page).
-- Vehicle detail route with price/status/specification presentation and responsive multi-image gallery/lightbox.
-- Guest enquiry form and server-side persistence endpoint with validation, request references, origin/body-size checks, honeypot and best-effort process-local throttling.
-- Three optimised local demo vehicle photos recovered from PR #12; the BMW X6 file is stored with its actual JPEG extension.
-- PostgreSQL schema for vehicles, images, vehicle options, saved builds, enquiries, test-drive requests, sourcing requests, admin users and audit logs.
-- Prisma 7 PostgreSQL adapter and server-only client.
-- Inventory read API with validated query parameters and bounded saved-vehicle lookup by stable slug.
-- Browser-local My Garage and compare selection (maximum three comparison vehicles).
-- Health endpoint that reports database connection state.
-- Explicitly labelled demo catalogue fallback when `DATABASE_URL` is not configured.
-- CI workflow for Prisma generation, TypeScript, lint and Next.js build.
+### Implemented on the current branch
+- Premium responsive homepage, vehicle finder and featured vehicle cards.
+- Server-rendered public inventory with search, sorting, filtering and database pagination.
+- Vehicle detail route with a multi-image gallery/lightbox.
+- PostgreSQL/Prisma schema and migration for vehicles, images, options, builds, enquiries, test drives, sourcing requests, administrator accounts, sessions and audit logs.
+- Production and development Neon branches with the committed migration and demo inventory.
+- Protected single-administrator sign-in using salted scrypt password hashes, opaque database-backed sessions and HttpOnly cookies.
+- Local-only administrator bootstrap command; no public administrator registration.
+- Database-derived admin overview and searchable/status-filtered inventory list.
+- Vehicle create/edit, publication/status changes, price/currency, specifications, features and ordered image URL management.
+- Transactional vehicle/image writes and audit records for inventory changes.
+- Server-side Zod validation and admin-session checks on protected API mutations.
+- Public enquiry API, vehicle read API and database health endpoint.
+- Browser-local My Garage and compare selection (maximum three vehicles).
 
 ### Not yet implemented
-- Live PostgreSQL provisioning, initial migration and seeded DB deployment.
-- Admin authentication and dealership management interface.
-- Live enquiry submissions until PostgreSQL is provisioned, migrated and configured in the deployment environment.
-- Persisted callback, test-drive and sourcing request forms.
-- Working Gemini AI Concierge.
-- Interactive vehicle Design Studio.
+- Admin enquiry, test-drive and sourcing-request queues and dealership settings.
+- Binary image uploads; inventory currently stores approved CDN/object-storage URLs or local asset paths.
+- Working Gemini AI Concierge and grounded inventory tools.
+- Interactive vehicle Design Studio and administration of vehicle-specific option sets.
 - Customer accounts and cross-device Garage sync.
-- Online payments (Release 3).
+- Staff roles, lead assignment and CRM (Release 2).
+- Quotes, reservations and online payments (Release 3).
 
 The documentation is the product source of truth: [Product Experience](./docs/PRODUCT_EXPERIENCE.md), [Architecture](./ARCHITECTURE.md), [Visual Blueprint](./docs/VISUAL_BLUEPRINT.md), and [Design Source of Truth](./docs/DESIGN_SOURCE_OF_TRUTH.md).
 
@@ -74,13 +74,44 @@ Check the backend at `/api/health`. Inventory JSON is available from `/api/vehic
 
 | Variable | Purpose |
 |---|---|
-| `DATABASE_URL` | PostgreSQL runtime connection (pooled URL where available) |
-| `DIRECT_URL` | Direct PostgreSQL connection for migrations |
-| `AUTH_SECRET` | Future admin/customer session secret |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | Gemini API key for the Concierge |
-| `NEXT_PUBLIC_SITE_URL` | Canonical public URL |
+| DATABASE_URL | PostgreSQL runtime connection (pooled URL where available) |
+| DIRECT_URL | Direct PostgreSQL connection for Prisma migrations |
+| AUTH_SECRET | Reserved for future signed customer/CSRF tokens; admin sessions are database-backed |
+| GOOGLE_GENERATIVE_AI_API_KEY | Gemini key for the Concierge (not yet used by the coming-soon page) |
+| NEXT_PUBLIC_SITE_URL | Canonical public URL |
 
-Never commit `.env`, `.env.local` or real credentials.
+Never commit .env, .env.local, session tokens, passwords or real database credentials.
+
+## Creating the first administrator
+
+There is deliberately no public administrator registration or bootstrap-password endpoint. After the admin-session migration has been deployed to the target database:
+
+1. Pull the private Vercel environment variables into the local, git-ignored .env.local file:
+
+   ~~~powershell
+   vercel link
+   vercel env pull .env.local --environment production
+   ~~~
+
+2. Create the first administrator locally. The command prompts for the password through a PowerShell secure-string prompt; do not put the password in source code, chat, Vercel variables or a committed file.
+
+   ~~~powershell
+   $env:ADMIN_EMAIL = Read-Host "Administrator email"
+   $env:ADMIN_NAME = Read-Host "Administrator name"
+   $securePassword = Read-Host "Create a strong password (12–128 characters)" -AsSecureString
+   $passwordPointer = [Runtime.InteropServices.Marshal]::SecureStringToBSTR($securePassword)
+   try {
+     $env:ADMIN_PASSWORD = [Runtime.InteropServices.Marshal]::PtrToStringBSTR($passwordPointer)
+     npm run admin:create
+   } finally {
+     [Runtime.InteropServices.Marshal]::ZeroFreeBSTR($passwordPointer)
+     Remove-Item Env:ADMIN_PASSWORD, Env:ADMIN_EMAIL, Env:ADMIN_NAME -ErrorAction SilentlyContinue
+   }
+   ~~~
+
+3. Open /admin/login and sign in.
+
+The bootstrap command refuses to overwrite an existing administrator. Use the application's controlled account recovery procedure for future password changes; do not create another account as a workaround.
 
 ## Performance principles
 
