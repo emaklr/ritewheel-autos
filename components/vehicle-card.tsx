@@ -39,7 +39,7 @@ export function VehicleCard({ vehicle, priority = false }: { vehicle: VehicleSum
           {vehicle.fuelType ? <span>{vehicle.fuelType}</span> : null}
           {vehicle.seats ? <span>{vehicle.seats} seats</span> : null}
         </div>
-        <VehicleCardActions vehicleId={vehicle.id} />
+        <VehicleCardActions vehicleSlug={vehicle.slug} />
         <div className="vehicle-card-bottom">
           <div>
             <span className="price-label">Asking price</span>
