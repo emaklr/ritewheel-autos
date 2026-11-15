@@ -197,7 +197,7 @@ const vehicles = [
 ];
 
 async function main() {
-  for (const [index, vehicle] of vehicles.entries()) {
+  for (const vehicle of vehicles) {
     const { image, imageAlt, ...data } = vehicle;
     await prisma.vehicle.upsert({
       where: { slug: vehicle.slug },
@@ -206,7 +206,11 @@ async function main() {
         ...data,
         price: vehicle.price,
         status: "AVAILABLE",
-        featured: index < 3,
+        featured: [
+          "mercedes-benz-gle-450-2024-demo",
+          "bmw-x5-xdrive40i-2023-demo",
+          "toyota-land-cruiser-prado-2024-demo",
+        ].includes(vehicle.slug),
         isDemo: true,
         publishedAt: new Date(),
         images: {
