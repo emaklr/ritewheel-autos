@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { getVehicleBySlug } from "@/lib/vehicles";
+import { VehicleCardActions } from "@/components/vehicle-card-actions";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -42,7 +43,6 @@ export default async function VehicleDetailPage({ params }: Props) {
     ["Seats", vehicle.seats === null ? null : String(vehicle.seats)],
   ].filter((item): item is [string, string] => Boolean(item[1]));
 
-  const unavailable = vehicle.status === "SOLD" || vehicle.status === "ARCHIVED";
 
   return (
     <>
@@ -58,6 +58,7 @@ export default async function VehicleDetailPage({ params }: Props) {
               <div className="vehicle-badges">
                 {vehicle.isDemo ? <span className="badge badge-demo">Demo listing</span> : null}
                 {vehicle.status === "RESERVED" ? <span className="badge badge-reserved">Reserved</span> : null}
+                {vehicle.status === "SOLD" ? <span className="badge badge-reserved">Sold</span> : null}
               </div>
             </div>
             <div className="vehicle-detail-description">
@@ -77,6 +78,7 @@ export default async function VehicleDetailPage({ params }: Props) {
               {vehicle.isDemo ? <small>Illustrative demo price — not an offer</small> : null}
             </div>
             <div className="status-line"><span className={vehicle.status === "AVAILABLE" ? "status-dot status-dot-green" : "status-dot"} />{vehicle.status === "AVAILABLE" ? "Listed as available" : vehicle.status.toLowerCase()}</div>
+            <VehicleCardActions vehicleSlug={vehicle.slug} />
             <div className="vehicle-detail-specs">
               {specs.slice(0, 8).map(([label, value]) => (
                 <div key={label} className="vehicle-detail-spec"><span>{label}</span><strong>{value}</strong></div>
