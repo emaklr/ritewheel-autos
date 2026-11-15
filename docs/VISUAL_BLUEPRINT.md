@@ -939,60 +939,215 @@ The customer explicitly chooses to share this summary. Do not expose the full AI
 ## 8. Screen 5 — Vehicle Design Studio
 
 **Route:** `/studio/[slug]`  
-**Purpose:** Let the customer personalise a vehicle using only configuration options and preview assets supported by that vehicle.
+**Status:** V1 visual concept created; detailed design contract below.  
+**Purpose:** Let a customer personalise a supported vehicle using real, vehicle-specific options and curated preview assets, with AI helping translate natural language into valid selections.
+
+### Approved design direction
+
+Use the established Ritewheel dark showroom look:
+- Obsidian/charcoal surfaces, restrained amber-gold selected states and ivory typography.
+- A large, cinematic vehicle preview is the main visual focus.
+- Configuration controls are compact, grouped and easy to scan.
+- Build summary remains visible so customers understand what they have selected.
+- AI styling helper is integrated into the Studio but does not dominate the interface.
+- The page feels like a thoughtful premium configurator, not a complicated engineering form.
+
+This is **Option A: an asset-backed interactive configurator**. V1 does not use WebGL, 3D rendering, live image generation, arbitrary repainting or image-editing models.
 
 ### Desktop layout
 
-- Compact Studio header with vehicle name, back-to-detail link, and build status.
-- Main left area (approximately 62–68%): large vehicle preview with a dark studio background.
-- Right panel (approximately 32–38%): configuration controls in a clear sequence.
-- A persistent bottom or side summary displays selected options and any stored option price adjustments.
-- Save Build is the primary gold action.
+1. Global public header with Design Studio selected.
+2. Compact Studio toolbar:
+   - Back to Vehicle Details.
+   - Vehicle make/model/trim.
+   - Draft / Saved build state.
+   - A short note that only options supported by this vehicle are shown.
+3. Main two-column workspace:
+   - **Preview column: 62–68% width.**
+   - **Configuration column: 32–38% width.**
+4. Preview area:
+   - One large curated vehicle image in a stable landscape frame.
+   - Compact thumbnail strip for other supported camera views (front/side/rear/interior) where supplied.
+   - A small label: "Curated vehicle preview" or "Preview uses selected vehicle images".
+   - A clear notice that the preview represents mapped image variants, not a live 3D rendering.
+5. Configuration area:
+   - AI "Describe your style" helper at the top.
+   - Vehicle-specific option groups underneath.
+   - Each group displays only choices enabled for this vehicle.
+6. Build summary at the bottom of the page or as a compact sticky side/bottom panel:
+   - Selected options.
+   - Any stored price adjustments.
+   - Save Build.
+   - Enquire about this build.
 
-### Configuration groups
+Avoid nested scroll regions where possible. The page itself should scroll naturally; on short desktop viewports, allow the configuration column to scroll independently only if keyboard and focus behaviour remain usable.
 
-Only show groups and choices enabled for the current vehicle.
+### Vehicle-specific option groups
 
-1. Exterior paint colour.
-2. Paint finish.
-3. Wheel style.
-4. Interior colour/material.
-5. Brake-caliper colour.
-6. Appearance/trim package.
+Only load option groups and options returned for the selected vehicle. The default option set can include:
 
-A selected state must be unambiguous. Use swatches for colours and visual thumbnail options for wheels/interiors where suitable assets exist. Include text labels for accessibility and users who cannot distinguish colours.
+1. **Exterior Colour** — named colour swatches such as Black, Pearl White, Silver, Blue or other options explicitly configured for the vehicle.
+2. **Paint Finish** — Gloss, Metallic, Matte or other configured finishes.
+3. **Wheel Style** — visual thumbnails with accessible labels.
+4. **Interior** — colour/material combinations such as Black Leather, Tan Leather or Cream only where configured.
+5. **Brake Calipers** — Black, Red, Yellow or other supported choices.
+6. **Appearance Package** — Standard, Sport or other configured package.
+
+The actual options are defined per vehicle in the database. These examples are not universal defaults. A vehicle may support only three option groups, while another may support six.
+
+### Option control behaviour
+
+- Colour groups use labelled swatches. A label must be visible or available to assistive technology; colour alone is insufficient.
+- Wheels/interiors use small thumbnails when curated option imagery exists; otherwise use a labelled compact card.
+- Selected choices have an obvious gold border/check and readable selected label.
+- Unavailable choices are hidden or visibly disabled with a reason; do not let customers select them.
+- Each group has a clear default selection where configured.
+- A customer can revert an individual group or reset the entire configuration to its default.
+- If changing one option makes another selection invalid, explain the dependency and ask before replacing/resetting the affected choice.
+- Never show an option that the current vehicle does not support.
 
 ### AI styling helper
 
-Provide a small "Describe your style" prompt in the Studio:
+A compact panel titled **Describe your style** lets the customer describe the look they want, for example:
 
-- Example: "Make it sporty but elegant, with a dark exterior and a tan interior."
-- AI returns a structured list of proposed valid option IDs.
-- Display the changes as a previewable proposal.
-- Customer reviews and applies them.
-- If no supported option matches the request, explain that and offer the closest available choices.
-- Never silently substitute an unavailable colour or part.
+"Make it sporty but elegant, with a dark exterior and a tan interior."
 
-### Preview resolver
+Interaction:
+1. Customer enters a description and selects Suggest Options.
+2. The server loads the current vehicle's supported options.
+3. Gemini receives the description and a bounded list of valid option IDs and labels.
+4. The model returns a structured proposal containing only those option IDs, plus a concise explanation.
+5. Server validates the response against the vehicle's actual option records.
+6. UI shows a **Proposed Changes — Review and Apply** summary.
+7. Customer chooses Apply or Dismiss.
+8. Applying updates the selected option state and asks the preview resolver for a mapped asset.
 
-- Exact mapping: show the curated asset assigned to the selected option combination.
-- Partial mapping: show the closest supported vehicle/variant preview and a visible option summary.
-- No mapped combination: keep the base vehicle preview and show selected options separately.
-- Never claim to dynamically repaint or render the real vehicle when only a preset image is shown.
+Rules:
+- AI never invents a paint colour, wheel, interior, package, price or option ID.
+- AI does not directly save the build or mutate database records.
+- An AI proposal is not applied until the customer confirms it.
+- If no valid option matches the request, say so and suggest the closest available options.
+- Model output is untrusted and must be schema-validated server-side.
+- The AI API key remains server-side; no customer contact/payment data is included in the styling prompt.
+- If Gemini is unavailable, manual controls remain fully functional.
 
-### Saving a build
+### Preview resolver and truthfulness
 
-- Customer reviews selected options and any supported price adjustments.
-- Save Build persists the vehicle ID, selected valid option IDs, preview asset reference, and a public unguessable build ID.
-- Show a success state and allow the customer to continue to an enquiry.
-- Build can be reopened using its public ID.
+The preview is an asset lookup, not a renderer.
+
+Resolution order:
+1. **Exact combination mapping:** use the curated preview image linked to the complete selected option combination.
+2. **Supported partial mapping:** use the closest available curated variant when an exact complete combination is not available; show the actual selected options clearly in the summary.
+3. **No matching variant:** retain the base vehicle image and show selected options in a text/icon summary. Do not fake a changed paint/wheel/interior image.
+
+Additional rules:
+- Only use preview assets approved for that vehicle.
+- Never combine unrelated vehicle images or make one trim look like another.
+- Show the same selected option state in the summary even if the image is a fallback.
+- Do not label a fallback image as an exact representation of the configured build.
+- Preview assets are loaded on demand after an option change; the base image appears first.
+- The image label/notice must remain understandable on desktop and mobile.
+
+### Build summary
+
+A persistent summary shows:
+- Vehicle make/model/trim.
+- Exterior colour and finish.
+- Wheel style.
+- Interior selection.
+- Brake-caliper colour.
+- Appearance package.
+- Any stored price adjustment from the option records.
+- A note where the preview is a closest-match/base image rather than an exact mapped combination.
+
+Price rules:
+- Never calculate a price change from AI text.
+- Only sum server-stored option price adjustments.
+- Currency is inherited from the vehicle/build pricing context and cannot be mixed.
+- If option price adjustments are unavailable, do not display a fabricated amount or "free"; simply show the selected options.
+- Any displayed total is an illustrative configuration estimate, not a dealership quotation. A formal quote requires staff verification in Release 3.
+
+### Saving and reopening a build
+
+**Guest in Release 1**
+- Customer chooses Save Build.
+- Server validates vehicle and selected option IDs.
+- Persist the VehicleBuild with an unguessable public ID and selected option snapshot, or use a temporary/local save if persistence is unavailable.
+- Display a success state and a shareable/reopenable build link where the selected build is persistently saved.
+- Explain that cross-device Garage sync requires a Release 2 customer account.
+- Do not require registration to continue to an enquiry.
+
+**Registered customer in Release 2**
+- Persist the build under the authenticated account.
+- Show it under My Garage → My Builds.
+- Allow the customer to reopen and edit it while the options remain valid.
+- If an option becomes unavailable, preserve the historical snapshot and ask the customer to select a current alternative before resaving.
+
+### Enquire about this build
+
+- Build Summary includes **Enquire about this build**.
+- Opens the normal enquiry form with the vehicle and saved build reference preselected.
+- Shows the selected option summary to the customer before submission.
+- The customer provides contact details and message (or uses verified account details in Release 2).
+- Submission creates an Enquiry linked to the vehicle/build.
+- No automatic purchase, reservation, quote or payment is created.
+- Staff can review the configuration in the enquiry queue.
 
 ### Mobile layout
 
-- Vehicle image first, with thumbnail/preview controls.
-- Configuration groups below in an accordion or step-by-step selector.
-- Sticky bottom bar with summary and Save Build.
-- Avoid a cramped split-screen layout.
+- Compact Studio toolbar with back link and vehicle name.
+- Large vehicle image appears first.
+- Preview thumbnails can scroll horizontally.
+- Configuration groups appear below in accordions or a guided step sequence.
+- Each group uses readable option cards/swatches rather than tiny controls.
+- AI styling helper is a compact collapsible panel or action near the top of options.
+- Sticky bottom summary shows selected option count or a short summary plus Save Build.
+- Full build summary and enquiry action remain accessible without being hidden behind the mobile keyboard.
+- Respect safe-area insets and never cover form controls.
+- No cramped desktop-style split screen and no horizontal page overflow.
+
+### Loading, empty and error states
+
+- Base vehicle image and current defaults load first.
+- Option groups show stable skeleton/control dimensions while loading.
+- No supported options: show a clear message and remove/hide the Design Studio entry point elsewhere.
+- Preview variant loading: keep the existing preview visible until the replacement is ready; avoid flashing blank space.
+- Missing exact combination: explain that a closest/base preview is shown and list the selected options.
+- Invalidated option: explain why it is no longer selectable and request a replacement.
+- AI unavailable: show manual controls normally and explain the styling helper is temporarily unavailable.
+- AI no valid proposal: show a helpful explanation and preserve current selections.
+- Save failure: retain the current option state and offer retry.
+- Save success: show build reference and next actions.
+- Enquiry validation/server error: show field-level feedback and preserve safe form data.
+
+### Performance constraints
+
+- V1 uses curated image assets and option mappings only; no 3D engine, WebGL, canvas rendering, video or image-generation API.
+- Load the base image first. Load alternate preview assets only after the user selects an option or changes camera angle.
+- Preload only the base image and a very small likely initial view set; other variants are on demand.
+- Optimise preview assets with responsive sizes and appropriate image formats.
+- Avoid composing many large transparent image layers in the browser.
+- Do not load Gemini/model code until the customer explicitly submits a styling prompt.
+- AI requests happen on submit, not on each keystroke.
+- Keep option state local and lightweight; persist only when Save Build is selected.
+- Use CSS transitions on selected borders/opacity; no large animated gradients or parallax.
+- Reserve image frames and option-card dimensions to prevent CLS.
+- Manual configuration must remain fast and usable without AI.
+
+### Design Studio acceptance criteria
+
+- Only vehicle-specific configured options are presented.
+- Manual option selection works without an AI key.
+- AI proposals contain only valid option IDs and require customer approval.
+- Preview accurately reflects an exact mapped asset, or clearly identifies a closest/base fallback.
+- No UI claims live 3D rendering, arbitrary repainting or generated photography.
+- Price adjustments are sourced from stored option data and currency-safe.
+- Guest can save/share/reopen a build without mandatory registration.
+- Build can be attached to an enquiry.
+- Unavailable options/builds are handled without deleting history.
+- Mobile has a deliberate image-first layout and accessible controls.
+- Preview images and AI code load on demand.
+- Performance checks pass on mid-range/mobile profiles.
 
 ## 9. Screen 6 — Admin dashboard
 
