@@ -924,3 +924,17 @@ Use [docs/DESIGN_SOURCE_OF_TRUTH.md](./docs/DESIGN_SOURCE_OF_TRUTH.md) as the pr
 The approved design mockups are visual-only references. They do not authorise copying example prices, vehicle details, availability labels, metrics, testimonials or functions into the application. Written product, architecture, visual and performance requirements take precedence when a mockup conflicts with them.
 
 Keep mockups in `docs/design-reference/`, not `public/`. Keep actual approved vehicle photography, thumbnails and Design Studio previews in `public/images/` or an approved CDN/object store with appropriate rights, optimisation, alt text and stable references. Never use screen mockups as listing photographs.
+
+
+## 31. Approved Vehicle Design Studio implementation decisions
+
+The detailed Design Studio screen contract is in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md#8-screen-5--vehicle-design-studio).
+
+- V1 is an asset-backed configurator, not a 3D/WebGL renderer or generative image editor.
+- Option groups and valid choices are vehicle-specific and stored in VehicleOption records.
+- AI styling is a proposal-only helper. The server supplies allowed option IDs, validates model output, and the customer explicitly applies or dismisses the proposal.
+- Preview resolver selects exact mapped asset, closest supported variant or base-image fallback; the UI must identify non-exact previews.
+- Option price deltas are server-stored and currency-safe. No AI-invented or browser-calculated prices.
+- Guest builds can be persisted with an unguessable public ID in Release 1; cross-device account ownership arrives in Release 2.
+- Build enquiry links the VehicleBuild and Vehicle; it does not create a quote, reservation or payment.
+- Load the base image first, fetch variants on demand, and lazy-load the AI helper/model only after an explicit action.
