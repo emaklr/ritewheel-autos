@@ -1,67 +1,107 @@
-'use client';
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import { SiteHeader } from "@/components/site-header";
+import { SiteFooter } from "@/components/site-footer";
+import { VehicleCard } from "@/components/vehicle-card";
+import { VehicleFinder } from "@/components/vehicle-finder";
+import { getFeaturedVehicles } from "@/lib/vehicles";
 
-export default function HomePage() {
-  const [cars] = useState([
-    {
-      id: 1,
-      name: "2021 Mercedes-Benz GLE 63S",
-      brand: "Mercedes-Benz",
-      year: 2021,
-      price: "$110,000",
-      image: "/car1.jpg",
-    },
-    {
-      id: 2,
-      name: "2020 BMW X6 M",
-      brand: "BMW",
-      year: 2020,
-      price: "$95,000",
-      image: "/car2.jpg",
-    },
-    {
-      id: 3,
-      name: "2022 Range Rover Sport",
-      brand: "Land Rover",
-      year: 2022,
-      price: "$120,000",
-      image: "/car3.jpg",
-    },
-  ]);
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
+  const { items: featured, isDemoMode } = await getFeaturedVehicles(3);
 
   return (
-    <div className="bg-black min-h-screen text-white p-6">
-      <header className="text-center py-10">
-        <h1 className="text-4xl font-bold text-yellow-400">RiteWheel Autos</h1>
-        <p className="text-lg mt-2">Luxury Cars | Open 24/7 | Built by Babatunde Seun</p>
-      </header>
+    <>
+      <SiteHeader active="/" />
+      <main>
+        <section className="hero">
+          <div className="hero-image">
+            <Image src="/images/vehicles/mercedes-gle.webp" alt="Mercedes-Benz GLE demonstration vehicle" fill priority sizes="100vw" />
+          </div>
+          <div className="hero-overlay" />
+          <div className="hero-content">
+            <div className="hero-copy">
+              <div className="hero-kicker"><span /> THE RITEWHEEL COLLECTION</div>
+              <h1>Find the car<br />that <em>moves you.</em></h1>
+              <p>Discover exceptional vehicles, compare your options and find the one that fits the way you live.</p>
+              <div className="hero-actions">
+                <Link href="/inventory" className="button button-gold">Explore inventory <span aria-hidden="true">→</span></Link>
+                <Link href="/concierge" className="button button-outline">Meet the AI Concierge</Link>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <section className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {cars.map((car) => (
-          <Card key={car.id} className="bg-white text-black rounded-2xl overflow-hidden">
-            <img src={car.image} alt={car.name} className="w-full h-48 object-cover" />
-            <CardContent className="p-4">
-              <h2 className="text-xl font-semibold">{car.name}</h2>
-              <p className="text-sm text-gray-600">Brand: {car.brand} | Year: {car.year}</p>
-              <p className="text-lg font-bold mt-2">{car.price}</p>
-              <Button
-                className="mt-4 w-full bg-yellow-400 hover:bg-yellow-500"
-                onClick={() => window.open("https://wa.me/2347012345678?text=I'm%20interested%20in%20a%20car%20on%20RiteWheel%20Autos", "_blank")}
-              >
-                Book a Call on WhatsApp
-              </Button>
-            </CardContent>
-          </Card>
-        ))}
-      </section>
+        <div className="finder-wrap"><VehicleFinder /></div>
 
-      <footer className="text-center mt-16 border-t border-yellow-400 pt-6">
-        <p className="text-sm text-yellow-400">© 2025 RiteWheel Autos — Built for Performance | Developed by Babatunde Seun</p>
-      </footer>
-    </div>
+        <section className="section">
+          <div className="container">
+            <div className="section-heading">
+              <div><span className="eyebrow">EXPLORE YOUR STYLE</span><h2>Browse by category</h2><p>Start with the kind of vehicle that suits your everyday.</p></div>
+              <Link href="/inventory" className="text-link">View all vehicles →</Link>
+            </div>
+            <div className="category-grid">
+              <Link href="/inventory?bodyType=SUV" className="category-card">
+                <Image src="/images/vehicles/mercedes-gle.webp" alt="" fill sizes="(max-width: 700px) 50vw, 33vw" />
+                <div><strong>SUVs</strong><span>Space, comfort and capability</span></div>
+              </Link>
+              <Link href="/inventory?make=BMW" className="category-card">
+                <Image src="/images/vehicles/bmw-x6.webp" alt="" fill sizes="(max-width: 700px) 50vw, 33vw" />
+                <div><strong>Performance</strong><span>Designed to make every drive count</span></div>
+              </Link>
+              <Link href="/inventory?make=Land%20Rover" className="category-card">
+                <Image src="/images/vehicles/range-rover-sport.webp" alt="" fill sizes="(max-width: 700px) 50vw, 33vw" />
+                <div><strong>Luxury</strong><span>Comfort with a confident presence</span></div>
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-alt">
+          <div className="container">
+            <div className="section-heading">
+              <div><span className="eyebrow">A CONSIDERED COLLECTION</span><h2>Exceptional vehicles</h2><p>Explore a selection of vehicles and open each listing for its details.</p></div>
+              <Link href="/inventory" className="text-link">View all inventory →</Link>
+            </div>
+            {isDemoMode && <p className="notice notice-spaced">Demo catalogue: the database is not connected yet. These sample listings are clearly marked and have no verified prices or availability.</p>}
+            {featured.length > 0 ? (
+              <div className="vehicle-grid">{featured.map((vehicle) => <VehicleCard key={vehicle.id} vehicle={vehicle} />)}</div>
+            ) : (
+              <div className="empty-state"><h2>Our collection is being updated</h2><p>There are no featured vehicles published right now. Browse the inventory or contact the dealership for help.</p><Link href="/inventory" className="button button-outline">Browse inventory</Link></div>
+            )}
+          </div>
+        </section>
+
+        <section className="section">
+          <div className="container feature-split">
+            <div className="feature-panel">
+              <span className="eyebrow">A BETTER WAY TO DISCOVER</span>
+              <h3>Your personal car concierge.</h3>
+              <p>Describe what matters to you. Ritewheel’s AI Concierge will help narrow the search to vehicles that match your needs once the AI service is connected.</p>
+              <Link href="/concierge" className="text-link">Explore AI Concierge →</Link>
+            </div>
+            <div className="feature-panel">
+              <span className="eyebrow">MAKE IT YOURS</span>
+              <h3>Imagine your next drive.</h3>
+              <p>Explore supported colours, wheels and interior choices with the upcoming asset-backed Design Studio.</p>
+              <Link href="/inventory" className="text-link">Explore vehicles →</Link>
+            </div>
+          </div>
+        </section>
+
+        <section className="section section-compact">
+          <div className="container">
+            <div className="feature-panel feature-panel-centered">
+              <span className="eyebrow">YOUR NEXT CHAPTER STARTS HERE</span>
+              <h3>Find a vehicle that feels like yours.</h3>
+              <p>Browse the collection or speak with the dealership about what you are looking for.</p>
+              <div className="hero-actions"><Link href="/inventory" className="button button-gold">Explore inventory</Link><Link href="/contact" className="button button-outline">Talk to the team</Link></div>
+            </div>
+          </div>
+        </section>
+      </main>
+      <SiteFooter />
+    </>
   );
 }
-
-
