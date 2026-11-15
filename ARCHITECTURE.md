@@ -137,8 +137,8 @@ Design rules:
 | Database | PostgreSQL | Persistent inventory, configurations, enquiries, bookings, and admin records |
 | ORM | Prisma | Schema, migrations, typed queries, and database access |
 | AI | Google Gemini through Vercel AI SDK | Natural-language concierge and tool calling |
-| Authentication | Auth.js credentials provider for admin access | Admin sessions and protected routes |
-| Password hashing | bcrypt | One-way admin password hashing |
+| Authentication | Application-owned opaque database sessions | HttpOnly cookies, session expiry, and server-side access checks |
+| Password hashing | Node.js crypto.scrypt | Salted one-way administrator password hashing |
 | Hosting | Vercel | Application hosting and deployment |
 | Image source | Curated local/public assets and approved image URLs in V1 | Vehicle photography and configurator previews |
 
@@ -202,6 +202,8 @@ Browser
 ```
 
 All database access and AI provider calls happen on the server. The browser never receives the database connection string, AI API key, password hashes, or unrestricted database access.
+
+The initial administrator is provisioned through a local CLI command after migration deployment; there is no public admin registration route. Admin login uses a 12-hour database-backed session, HttpOnly/SameSite cookies, origin checks for mutations, and a best-effort process-local login throttle. Configure a distributed edge/WAF rate limit before opening the admin login to broad public traffic.
 
 ## 7. Proposed application structure
 
@@ -277,6 +279,10 @@ Use UUID primary keys, timestamps, explicit enums where status values are contro
 
 **AdminUser**
 - id, email (unique), passwordHash, name, role, active, createdAt, updatedAt.
+
+**AdminSession**
+- id, adminUserId, tokenHash (unique), expiresAt, createdAt, lastSeenAt.
+- The browser receives only a random opaque session token in an HttpOnly cookie; PostgreSQL stores its SHA-256 hash, not the raw token.
 - V1 has an admin role; keep the role field extensible.
 
 **Vehicle**
