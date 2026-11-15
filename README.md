@@ -13,7 +13,9 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 ### Implemented in this foundation branch
 - Premium responsive homepage with a single hero image, full-width finder, catalogue categories and featured vehicle cards.
 - Server-rendered inventory page with search, sorting, filters and database pagination (12 per page).
-- Vehicle detail route with price/status/specification presentation.
+- Vehicle detail route with price/status/specification presentation and responsive multi-image gallery/lightbox.
+- Guest enquiry form and server-side persistence endpoint with validation, request references, origin/body-size checks, honeypot and best-effort process-local throttling.
+- Three optimised local demo vehicle photos recovered from PR #12; the BMW X6 file is stored with its actual JPEG extension.
 - PostgreSQL schema for vehicles, images, vehicle options, saved builds, enquiries, test-drive requests, sourcing requests, admin users and audit logs.
 - Prisma 7 PostgreSQL adapter and server-only client.
 - Inventory read API with validated query parameters and bounded saved-vehicle lookup by stable slug.
@@ -25,7 +27,8 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 ### Not yet implemented
 - Live PostgreSQL provisioning, initial migration and seeded DB deployment.
 - Admin authentication and dealership management interface.
-- Persisted enquiry, callback, test-drive and sourcing request forms.
+- Live enquiry submissions until PostgreSQL is provisioned, migrated and configured in the deployment environment.
+- Persisted callback, test-drive and sourcing request forms.
 - Working Gemini AI Concierge.
 - Interactive vehicle Design Studio.
 - Customer accounts and cross-device Garage sync.
@@ -65,7 +68,7 @@ npm run db:seed
 npm run dev
 ```
 
-Check the backend at `/api/health`. Inventory JSON is available from `/api/vehicles`.
+Check the backend at `/api/health`. Inventory JSON is available from `/api/vehicles`. Guest enquiries are submitted to `/api/enquiries` once PostgreSQL is configured.
 
 ## Environment variables
 
