@@ -15,9 +15,26 @@ concurrency:
 
 jobs:
   validate:
-    name: Typecheck, lint and build
+    name: Database migration, typecheck, lint and build
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ritewheel_test?schema=public
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/ritewheel_test?schema=public
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: ritewheel_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d ritewheel_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -30,8 +47,17 @@ jobs:
       - name: Install dependencies
         run: npm install --no-audit --no-fund
 
+      - name: Validate Prisma schema
+        run: npx prisma validate
+
       - name: Generate Prisma client
         run: npx prisma generate
+
+      - name: Apply committed migrations to PostgreSQL
+        run: npx prisma migrate deploy
+
+      - name: Seed demo inventory
+        run: npx prisma db seed
 
       - name: Check TypeScript
         run: npm run typecheck
