@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { getVehiclesByIds, searchVehicles } from "@/lib/vehicles";
+import { getVehiclesBySlugs, searchVehicles } from "@/lib/vehicles";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
