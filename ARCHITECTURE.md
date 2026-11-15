@@ -901,3 +901,17 @@ Invariants:
 | Release 3 | Verified quotes, reservation holds, payment obligations, hosted checkout, signed webhooks, transaction records, refunds, reconciliation and handover | Live payment implementation after release gates |
 
 Payment structure is designed now to avoid redesign. Gateway integration and real money movement are explicitly deferred to Release 3.
+
+
+## 29. Approved Vehicle Details page decisions
+
+The full screen specification is in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md#6-screen-3--vehicle-detail).
+
+- Desktop: large gallery plus a compact vehicle summary/action panel; mobile: deliberate stacked layout with restrained sticky enquiry actions.
+- Listing facts, price/currency, condition, badges and availability are server-backed. Missing data is not fabricated; demo records and prices are labelled.
+- Guest Save to My Garage uses local browser storage in Release 1; account-synchronised saves are Release 2.
+- Compare is local and capped at three vehicles.
+- Enquiry and test-drive forms persist separate requests. Test-drive requests remain pending until dealership confirmation.
+- Formal payable quotes, reservations and checkout are not actions on the Vehicle Details page in Release 1; they belong to Release 3 and the quote/payment architecture.
+- Ask AI about this vehicle is on-demand and passes only safe public vehicle context. AI cannot approve price, stock, booking or payment.
+- Gallery uses an optimised lead image, lazy-loaded remaining images and an on-demand lightbox; no autoplay/3D gallery.
