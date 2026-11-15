@@ -204,9 +204,34 @@ Proposed routes:
 
 ## 13. Dealership workspace and CRM
 
-Navigation evolves to Overview, Inventory, Leads/Enquiries, Sourcing Requests, Test Drives, Customers, Quotations (Release 3), Transactions (Release 3), Staff and Settings.
+### Release 1 — Single-admin operations workspace
 
-Dashboard metrics are calculated from database records only: available vehicles, new/unassigned leads, pending callback/sourcing requests, requested/confirmed test drives, quotes awaiting response, and later payment exceptions. No invented revenue, growth or conversion metrics.
+The first release provides one protected dealership workspace for a single administrator role. This is an operational dashboard and request queue, not a staff CRM.
+
+Navigation:
+- Overview.
+- Inventory.
+- Enquiries.
+- Test Drives.
+- Sourcing Requests.
+- Basic Settings (public dealership/contact information).
+
+Release 1 capabilities:
+- Review database-derived overview counts.
+- Create, edit, publish/unpublish, reserve, mark sold and archive vehicle listings.
+- Manage vehicle facts, pricing/currency, images and supported Design Studio options.
+- Review customer enquiries and update basic statuses.
+- Review test-drive requests and accept/decline them with explicit confirmed appointment details.
+- Review sourcing requests and move them through the basic request statuses.
+- Configure actual public contact channels and dealership profile details.
+
+Release 1 does not include multiple staff accounts, granular roles, lead assignment, customer CRM records, internal sales activity timelines, private staff notes, quote management or payments. Each admin route and API mutation must still require a valid server-side administrator session.
+
+### Release 2 — Staff CRM and customer operations
+
+Navigation expands to include Leads, Customers, Staff and Settings alongside Inventory, Enquiries, Sourcing Requests and Test Drives.
+
+Dashboard metrics are calculated from actual records only: available vehicles, new/unassigned leads, pending callback/sourcing requests, requested/confirmed test drives and other defined workflow counts. No invented revenue, growth or conversion metrics.
 
 Proposed lead states:
 `NEW → ASSIGNED → CONTACTING → QUALIFIED → QUOTED → NEGOTIATING → WON`
@@ -214,6 +239,10 @@ Proposed lead states:
 Alternative states: `LOST`, `UNRESPONSIVE`, `CLOSED`.
 
 A lead can link to a customer or guest contact snapshot, enquiry, vehicle, build, sourcing request and quote. Staff have an owner, can record activities and follow-ups, and can escalate commercial decisions. Internal notes and AI drafts are not automatically customer-visible.
+
+### Release 3 — Commercial and payment operations
+
+Add Quotations, Reservations and Transactions/Payment Exceptions. These operate against verified quotes, server-controlled reservations and the payment architecture documented separately. Do not expose payment screens in Release 1 or Release 2 before their workflows exist.
 
 ## 14. Purchase model: no traditional cart
 
