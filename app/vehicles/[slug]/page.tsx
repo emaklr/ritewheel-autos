@@ -1,10 +1,10 @@
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { getVehicleBySlug } from "@/lib/vehicles";
 import { VehicleCardActions } from "@/components/vehicle-card-actions";
+import { VehicleGallery } from "@/components/vehicle-gallery";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -32,6 +32,16 @@ export default async function VehicleDetailPage({ params }: Props) {
   const vehicle = await getVehicleBySlug(slug);
   if (!vehicle) notFound();
 
+  const galleryImages = vehicle.images?.length
+    ? vehicle.images
+    : [{ url: vehicle.image, altText: vehicle.imageAlt }];
+
+  const galleryBadge = vehicle.isDemo
+    ? "Demo listing"
+    : vehicle.status !== "AVAILABLE"
+      ? vehicle.status.toLowerCase()
+      : undefined;
+
   const specs = [
     ["Year", String(vehicle.year)],
     ["Body type", vehicle.bodyType],
@@ -53,14 +63,7 @@ export default async function VehicleDetailPage({ params }: Props) {
         </div>
         <div className="vehicle-detail-layout">
           <div>
-            <div className="vehicle-detail-image">
-              <Image src={vehicle.image} alt={vehicle.imageAlt} fill priority sizes="(max-width: 760px) 100vw, 62vw" />
-              <div className="vehicle-badges">
-                {vehicle.isDemo ? <span className="badge badge-demo">Demo listing</span> : null}
-                {vehicle.status === "RESERVED" ? <span className="badge badge-reserved">Reserved</span> : null}
-                {vehicle.status === "SOLD" ? <span className="badge badge-reserved">Sold</span> : null}
-              </div>
-            </div>
+            <VehicleGallery images={galleryImages} badge={galleryBadge} />
             <div className="vehicle-detail-description">
               <span className="eyebrow">ABOUT THIS VEHICLE</span>
               <h2>Overview</h2>
