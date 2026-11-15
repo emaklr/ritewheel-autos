@@ -153,7 +153,7 @@ export default async function InventoryPage({ searchParams }: { searchParams: Se
               ) : (
                 <div className="empty-state">
                   <span className="eyebrow">NO EXACT MATCH</span>
-                  <h3>We couldn't find a vehicle for those filters.</h3>
+                  <h3>We could not find a vehicle for those filters.</h3>
                   <p>Try broadening your search, or ask Ritewheel to help source the vehicle you want.</p>
                   <div className="hero-actions"><Link href="/inventory" className="button button-outline">Clear filters</Link><Link href="/source-vehicle" className="button button-gold">Request a vehicle ↗</Link></div>
                 </div>
