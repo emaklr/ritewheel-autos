@@ -64,7 +64,7 @@ Initial palette:
 - Desktop filter sidebar and three-column grid of large vehicle cards.
 - Mobile filter drawer and URL-shareable search state.
 - Compare up to three vehicles locally.
-- AI Concierge launcher opens an on-demand drawer rather than occupying a permanent sidebar.
+- Use the selected panoramic-banner/filter-sidebar catalogue concept, but omit its always-visible AI chat column; a small floating AI launcher opens a drawer only when clicked.
 
 ### AI Car Concierge
 - Natural-language vehicle discovery.
