@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { AdminLoginForm } from "@/components/admin/admin-login-form";
 import { getCurrentAdmin } from "@/lib/admin-auth";
@@ -12,10 +13,10 @@ export default async function AdminLoginPage() {
   return (
     <main className="admin-login-page">
       <div className="admin-login-card">
-        <a className="admin-brand" href="/" aria-label="Ritewheel Autos home">
+        <Link className="admin-brand" href="/" aria-label="Ritewheel Autos home">
           <span className="admin-brand-mark">R</span>
           <span>RITEWHEEL <b>AUTOS</b></span>
-        </a>
+        </Link>
         <div className="admin-login-heading">
           <span className="eyebrow">DEALERSHIP WORKSPACE</span>
           <h1>Welcome back.</h1>
