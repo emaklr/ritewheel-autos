@@ -70,7 +70,7 @@ export async function getCurrentAdmin() {
     where: {
       tokenHash: hashSessionToken(token),
       expiresAt: { gt: new Date() },
-      adminUser: { active: true },
+      adminUser: { active: true, role: "ADMIN" },
     },
     select: {
       adminUser: { select: { id: true, email: true, name: true, role: true } },
