@@ -150,6 +150,7 @@ model VehicleBuild {
 
 model Enquiry {
   id           String        @id @default(cuid())
+  reference    String        @unique @default(cuid())
   customerName String
   email        String
   phone        String?
@@ -170,6 +171,7 @@ model Enquiry {
 
 model TestDriveRequest {
   id            String          @id @default(cuid())
+  reference     String          @unique @default(cuid())
   customerName  String
   email         String
   phone         String
@@ -191,6 +193,7 @@ model TestDriveRequest {
 
 model SourcingRequest {
   id                   String               @id @default(cuid())
+  reference            String               @unique @default(cuid())
   customerName         String
   email                String
   phone                String?

@@ -30,8 +30,8 @@ const vehicles = [
     exteriorColour: "Obsidian Black",
     interiorColour: "Black",
     features: ["Panoramic roof", "360 camera", "Leather interior", "Adaptive cruise control"],
-    image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1600&q=85",
-    imageAlt: "Luxury Mercedes-Benz vehicle in a studio setting",
+    image: "/images/vehicles/mercedes-gle.webp",
+    imageAlt: "Blue Mercedes-Benz GLE demonstration vehicle",
   },
   {
     slug: "bmw-x5-xdrive40i-2023-demo",
@@ -55,6 +55,52 @@ const vehicles = [
     features: ["Panoramic roof", "Parking assistant", "Leather interior"],
     image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?auto=format&fit=crop&w=1600&q=85",
     imageAlt: "Dark premium BMW SUV",
+  },
+  {
+    slug: "demo-bmw-x6",
+    make: "BMW",
+    model: "X6 M",
+    trim: "M",
+    year: 2020,
+    bodyType: "SUV",
+    description: "Illustrative demo listing used to demonstrate search, vehicle details and comparison. Replace these example details with verified listing data before presenting this as real stock.",
+    price: null,
+    currency: "NGN",
+    condition: "Used",
+    mileage: null,
+    transmission: null,
+    fuelType: null,
+    engine: null,
+    drivetrain: null,
+    seats: null,
+    exteriorColour: null,
+    interiorColour: null,
+    features: [],
+    image: "/images/vehicles/bmw-x6.jpg",
+    imageAlt: "Blue BMW X6 M demonstration vehicle",
+  },
+  {
+    slug: "demo-range-rover-sport",
+    make: "Land Rover",
+    model: "Range Rover Sport",
+    trim: null,
+    year: 2022,
+    bodyType: "SUV",
+    description: "Illustrative demo listing used to demonstrate vehicle discovery. Replace the example details with verified vehicle information before treating this as an available offer.",
+    price: null,
+    currency: "NGN",
+    condition: "Used",
+    mileage: null,
+    transmission: null,
+    fuelType: null,
+    engine: null,
+    drivetrain: null,
+    seats: null,
+    exteriorColour: null,
+    interiorColour: null,
+    features: [],
+    image: "/images/vehicles/range-rover-sport.webp",
+    imageAlt: "Red Range Rover Sport demonstration vehicle",
   },
   {
     slug: "toyota-land-cruiser-prado-2024-demo",
@@ -151,7 +197,7 @@ const vehicles = [
 ];
 
 async function main() {
-  for (const [index, vehicle] of vehicles.entries()) {
+  for (const vehicle of vehicles) {
     const { image, imageAlt, ...data } = vehicle;
     await prisma.vehicle.upsert({
       where: { slug: vehicle.slug },
@@ -160,7 +206,11 @@ async function main() {
         ...data,
         price: vehicle.price,
         status: "AVAILABLE",
-        featured: index < 3,
+        featured: [
+          "mercedes-benz-gle-450-2024-demo",
+          "bmw-x5-xdrive40i-2023-demo",
+          "toyota-land-cruiser-prado-2024-demo",
+        ].includes(vehicle.slug),
         isDemo: true,
         publishedAt: new Date(),
         images: {

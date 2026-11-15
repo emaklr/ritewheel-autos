@@ -22,6 +22,7 @@ export type VehicleSummary = {
   description: string;
   image: string;
   imageAlt: string;
+  images?: { url: string; altText: string }[];
 };
 
 const demoVehicles: VehicleSummary[] = [
@@ -45,8 +46,57 @@ const demoVehicles: VehicleSummary[] = [
     featured: true,
     isDemo: true,
     description: "An illustrative premium SUV listing used to demonstrate Ritewheel's discovery experience.",
-    image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=82",
-    imageAlt: "Luxury Mercedes-Benz vehicle in a studio setting",
+    image: "/images/vehicles/mercedes-gle.webp",
+    imageAlt: "Blue Mercedes-Benz GLE demonstration vehicle",
+    images: [{ url: "/images/vehicles/mercedes-gle.webp", altText: "Blue Mercedes-Benz GLE demonstration vehicle" }],
+  },
+  {
+    id: "demo-bmw-x6",
+    slug: "demo-bmw-x6",
+    make: "BMW",
+    model: "X6 M",
+    trim: "M",
+    year: 2020,
+    bodyType: "SUV",
+    condition: "Used",
+    mileage: null,
+    transmission: null,
+    fuelType: null,
+    engine: null,
+    seats: null,
+    price: null,
+    currency: "NGN",
+    status: "AVAILABLE",
+    featured: false,
+    isDemo: true,
+    description: "Illustrative demo listing used to demonstrate search, vehicle details and comparison. Replace these example details with verified listing data before presenting it as real stock.",
+    image: "/images/vehicles/bmw-x6.jpg",
+    imageAlt: "Blue BMW X6 M demonstration vehicle",
+    images: [{ url: "/images/vehicles/bmw-x6.jpg", altText: "Blue BMW X6 M demonstration vehicle" }],
+  },
+  {
+    id: "demo-range-rover-sport",
+    slug: "demo-range-rover-sport",
+    make: "Land Rover",
+    model: "Range Rover Sport",
+    trim: null,
+    year: 2022,
+    bodyType: "SUV",
+    condition: "Used",
+    mileage: null,
+    transmission: null,
+    fuelType: null,
+    engine: null,
+    seats: null,
+    price: null,
+    currency: "NGN",
+    status: "AVAILABLE",
+    featured: false,
+    isDemo: true,
+    description: "Illustrative demo listing used to demonstrate vehicle discovery. Replace these example details with verified vehicle information before treating this as an available offer.",
+    image: "/images/vehicles/range-rover-sport.webp",
+    imageAlt: "Red Range Rover Sport demonstration vehicle",
+    images: [{ url: "/images/vehicles/range-rover-sport.webp", altText: "Red Range Rover Sport demonstration vehicle" }],
   },
   {
     id: "demo-bmw-x5",
@@ -233,11 +283,17 @@ function formatVehicle(row: {
   description: string;
   images: { url: string; altText: string | null }[];
 }): VehicleSummary {
+  const images = row.images.map((image) => ({
+    url: image.url,
+    altText: image.altText ?? `${row.make} ${row.model}`,
+  }));
+
   return {
     ...row,
     price: row.price?.toNumber() ?? null,
-    image: row.images[0]?.url ?? "/images/vehicle-placeholder.svg",
-    imageAlt: row.images[0]?.altText ?? `${row.make} ${row.model}`,
+    image: images[0]?.url ?? "/images/vehicle-placeholder.svg",
+    imageAlt: images[0]?.altText ?? `${row.make} ${row.model}`,
+    images,
   };
 }
 

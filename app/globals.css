@@ -344,3 +344,187 @@ img { display: block; max-width: 100%; }
 
 .vehicle-detail-summary > .vehicle-card-actions { margin:18px 0 4px; }
 .vehicle-detail-summary > .vehicle-card-actions .mini-action { min-height:38px; flex:1; }
+
+
+/* Recovered vehicle gallery and guest enquiry experience */
+.vehicle-gallery { min-width:0; }
+.vehicle-detail-image {
+  position:relative;
+  overflow:hidden;
+  aspect-ratio:16 / 10;
+  border:1px solid var(--line);
+  border-radius:15px;
+  background:#171b1a;
+}
+.vehicle-detail-image > img { object-fit:cover; }
+.gallery-badge { position:absolute; top:15px; left:15px; z-index:2; }
+.gallery-expand,.gallery-arrow {
+  position:absolute;
+  z-index:2;
+  display:grid;
+  place-items:center;
+  width:39px;
+  height:39px;
+  border:1px solid rgba(255,255,255,.25);
+  border-radius:50%;
+  color:#fff;
+  background:rgba(8,9,9,.72);
+  cursor:pointer;
+  backdrop-filter:blur(8px);
+}
+.gallery-expand { right:14px; bottom:14px; font-size:20px; }
+.gallery-arrow { top:50%; transform:translateY(-50%); font-size:25px; }
+.gallery-arrow-left { left:13px; }
+.gallery-arrow-right { right:13px; }
+.gallery-count,.gallery-lightbox-count {
+  position:absolute;
+  right:14px;
+  bottom:14px;
+  z-index:2;
+  padding:6px 9px;
+  border:1px solid rgba(255,255,255,.16);
+  border-radius:6px;
+  color:#f4f1ea;
+  background:rgba(8,9,9,.72);
+  font-size:10px;
+}
+.gallery-count { right:62px; bottom:22px; }
+.gallery-thumbnails {
+  display:flex;
+  gap:9px;
+  overflow-x:auto;
+  padding:12px 1px 4px;
+  scrollbar-width:thin;
+}
+.gallery-thumbnail {
+  position:relative;
+  flex:0 0 104px;
+  aspect-ratio:4 / 3;
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#171b1a;
+  cursor:pointer;
+}
+.gallery-thumbnail.is-active { border:2px solid var(--gold); }
+.gallery-thumbnail img { object-fit:cover; }
+.gallery-lightbox {
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  display:grid;
+  place-items:center;
+  padding:24px;
+  background:rgba(3,4,4,.96);
+}
+.gallery-lightbox-stage {
+  position:relative;
+  width:min(1400px,100%);
+  height:min(88vh,900px);
+}
+.gallery-lightbox-image { object-fit:contain; }
+.gallery-lightbox-close,.gallery-lightbox-arrow {
+  position:absolute;
+  z-index:3;
+  display:grid;
+  place-items:center;
+  width:44px;
+  height:44px;
+  border:1px solid rgba(255,255,255,.24);
+  border-radius:50%;
+  color:#fff;
+  background:rgba(18,21,20,.9);
+  cursor:pointer;
+  font-size:26px;
+}
+.gallery-lightbox-close { top:12px; right:12px; }
+.gallery-lightbox-arrow { top:50%; transform:translateY(-50%); }
+.gallery-lightbox-prev { left:12px; }
+.gallery-lightbox-next { right:12px; }
+.gallery-lightbox-count { right:50%; bottom:8px; transform:translateX(50%); }
+
+.contact-page { padding-top:60px; padding-bottom:85px; }
+.contact-page-layout {
+  display:grid;
+  grid-template-columns:minmax(0,.85fr) minmax(360px,1.15fr);
+  gap:clamp(30px,6vw,88px);
+  align-items:start;
+  max-width:1160px;
+  margin:18px auto 0;
+}
+.contact-intro { padding-top:20px; }
+.contact-intro h1 {
+  max-width:520px;
+  margin:12px 0 16px;
+  font-size:clamp(36px,4.5vw,58px);
+  line-height:1.02;
+  letter-spacing:-.055em;
+}
+.contact-intro > p { max-width:520px; color:#bdc4bf; font-size:14px; line-height:1.85; }
+.contact-trust-note {
+  max-width:510px;
+  margin-top:27px;
+  padding:15px 17px;
+  border:1px solid rgba(245,160,0,.25);
+  border-radius:10px;
+  color:#d7c59f;
+  background:rgba(245,160,0,.055);
+  font-size:11px;
+  line-height:1.75;
+}
+.contact-privacy-note { color:#87908a !important; font-size:10px !important; }
+.contact-form-panel {
+  padding:28px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:linear-gradient(145deg,#171b1a,#101313);
+}
+.contact-form-panel h2 { margin:7px 0 22px; font-size:24px; letter-spacing:-.04em; }
+.contact-form { display:grid; gap:16px; }
+.contact-form .field input,.contact-form .field textarea {
+  width:100%;
+  min-height:47px;
+  padding:12px 13px;
+  border:1px solid var(--line-strong);
+  border-radius:8px;
+  color:var(--text);
+  background:#202524;
+}
+.contact-form .field textarea { min-height:120px; resize:vertical; }
+.contact-form .button { width:100%; }
+.enquiry-honeypot {
+  position:absolute !important;
+  left:-10000px !important;
+  width:1px !important;
+  height:1px !important;
+  overflow:hidden !important;
+}
+.form-message {
+  margin:0;
+  padding:11px 13px;
+  border:1px solid rgba(217,107,99,.36);
+  border-radius:8px;
+  color:#f0b2aa;
+  background:rgba(217,107,99,.08);
+  font-size:11px;
+}
+.form-note { margin:0; color:#89928c; font-size:10px; line-height:1.65; }
+.enquiry-success,.enquiry-disabled {
+  padding:20px;
+  border:1px solid rgba(245,160,0,.25);
+  border-radius:10px;
+  background:rgba(245,160,0,.05);
+}
+.enquiry-success h2 { margin:7px 0; }
+.enquiry-success p,.enquiry-disabled p { color:#c4cbc6; font-size:12px; line-height:1.7; }
+.enquiry-disabled strong { font-size:13px; }
+
+@media (max-width:760px) {
+  .contact-page { padding-top:35px; padding-bottom:55px; }
+  .contact-page-layout { grid-template-columns:1fr; gap:28px; }
+  .contact-intro { padding-top:0; }
+  .contact-form-panel { padding:21px 17px; }
+  .gallery-thumbnail { flex-basis:84px; }
+  .gallery-lightbox { padding:10px; }
+  .gallery-lightbox-stage { height:82vh; }
+}
