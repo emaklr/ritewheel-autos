@@ -94,6 +94,75 @@ const demoVehicles: VehicleSummary[] = [
     image: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=1200&q=82",
     imageAlt: "Premium silver sport utility vehicle",
   },
+  {
+    id: "demo-e-class",
+    slug: "mercedes-benz-e-class-e350-2023-demo",
+    make: "Mercedes-Benz",
+    model: "E-Class",
+    trim: "E350",
+    year: 2023,
+    bodyType: "Sedan",
+    condition: "Foreign Used",
+    mileage: 14200,
+    transmission: "Automatic",
+    fuelType: "Petrol",
+    engine: "2.0L Turbo",
+    seats: 5,
+    price: 82000000,
+    currency: "NGN",
+    status: "AVAILABLE",
+    featured: false,
+    isDemo: true,
+    description: "Illustrative executive sedan record for the Ritewheel demo catalogue.",
+    image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=1200&q=82",
+    imageAlt: "Premium executive sedan",
+  },
+  {
+    id: "demo-porsche-911",
+    slug: "porsche-911-carrera-2022-demo",
+    make: "Porsche",
+    model: "911 Carrera",
+    trim: "Carrera",
+    year: 2022,
+    bodyType: "Coupe",
+    condition: "Foreign Used",
+    mileage: 9200,
+    transmission: "Automatic",
+    fuelType: "Petrol",
+    engine: "3.0L Twin-Turbo Flat-6",
+    seats: 4,
+    price: 180000000,
+    currency: "NGN",
+    status: "AVAILABLE",
+    featured: false,
+    isDemo: true,
+    description: "Illustrative sports coupe record for the Ritewheel demo catalogue.",
+    image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=1200&q=82",
+    imageAlt: "Porsche 911 sports coupe",
+  },
+  {
+    id: "demo-toyota-hilux",
+    slug: "toyota-hilux-gr-sport-2024-demo",
+    make: "Toyota",
+    model: "Hilux",
+    trim: "GR Sport",
+    year: 2024,
+    bodyType: "Pickup",
+    condition: "Brand New",
+    mileage: 0,
+    transmission: "Automatic",
+    fuelType: "Diesel",
+    engine: "2.8L Turbo Diesel",
+    seats: 5,
+    price: 76000000,
+    currency: "NGN",
+    status: "AVAILABLE",
+    featured: false,
+    isDemo: true,
+    description: "Illustrative pickup record for the Ritewheel demo catalogue.",
+    image: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=1200&q=82",
+    imageAlt: "Premium pickup truck",
+  },
 ];
 
 export type VehicleFilters = {
@@ -219,7 +288,7 @@ export async function searchVehicles(filters: VehicleFilters = {}) {
     } : {}),
     ...(filters.make ? { make: { equals: filters.make, mode: "insensitive" as const } } : {}),
     ...(filters.bodyType ? { bodyType: { equals: filters.bodyType, mode: "insensitive" as const } } : {}),
-    ...(filters.maxBudget ? { price: { lte: filters.maxBudget } } : {}),
+    ...(filters.maxBudget ? { price: { lte: filters.maxBudget }, currency: "NGN" } : {}),
   };
 
   const orderBy = filters.sort === "price-low"
@@ -304,4 +373,24 @@ export async function getVehiclesByIds(ids: string[]): Promise<{ items: VehicleS
     items: safeIds.map((id) => byId.get(id)).filter((vehicle): vehicle is VehicleSummary => Boolean(vehicle)),
     dataSource: "database",
   };
+}
+
+
+export async function getAvailableVehicleCategories(): Promise<{ bodyType: string; count: number }[]> {
+  if (!process.env.DATABASE_URL) {
+    const counts = new Map<string, number>();
+    for (const vehicle of demoVehicles) {
+      if (vehicle.status === "AVAILABLE") counts.set(vehicle.bodyType, (counts.get(vehicle.bodyType) ?? 0) + 1);
+    }
+    return [...counts.entries()].map(([bodyType, count]) => ({ bodyType, count }));
+  }
+
+  const prisma = getPrismaClient();
+  const rows = await prisma.vehicle.groupBy({
+    by: ["bodyType"],
+    where: { status: "AVAILABLE", publishedAt: { not: null } },
+    _count: { _all: true },
+    orderBy: { bodyType: "asc" },
+  });
+  return rows.map((row) => ({ bodyType: row.bodyType, count: row._count._all }));
 }
