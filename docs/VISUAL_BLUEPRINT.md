@@ -323,69 +323,204 @@ A final contact CTA links to the configured contact route. Contact details are d
 ## 5. Screen 2 — Inventory
 
 **Route:** `/inventory`  
-**Purpose:** Let customers browse, filter, sort, and shortlist real published stock.
+**Status:** Proposed V1 design direction.  
+**Purpose:** Help customers quickly find and shortlist real vehicles without turning the page into a dense or slow filter dashboard.
+
+### Approved design direction
+
+Use the same dark luxury language as the homepage, but make Inventory more functional and compact:
+
+- No second, oversized cinematic hero. The homepage already provides the visual introduction.
+- Compact page title and short description.
+- Search, result count and sort controls above the results.
+- Filter sidebar on the left on desktop.
+- Three large, readable vehicle cards per row on wide desktop.
+- A small floating AI Concierge launcher that opens a drawer only when clicked.
+- No permanently visible chatbot column beside the inventory grid.
+
+The inventory page should prioritise vehicle discovery and imagery. It should feel spacious rather than crammed with controls.
 
 ### Desktop layout
 
-- Breadcrumb or compact page eyebrow.
-- Heading: "Our vehicle collection".
-- Short subtitle and a real result count.
-- Main content split: filter sidebar (approximately 250–280 px) and result grid.
-- Toolbar above grid: active filter chips, sort selector, and grid/list toggle only if both layouts are implemented.
-- Three-column vehicle grid on wide desktop; two columns on smaller desktop/tablet.
+1. Global public header with Inventory selected.
+2. Compact title region:
+   - Eyebrow: "Premium Vehicle Inventory".
+   - Heading: **"Exceptional vehicles. Real opportunities."**
+   - One short sentence explaining that customers can browse or use filters to narrow the catalogue.
+   - Do not repeat the homepage hero or load another large banner photograph.
+3. Search and results toolbar:
+   - Search by make, model, trim or keyword.
+   - Current result count, for example "Showing 12 of 48 vehicles" only when those values come from the query result.
+   - Sort selector.
+   - Optional grid/list toggle only if both modes are fully implemented and tested.
+4. Main two-column content:
+   - Left filter sidebar: approximately 240–270 px.
+   - Right result area: three columns on wide desktop; two columns on medium desktop/tablet.
+5. Pagination below the grid.
+6. Footer and compact floating AI Concierge launcher.
 
-### Filter controls
+### Search and toolbar
 
-- Search by make/model/keyword.
-- Make.
-- Body type.
-- Price range (with currency clear).
-- Year range.
-- Mileage range.
-- Fuel type.
-- Transmission.
-- Seating capacity.
-- Condition.
-- Availability.
+- Search placeholder: "Search by make, model or keyword…"
+- Sort options: Newest First, Price: Low to High, Price: High to Low, Year, and Mileage where the data supports it.
+- Keep selected sort and search values in URL search parameters.
+- Debounce free-text search by approximately 250–350 ms.
+- Apply search on the server; do not download the full inventory to filter in the browser.
+- Display the true result count from the server response.
+- Preserve the current filter state when sorting or navigating between pages.
 
-Use collapsible filter groups. Show selected filters as removable chips and provide a clear-all action. Filter changes update URL search parameters so a search can be shared or refreshed.
+### Desktop filter sidebar
 
-### Vehicle card
+Keep the sidebar visually quiet: charcoal surface, subtle border, clear section labels, compact spacing and a single gold Apply Filters action where an explicit apply step is necessary.
 
-Each card includes:
+Filter groups:
 
-- Large landscape image.
-- One data-backed badge, such as Featured, New Arrival, or Reserved; never infer a status from the age of the record.
-- Favourite heart button.
-- Make, model, trim, and year.
-- A concise row of key specs: transmission, fuel, mileage, and/or body type.
-- Formatted price with the stored currency.
-- View details action or clickable card.
-- Compare checkbox/control.
+1. **Make** — available makes from published inventory.
+2. **Model** — options narrowed by selected make, where practical.
+3. **Body Type** — SUV, Sedan, Coupe, Pickup, Hatchback, Van and other types only when present in inventory.
+4. **Price Range** — min/max range with the currency clearly displayed. Never combine different currencies into one misleading range.
+5. **Year** — min/max or supported year selection.
+6. **Mileage** — optional range when mileage is recorded.
+7. **Fuel Type** — Petrol, Diesel, Hybrid, Electric and other supported types.
+8. **Transmission** — Automatic, Manual and other supported values.
+9. **Exterior Colour** — labelled swatches and accessible names.
+10. **Features** — a small set of useful features such as Leather Seats, Panoramic Roof, 360° Camera and Apple CarPlay only when those fields exist in inventory.
 
-### Sorting and pagination
+Sidebar behaviour:
+- Show selected filters as removable chips above results.
+- Offer Reset All / Clear Filters.
+- Use collapsible groups for long lists.
+- Do not create fake makes, colours, feature counts or available filter values.
+- Filter option counts are optional; omit them unless accurately calculated.
+- Avoid a giant all-filters form occupying the first viewport.
+- Use URL parameters as the canonical shareable filter state.
 
-- Sort options: newest, price low-to-high, price high-to-low, year, and mileage when those fields are present.
-- Pagination is database-backed.
-- Keep filters when the user changes pages.
-- Never fetch the full catalogue and filter everything in the browser.
+### Mobile filters
 
-### Mobile layout
+- Replace the desktop sidebar with a Filters button opening an accessible bottom sheet or full-height drawer.
+- Show the active filter count on the button.
+- The drawer contains the same filter controls as desktop.
+- Provide Clear All and Apply Filters actions.
+- Keep applied filter chips and sort accessible above results.
+- The drawer must support keyboard focus, escape-to-close, scroll containment and touch-friendly controls.
+- Do not render the desktop sidebar off-screen or hide it with CSS while still loading its controls.
 
-- Search remains near the top.
-- Filters open in a bottom sheet or full-height drawer.
-- Show active filter count.
-- One or two cards per row depending on viewport width; prioritize readable card details.
-- Keep sort and filter actions sticky/accessible while browsing.
+### Vehicle result cards
 
-### Required states
+Wide desktop: three cards per row.  
+Medium desktop/tablet: two cards per row where there is sufficient width.  
+Narrow mobile: one card per row.
 
-- Loading skeletons.
-- No inventory available.
-- No results for current filters, with clear-filters action.
-- Failed inventory request with retry.
-- Missing image fallback.
-- Reserved and sold listings clearly distinguished; sold vehicles are excluded from available inventory by default.
+Each card contains:
+
+- Consistent landscape vehicle image, approximately 16:10.
+- A small factual badge when supported, such as Featured, New Arrival, Reserved or Demo Listing.
+- Favourite control.
+- Make, model, trim and year.
+- One concise metadata line such as body type and transmission.
+- Price and its stored currency, or "Price on request".
+- Up to three relevant specification highlights, chosen from recorded engine, fuel, mileage, seating or drivetrain values.
+- View Details as the primary card navigation.
+- Compare as a secondary action.
+
+Do not squeeze every specification onto the card. Put full specifications on the vehicle detail page. Keep card height, image crop, price position and action placement consistent.
+
+All vehicle card information must come from the vehicle record. Demo vehicles must be visibly labelled as demo content. Never invent availability, mileage, engine output, price, popularity or stock status to make the grid look fuller.
+
+### Compare behaviour
+
+- Compare action adds/removes a vehicle from the local compare selection.
+- Maximum of three vehicles.
+- A compact compare tray appears only when at least one vehicle is selected.
+- The tray shows selected vehicle thumbnails/names and a Compare button.
+- Disable adding a fourth vehicle and explain the limit.
+- Compare selection persists locally in the current browser only; no customer account is required.
+- If a selected vehicle becomes unpublished, sold or unavailable, reconcile it before comparison and tell the customer.
+- The compare tray must not cover card actions or obscure mobile content.
+
+### AI Concierge entry point
+
+- Show a small floating **Ask AI Concierge** launcher at the lower-right on desktop.
+- On mobile, use a compact button that does not obscure the result grid or pagination.
+- Clicking opens a side drawer on desktop and a full-height/bottom-sheet experience on mobile.
+- Load the chat component, AI client code and conversation UI only when opened.
+- Do not automatically send a prompt or call Gemini when Inventory first loads.
+- Include the current search/filter context when the user explicitly opens the Concierge and chooses to use it.
+- The Concierge remains a helper, not a required route through the catalogue.
+
+### Pagination
+
+- Default page size: 12 vehicles.
+- Pagination and sorting are server/database-backed.
+- Keep active filters and sort in the URL when moving between pages.
+- Show the current page and a small set of page links plus previous/next.
+- Avoid infinite scroll in V1; explicit pagination is predictable, shareable and lighter to maintain.
+- If the filtered result set changes and the current page becomes invalid, return a clear empty state or reset to the first valid page.
+
+### Inventory API and query contract
+
+The public `GET /api/vehicles` endpoint accepts a validated set of query parameters:
+
+- `q`: make/model/trim/keyword search.
+- `make`, `model`, `bodyType`.
+- `minPrice`, `maxPrice`, and `currency`.
+- `minYear`, `maxYear`.
+- `minMileage`, `maxMileage`.
+- `fuelType`, `transmission`, `exteriorColour`.
+- `features` as a bounded list of supported feature keys.
+- `sort`, `page`, `pageSize`.
+
+Rules:
+- Validate all query inputs with Zod.
+- Use allowlisted sort keys and bounded page/pageSize.
+- Default to 12 results and enforce a maximum page size.
+- Apply filters in Prisma/PostgreSQL, not after fetching all records.
+- Return only fields needed by cards and filter facets.
+- Use indexed fields and inspect query plans for the real search patterns.
+- Apply price filters within one currency only. A request without a currency should not silently mix currencies.
+- Return a stable result shape including items, page, pageSize, total, totalPages, and available filter facets where appropriate.
+- Exclude draft, archived and sold vehicles from default available results. Reserved vehicles can be shown only with a clear status and according to the selected availability filter.
+
+### Loading, empty and error states
+
+- **Initial loading:** stable card skeletons with fixed image aspect ratio; avoid large animated shimmer.
+- **No inventory:** explain that the catalogue is being updated and provide a contact link only if configured.
+- **No matches:** show the applied filter chips and a Clear Filters action.
+- **Search error:** show a concise message and Retry action; keep the page shell usable.
+- **Image failure:** use a neutral premium fallback without changing card geometry.
+- **Filter option unavailable:** retain safe defaults and show a clear control state.
+- **Compare empty:** no tray until the first vehicle is selected.
+- **AI unavailable:** normal inventory functionality remains usable; the launcher can show a disabled/limited explanation if the provider is not configured.
+- **Sold or reserved record:** show its real status and make the next available action clear.
+
+### Performance constraints
+
+- Keep the inventory page and cards as Server Components by default.
+- Use small client-side islands for filters, compare, favourites and the mobile filter drawer.
+- Server-render the first page of 12 vehicles.
+- Fetch only fields required for the current result cards.
+- Use Next.js image optimisation, explicit dimensions/aspect ratios, accurate `sizes` and lazy loading for below-fold cards.
+- Do not fetch full-resolution vehicle-gallery images for inventory cards.
+- Debounce search and ignore stale responses.
+- Do not load AI code, Gemini SDK, Design Studio assets, or admin code on initial Inventory render.
+- AI drawer is dynamically imported only after the customer opens it.
+- No infinite-scroll machinery, live polling, large charts or complex grid animation.
+- Keep card hover effects to a small transform/opacity transition.
+- The page must remain useful without JavaScript for core content and navigation wherever practical.
+
+### Inventory acceptance criteria
+
+- Search, sorting, filters and pagination work together and are represented in the URL.
+- All filtering and pagination happen at the database/server layer.
+- The first page displays no more than 12 vehicles by default.
+- Three large cards appear per row on wide desktop.
+- The desktop sidebar becomes an accessible mobile filter drawer.
+- Cards use consistent dimensions and data-backed content.
+- Compare supports a maximum of three vehicles.
+- AI Concierge loads only when the customer opens it.
+- No fictional filter counts, vehicles, prices, specifications or availability claims appear.
+- Loading, empty, error, unavailable and no-match states are designed.
+- The page is tested on mobile and desktop under constrained network/CPU settings.
 
 ## 6. Screen 3 — Vehicle detail
 
