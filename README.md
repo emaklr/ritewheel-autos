@@ -75,6 +75,7 @@ Initial palette:
 - Use the selected panoramic-banner/filter-sidebar catalogue concept, but omit its always-visible AI chat column; a small floating AI launcher opens a drawer only when clicked.
 
 ### AI Car Concierge
+- Dedicated two-panel conversation and vehicle-match workspace; no permanent chat panel on Inventory.
 - Natural-language vehicle discovery.
 - Preference collection for budget, make, body type, seating, fuel, transmission, use case, and colour.
 - Recommendations grounded in published database inventory.
@@ -119,7 +120,7 @@ A managed PostgreSQL host such as Neon or Supabase-hosted PostgreSQL can be used
 
 ## Architecture
 
-See [ARCHITECTURE.md](./ARCHITECTURE.md) for the system design, application structure, database entities, API contract, AI tool restrictions, security model, testing approach, and deployment plan. See [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md) for the screen-by-screen visual direction, page layouts, component inventory, interaction states, and performance-friendly visual rules. Performance is a product requirement: responsive optimised imagery, server-rendered pages, route-level code splitting, CSS-first motion, and Core Web Vitals targets are defined in `ARCHITECTURE.md`.
+See [ARCHITECTURE.md](./ARCHITECTURE.md) for the system design, application structure, database entities, API contract, AI tool restrictions, security model, testing approach, and deployment plan. [DESIGN_SOURCE_OF_TRUTH.md](./docs/DESIGN_SOURCE_OF_TRUTH.md) defines the document hierarchy, approved mockup usage and production asset rules. See [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md) for the screen-by-screen visual direction, page layouts, component inventory, interaction states, and performance-friendly visual rules. Performance is a product requirement: responsive optimised imagery, server-rendered pages, route-level code splitting, CSS-first motion, and Core Web Vitals targets are defined in `ARCHITECTURE.md`.
 
 At a glance:
 
@@ -193,6 +194,7 @@ Financing approval, multi-dealership tenancy, live external inventory feeds and 
 - GitHub: [emaklr/ritewheel-autos](https://github.com/emaklr/ritewheel-autos)
 - Product architecture: [ARCHITECTURE.md](./ARCHITECTURE.md)
 - Product experience: [docs/PRODUCT_EXPERIENCE.md](./docs/PRODUCT_EXPERIENCE.md)
+- Design source of truth: [docs/DESIGN_SOURCE_OF_TRUTH.md](./docs/DESIGN_SOURCE_OF_TRUTH.md)
 - Payments and transactions: [docs/PAYMENTS_AND_TRANSACTIONS.md](./docs/PAYMENTS_AND_TRANSACTIONS.md)
 
 ---
