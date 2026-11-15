@@ -275,3 +275,33 @@ export async function getVehicleBySlug(slug: string): Promise<VehicleSummary | n
   if (!row || row.status === "DRAFT" || row.status === "ARCHIVED") return null;
   return formatVehicle(row);
 }
+
+
+export async function getVehiclesByIds(ids: string[]): Promise<{ items: VehicleSummary[]; dataSource: "demo" | "database" }> {
+  const safeIds = ids.filter((id) => typeof id === "string" && id.length <= 40).slice(0, 3);
+  if (safeIds.length === 0) return { items: [], dataSource: process.env.DATABASE_URL ? "database" : "demo" };
+
+  if (!process.env.DATABASE_URL) {
+    const items = safeIds
+      .map((id) => demoVehicles.find((vehicle) => vehicle.id === id))
+      .filter((vehicle): vehicle is VehicleSummary => Boolean(vehicle));
+    return { items, dataSource: "demo" };
+  }
+
+  const prisma = getPrismaClient();
+  const rows = await prisma.vehicle.findMany({
+    where: { id: { in: safeIds }, status: { in: ["AVAILABLE", "RESERVED", "SOLD"] } },
+    select: {
+      id: true, slug: true, make: true, model: true, trim: true, year: true,
+      bodyType: true, condition: true, mileage: true, transmission: true,
+      fuelType: true, engine: true, seats: true, price: true, currency: true,
+      status: true, featured: true, isDemo: true, description: true,
+      images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1, select: { url: true, altText: true } },
+    },
+  });
+  const byId = new Map(rows.map((row) => [row.id, formatVehicle(row)]));
+  return {
+    items: safeIds.map((id) => byId.get(id)).filter((vehicle): vehicle is VehicleSummary => Boolean(vehicle)),
+    dataSource: "database",
+  };
+}
