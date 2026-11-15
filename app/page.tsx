@@ -6,6 +6,8 @@ import { VehicleCard } from "@/components/vehicle-card";
 import { VehicleFinder } from "@/components/vehicle-finder";
 import { getAvailableVehicleCategories, getFeaturedVehicles } from "@/lib/vehicles";
 
+export const dynamic = "force-dynamic";
+
 const categoryImages: Record<string, string> = {
   SUV: "https://images.unsplash.com/photo-1519641471654-76ce0107ad1b?auto=format&fit=crop&w=760&q=78",
   Sedan: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?auto=format&fit=crop&w=760&q=78",
