@@ -19,15 +19,15 @@ function writeIds(key: string, ids: string[]) {
   window.dispatchEvent(new Event("ritewheel-local-collection-updated"));
 }
 
-export function VehicleCardActions({ vehicleId }: { vehicleId: string }) {
+export function VehicleCardActions({ vehicleSlug }: { vehicleSlug: string }) {
   const [saved, setSaved] = useState(false);
   const [compared, setCompared] = useState(false);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     const sync = () => {
-      setSaved(readIds(SAVED_KEY).includes(vehicleId));
-      setCompared(readIds(COMPARE_KEY).includes(vehicleId));
+      setSaved(readIds(SAVED_KEY).includes(vehicleSlug));
+      setCompared(readIds(COMPARE_KEY).includes(vehicleSlug));
     };
     sync();
     window.addEventListener("storage", sync);
@@ -36,20 +36,20 @@ export function VehicleCardActions({ vehicleId }: { vehicleId: string }) {
       window.removeEventListener("storage", sync);
       window.removeEventListener("ritewheel-local-collection-updated", sync);
     };
-  }, [vehicleId]);
+  }, [vehicleSlug]);
 
   function toggleSaved() {
     const ids = readIds(SAVED_KEY);
-    const next = ids.includes(vehicleId) ? ids.filter((id) => id !== vehicleId) : [...ids, vehicleId];
+    const next = ids.includes(vehicleSlug) ? ids.filter((id) => id !== vehicleSlug) : [...ids, vehicleSlug];
     writeIds(SAVED_KEY, next);
-    setSaved(next.includes(vehicleId));
-    setMessage(next.includes(vehicleId) ? "Saved to My Garage on this device." : "Removed from My Garage.");
+    setSaved(next.includes(vehicleSlug));
+    setMessage(next.includes(vehicleSlug) ? "Saved to My Garage on this device." : "Removed from My Garage.");
   }
 
   function toggleCompare() {
     const ids = readIds(COMPARE_KEY);
-    if (ids.includes(vehicleId)) {
-      const next = ids.filter((id) => id !== vehicleId);
+    if (ids.includes(vehicleSlug)) {
+      const next = ids.filter((id) => id !== vehicleSlug);
       writeIds(COMPARE_KEY, next);
       setCompared(false);
       setMessage("Removed from comparison.");
@@ -59,7 +59,7 @@ export function VehicleCardActions({ vehicleId }: { vehicleId: string }) {
       setMessage("You can compare up to three vehicles at a time.");
       return;
     }
-    const next = [...ids, vehicleId];
+    const next = [...ids, vehicleSlug];
     writeIds(COMPARE_KEY, next);
     setCompared(true);
     setMessage("Added to comparison.");
