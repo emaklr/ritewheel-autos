@@ -21,7 +21,7 @@ function readIds(key: string): string[] {
 }
 
 export function LocalVehicleCollection({ mode }: { mode: Mode }) {
-  const [ids, setIds] = useState<string[]>([]);
+  const [slugs, setIds] = useState<string[]>([]);
   const [vehicles, setVehicles] = useState<VehicleSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -39,14 +39,14 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
 
   useEffect(() => {
     const controller = new AbortController();
-    if (ids.length === 0) {
+    if (slugs.length === 0) {
       setVehicles([]);
       setLoading(false);
       setError("");
       return () => controller.abort();
     }
     setLoading(true);
-    fetch(`/api/vehicles?ids=${encodeURIComponent(ids.join(","))}`, { signal: controller.signal })
+    fetch(`/api/vehicles?slugs=${encodeURIComponent(slugs.join(","))}`, { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error("Vehicles could not be loaded.");
         return response.json() as Promise<{ items: VehicleSummary[] }>;
@@ -61,10 +61,10 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
       })
       .finally(() => setLoading(false));
     return () => controller.abort();
-  }, [ids]);
+  }, [slugs]);
 
   function remove(id: string) {
-    const next = ids.filter((value) => value !== id);
+    const next = slugs.filter((value) => value !== slug);
     window.localStorage.setItem(KEYS[mode], JSON.stringify(next));
     window.dispatchEvent(new Event("ritewheel-local-collection-updated"));
     setIds(next);
@@ -87,7 +87,7 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
         <Link href="/inventory" className="button button-outline button-small">Explore inventory</Link>
       </div>
       {loading ? <p className="collection-message">Loading your vehicles…</p> : null}
-      {error ? <p className="collection-message">{error} <button type="button" onClick={() => setIds([...ids])}>Retry</button></p> : null}
+      {error ? <p className="collection-message">{error} <button type="button" onClick={() => setIds([...slugs])}>Retry</button></p> : null}
       {!loading && !error && vehicles.length === 0 ? (
         <div className="empty-state">
           <h3>{isSaved ? "Your Garage is ready." : "Nothing to compare yet."}</h3>
@@ -98,7 +98,7 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
       {vehicles.length > 0 ? (
         <div className={isSaved ? "vehicle-grid" : "comparison-grid"}>
           {vehicles.map((vehicle) => (
-            <article key={vehicle.id} className="collection-card">
+            <article key={vehicle.slug} className="collection-card">
               <Link href={`/vehicles/${vehicle.slug}`} className="collection-card-title">
                 <span>{vehicle.year} · {vehicle.bodyType}</span>
                 <strong>{vehicle.make} {vehicle.model}</strong>
@@ -111,7 +111,7 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
                 <span>{vehicle.price === null ? "Price on request" : new Intl.NumberFormat("en-NG", { style: "currency", currency: vehicle.currency, maximumFractionDigits: 0 }).format(vehicle.price)}</span>
                 {vehicle.isDemo ? <small>Demo listing · Illustrative data</small> : null}
               </div>
-              <button type="button" className="mini-action" onClick={() => remove(vehicle.id)}>Remove</button>
+              <button type="button" className="mini-action" onClick={() => remove(vehicle.slug)}>Remove</button>
             </article>
           ))}
         </div>
