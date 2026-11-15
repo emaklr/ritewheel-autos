@@ -802,7 +802,7 @@ The homepage is approved as a visual direction for implementation once this docu
 The Inventory screen is specified in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md#5-screen-2--inventory).
 
 Approved direction:
-- Use a compact title/intro rather than a second full-size cinematic hero.
+- Use a compact panoramic vehicle banner and title rather than a second full-size cinematic hero.
 - Desktop filter sidebar and three-column vehicle grid on wide screens.
 - Search and sort above results; filters remain shareable through URL parameters.
 - Default to 12 records per server-paginated result page.
@@ -815,3 +815,8 @@ Approved direction:
 - Currency-specific price filters must not mix NGN, USD, or other currencies.
 
 These decisions are the V1 implementation contract and are subject to the same performance budget as the homepage.
+
+
+### 23.1 Inventory visual selection and AI visibility
+
+The selected second inventory concept is the visual reference for its compact panoramic banner, filter sidebar, search/sort toolbar, and vehicle-card composition. Its permanently visible right-hand AI chat column is intentionally excluded. The vehicle grid uses that space; AI is available through a small floating launcher and opens an on-demand drawer only after a customer clicks it. The launcher must not cover vehicle cards, pagination, or important mobile controls. AI UI and model code are not loaded before the drawer is opened.
