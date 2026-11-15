@@ -1456,10 +1456,13 @@ Component APIs should use typed data models and should not embed database calls.
 | Design Studio | `/studio/[slug]` | Vehicle-specific options and preview asset mapping |
 | About | `/about` | Configured dealership profile and curated copy |
 | Contact | `/contact` | Configured contact details and enquiry form |
+| Admin login | `/admin/login` | Admin authentication |
 | Admin overview | `/admin` | Authenticated database aggregates |
 | Admin inventory | `/admin/vehicles` | Authenticated vehicle records |
 | Admin enquiries | `/admin/enquiries` | Authenticated enquiries |
 | Admin test drives | `/admin/test-drives` | Authenticated test-drive requests |
+| Admin sourcing | `/admin/sourcing-requests` | Authenticated sourcing request queue |
+| Admin settings | `/admin/settings` | Authenticated public dealership/contact settings |
 
 ## 14. Main customer journey
 
