@@ -14,6 +14,14 @@ const querySchema = z.object({
   sort: z.enum(["newest", "price-low", "price-high"]).default("newest"),
   page: z.coerce.number().int().min(1).max(1000).default(1),
   pageSize: z.coerce.number().int().min(1).max(24).default(12),
+}).superRefine((filters, context) => {
+  if ((filters.maxBudget !== undefined || filters.sort !== "newest") && !filters.currency) {
+    context.addIssue({
+      code: "custom",
+      path: ["currency"],
+      message: "Select a currency before filtering or sorting by price.",
+    });
+  }
 });
 
 export async function GET(request: Request) {
