@@ -4,7 +4,7 @@
 
 Ritewheel Autos is a premium automotive marketplace concept that combines a photography-led dealership experience with an AI-powered car concierge and an interactive vehicle Design Studio.
 
-The goal is to make finding a car feel less like searching through a spreadsheet and more like working with a knowledgeable personal car advisor.
+The goal is to make finding a car feel less like searching through a spreadsheet and more like working with a knowledgeable personal car advisor. The complete customer journey, My Garage concept, sourcing requests, human dealership workflow and release roadmap are documented in [docs/PRODUCT_EXPERIENCE.md](./docs/PRODUCT_EXPERIENCE.md). The future quote, reservation and payment architecture is documented in [docs/PAYMENTS_AND_TRANSACTIONS.md](./docs/PAYMENTS_AND_TRANSACTIONS.md).
 
 > **Project status:** Architecture and product scope defined. The first public implementation is planned; features described here should not be treated as already shipped.
 
@@ -162,30 +162,30 @@ The initial catalogue will use clearly identified demonstration vehicle data and
 
 Every recommendation must be backed by a vehicle record. Every Design Studio option must be enabled for the selected vehicle. A test-drive submission is a request until an administrator accepts it.
 
-## V1 boundaries
+## Release boundaries
 
-To keep the first release achievable, V1 does not include:
+**Release 1:** Public marketplace, AI Concierge, asset-backed Design Studio, guest/local Garage, enquiries, test-drive and sourcing requests, and basic dealership request queues. No required customer account or online payment processing.
 
-- Online payment or checkout.
-- Financing approval or credit checks.
-- Multi-dealership tenancy.
-- Customer social accounts or public reviews.
-- Live manufacturer inventory feeds.
-- Generative image editing or 3D vehicle rendering.
+**Release 2:** Customer accounts, synchronised My Garage, saved recommendations, preferences, notifications, staff roles, lead assignment and CRM activity.
 
-These can be considered after the main marketplace and customer journey are working reliably.
+**Release 3:** Versioned quotations, vehicle reservation holds, deposit/full/balance obligations, hosted checkout, verified webhooks, refunds, transaction records, reconciliation and handover tracking.
+
+Payment architecture is designed now; live payments are implemented in Release 3 after accounts and sales workflows are stable. Provider selection remains open pending due diligence.
+
+Financing approval, multi-dealership tenancy, live external inventory feeds and generative image/3D rendering remain outside these releases unless separately approved.
 
 ## Delivery roadmap
 
-- [ ] **Phase 1:** Consolidate repository, build the premium storefront, inventory, vehicle detail, database, enquiries, test-drive requests, and admin portal.
-- [ ] **Phase 2:** Add the AI Concierge with read-only inventory tools, grounded recommendations, and vehicle comparison.
-- [ ] **Phase 3:** Add the vehicle Design Studio, preview assets, AI option mapping, and saved builds.
-- [ ] **Release:** Test the public customer journey, protect admin routes, verify deployment, and publish the live portfolio URL.
+- [ ] **Release 1:** Public marketplace, AI Concierge, Design Studio, guest/local Garage, enquiry/test-drive/sourcing intake and basic admin queues.
+- [ ] **Release 2:** Customer accounts, persistent My Garage, notifications, sales roles, lead assignment and CRM.
+- [ ] **Release 3:** Quotes, reservations, hosted payment gateway, webhook verification, refunds, reconciliation and purchase handover.
 
 ## Project links
 
 - GitHub: [emaklr/ritewheel-autos](https://github.com/emaklr/ritewheel-autos)
 - Product architecture: [ARCHITECTURE.md](./ARCHITECTURE.md)
+- Product experience: [docs/PRODUCT_EXPERIENCE.md](./docs/PRODUCT_EXPERIENCE.md)
+- Payments and transactions: [docs/PAYMENTS_AND_TRANSACTIONS.md](./docs/PAYMENTS_AND_TRANSACTIONS.md)
 
 ---
 
