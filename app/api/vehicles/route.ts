@@ -17,18 +17,25 @@ const querySchema = z.object({
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const idsRaw = url.searchParams.get("ids");
-  if (idsRaw !== null) {
-    const ids = idsRaw.split(",").map((id) => id.trim()).filter(Boolean);
-    if (ids.length > 3 || ids.some((id) => id.length > 40)) {
-      return NextResponse.json({ error: "A maximum of three valid vehicle IDs can be requested." }, { status: 400 });
+  const slugsRaw = url.searchParams.get("slugs");
+
+  if (slugsRaw !== null) {
+    const slugs = slugsRaw.split(",").map((slug) => slug.trim()).filter(Boolean);
+
+    if (
+      slugs.length > 50 ||
+      slugs.some((slug) => !/^[a-z0-9-]{3,100}$/.test(slug)) ||
+      new Set(slugs).size !== slugs.length
+    ) {
+      return NextResponse.json({ error: "A maximum of fifty unique valid vehicle slugs can be requested." }, { status: 400 });
     }
+
     try {
-      return NextResponse.json(await getVehiclesByIds(ids), {
+      return NextResponse.json(await getVehiclesBySlugs(slugs), {
         headers: { "Cache-Control": "private, no-store" },
       });
     } catch (error) {
-      console.error("Vehicle lookup failed:", error instanceof Error ? error.message : "Unknown error");
+      console.error("Saved vehicle lookup failed:", error instanceof Error ? error.message : "Unknown error");
       return NextResponse.json({ error: "Vehicles could not be loaded." }, { status: 503 });
     }
   }
