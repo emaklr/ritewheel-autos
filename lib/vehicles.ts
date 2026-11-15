@@ -132,3 +132,35 @@ export async function getVehicleBySlug(slug: string): Promise<{ vehicle: Vehicle
   });
   return { vehicle: record ? mapVehicle(record) : null, isDemoMode: false };
 }
+
+/**
+ * Resolve a guest Garage/Compare collection from stable public slugs.
+ * Only currently published public records are returned; order follows the
+ * customer's saved selection, and sold listings remain visible as history.
+ */
+export async function getVehiclesBySlugs(slugs: string[]): Promise<{ items: VehicleSummary[]; isDemoMode: boolean }> {
+  if (slugs.length === 0) return { items: [], isDemoMode: !databaseConfigured || !prisma };
+
+  if (!databaseConfigured || !prisma) {
+    const bySlug = new Map(demoVehicles.map((vehicle) => [vehicle.slug, vehicle]));
+    return {
+      items: slugs.map((slug) => bySlug.get(slug)).filter((vehicle): vehicle is VehicleSummary => Boolean(vehicle)),
+      isDemoMode: true
+    };
+  }
+
+  const records = await prisma.vehicle.findMany({
+    where: {
+      slug: { in: slugs },
+      publishedAt: { not: null },
+      status: { in: ["AVAILABLE", "RESERVED", "SOLD"] }
+    },
+    include: { images: { orderBy: { sortOrder: "asc" } } }
+  });
+
+  const bySlug = new Map(records.map((record) => [record.slug, mapVehicle(record)]));
+  return {
+    items: slugs.map((slug) => bySlug.get(slug)).filter((vehicle): vehicle is VehicleSummary => Boolean(vehicle)),
+    isDemoMode: false
+  };
+}

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { VehicleSummary } from "@/lib/vehicles";
+import { VehicleCardActions } from "@/components/vehicle-card-actions";
 import { formatPrice, vehicleTitle } from "@/lib/format";
 
 export function VehicleCard({ vehicle }: { vehicle: VehicleSummary }) {
@@ -20,6 +21,7 @@ export function VehicleCard({ vehicle }: { vehicle: VehicleSummary }) {
         <div className="vehicle-spec-line">{[vehicle.bodyType, vehicle.transmission, vehicle.fuelType].filter(Boolean).join(" · ") || "Vehicle details available"}</div>
         <div className="vehicle-card-bottom"><span className="vehicle-price">{formatPrice(vehicle)}</span><Link href={"/vehicles/" + vehicle.slug} className="text-link">View details <span aria-hidden="true">↗</span></Link></div>
       </div>
+      <div className="vehicle-card-action-wrap"><VehicleCardActions vehicleSlug={vehicle.slug} /></div>
     </article>
   );
 }

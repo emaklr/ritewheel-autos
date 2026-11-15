@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { formatPrice, vehicleTitle } from "@/lib/format";
+import { VehicleCardActions } from "@/components/vehicle-card-actions";
 import { getVehicleBySlug } from "@/lib/vehicles";
 
 export const dynamic = "force-dynamic";
@@ -55,6 +56,7 @@ export default async function VehicleDetailPage({ params }: { params: Promise<{ 
             <div className="detail-price"><strong>{formatPrice(vehicle)}</strong><span>Displayed in {vehicle.currency}. Final terms require dealership confirmation.</span></div>
             <div className="detail-specs">{availableFacts.slice(0, 4).map(([label, value]) => <div className="detail-spec" key={label}><span>{label}</span><strong>{value}</strong></div>)}</div>
             <div className="detail-actions"><Link href={"/contact?vehicle=" + encodeURIComponent(vehicle.slug)} className="button button-gold">Enquire about this vehicle</Link><Link href="/inventory" className="button button-outline">Continue browsing</Link></div>
+            <VehicleCardActions vehicleSlug={vehicle.slug} />
             <p className="detail-meta detail-action-note">An enquiry does not reserve the vehicle or lock its price.</p>
           </aside>
         </section>

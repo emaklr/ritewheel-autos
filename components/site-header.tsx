@@ -28,6 +28,8 @@ export function SiteHeader({ active = "" }: { active?: string }) {
           ))}
         </nav>
         <div className="header-actions">
+          <Link href="/garage" className="header-shortcut">My Garage</Link>
+          <Link href="/compare" className="header-shortcut header-compare">Compare</Link>
           <Link href="/contact" className="button button-gold button-small">Get in touch</Link>
           <button type="button" className="mobile-menu-button" aria-label={menuOpen ? "Close menu" : "Open menu"} aria-expanded={menuOpen} onClick={() => setMenuOpen((value) => !value)}>
             <span></span><span></span>
@@ -41,6 +43,8 @@ export function SiteHeader({ active = "" }: { active?: string }) {
               {link.label}
             </Link>
           ))}
+          <Link href="/garage" className="nav-link" onClick={() => setMenuOpen(false)}>My Garage</Link>
+          <Link href="/compare" className="nav-link" onClick={() => setMenuOpen(false)}>Compare vehicles</Link>
           <Link href="/contact" className="button button-gold" onClick={() => setMenuOpen(false)}>Get in touch</Link>
         </nav>
       )}

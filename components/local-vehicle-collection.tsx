@@ -1,0 +1,124 @@
+"use client";
+
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import type { VehicleSummary } from "@/lib/vehicles";
+import { formatPrice, vehicleTitle } from "@/lib/format";
+
+type Mode = "saved" | "compare";
+const KEYS = { saved: "ritewheel.garage.saved.v1", compare: "ritewheel.compare.v1" } as const;
+
+function readSlugs(key: string): string[] {
+  try {
+    const value: unknown = JSON.parse(window.localStorage.getItem(key) ?? "[]");
+    return Array.isArray(value)
+      ? [...new Set(value.filter((item): item is string => typeof item === "string"))].slice(0, 50)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+export function LocalVehicleCollection({ mode }: { mode: Mode }) {
+  const [slugs, setSlugs] = useState<string[]>([]);
+  const [vehicles, setVehicles] = useState<VehicleSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const sync = () => setSlugs(readSlugs(KEYS[mode]));
+    sync();
+    window.addEventListener("storage", sync);
+    window.addEventListener("ritewheel-local-collection-updated", sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener("ritewheel-local-collection-updated", sync);
+    };
+  }, [mode]);
+
+  useEffect(() => {
+    const controller = new AbortController();
+    if (slugs.length === 0) {
+      setVehicles([]);
+      setLoading(false);
+      setError("");
+      return () => controller.abort();
+    }
+    setLoading(true);
+    fetch("/api/v1/vehicles?slugs=" + encodeURIComponent(slugs.join(",")), { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Vehicles could not be loaded.");
+        return response.json() as Promise<{ items: VehicleSummary[] }>;
+      })
+      .then((data) => {
+        setVehicles(data.items);
+        setError("");
+      })
+      .catch((reason: unknown) => {
+        if (reason instanceof Error && reason.name === "AbortError") return;
+        setError(reason instanceof Error ? reason.message : "Something went wrong.");
+      })
+      .finally(() => setLoading(false));
+    return () => controller.abort();
+  }, [slugs]);
+
+  function remove(slug: string) {
+    const next = slugs.filter((item) => item !== slug);
+    window.localStorage.setItem(KEYS[mode], JSON.stringify(next));
+    window.dispatchEvent(new Event("ritewheel-local-collection-updated"));
+    setSlugs(next);
+  }
+
+  const savedMode = mode === "saved";
+  return (
+    <section className="local-collection">
+      <div className="section-heading">
+        <div>
+          <span className="eyebrow">{savedMode ? "YOUR SHORTLIST" : "MAKE A CONFIDENT CHOICE"}</span>
+          <h1>{savedMode ? "My Garage" : "Compare vehicles"}</h1>
+          <p>{savedMode
+            ? "Your saved vehicles, kept on this browser. Account synchronisation will arrive in a later release."
+            : "Review up to three vehicles side by side. Your comparison is stored on this browser."}</p>
+        </div>
+        <Link href="/inventory" className="button button-outline button-small">Explore inventory</Link>
+      </div>
+
+      {loading && <p className="collection-message">Loading your vehicles…</p>}
+      {error && <p className="collection-message" role="alert">{error} <button type="button" onClick={() => setSlugs([...slugs])}>Retry</button></p>}
+
+      {!loading && !error && vehicles.length === 0 && (
+        <div className="empty-state">
+          <h2>{savedMode ? "Your Garage is ready." : "Nothing to compare yet."}</h2>
+          <p>{savedMode
+            ? "Save a vehicle from the catalogue and it will appear here."
+            : "Choose up to three vehicles from Inventory to compare their details."}</p>
+          <Link href="/inventory" className="button button-gold">Browse vehicles →</Link>
+        </div>
+      )}
+
+      {vehicles.length > 0 && (
+        <div className={savedMode ? "vehicle-grid" : "comparison-grid"}>
+          {vehicles.map((vehicle) => (
+            <article key={vehicle.slug} className="collection-card">
+              <Link href={"/vehicles/" + vehicle.slug} className="collection-card-title">
+                <span>{vehicle.year} · {vehicle.bodyType}</span>
+                <strong>{vehicleTitle(vehicle)}</strong>
+              </Link>
+              <div className="collection-card-details">
+                <span>{vehicle.condition ?? "Condition not provided"}</span>
+                <span>{vehicle.transmission ?? "Transmission not provided"}</span>
+                <span>{vehicle.fuelType ?? "Fuel not provided"}</span>
+                <span>{vehicle.seats ? vehicle.seats + " seats" : "Seating not provided"}</span>
+                <span>{formatPrice(vehicle)}</span>
+                {vehicle.isDemo && <small>Demo listing · Illustrative data</small>}
+              </div>
+              {vehicle.status !== "AVAILABLE" && <span className="badge badge-reserved">{vehicle.status}</span>}
+              <button type="button" className="mini-action" onClick={() => remove(vehicle.slug)}>Remove</button>
+            </article>
+          ))}
+        </div>
+      )}
+      <p className="demo-notice">Guest Garage and comparison are local to this browser in Release 1. Clearing browser storage or using another device will not preserve these items. Sold or unavailable listings remain visible when still public.</p>
+    </section>
+  );
+}

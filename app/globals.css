@@ -279,3 +279,40 @@ img { display: block; max-width: 100%; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
 }
+
+/* Guest Garage and Compare */
+.header-shortcut { color: var(--muted); font-size: 11px; font-weight: 700; white-space: nowrap; }
+.header-shortcut:hover { color: var(--gold); }
+.vehicle-card-action-wrap { padding: 0 18px 17px; }
+.vehicle-card-actions { display: flex; flex-wrap: wrap; gap: 8px; padding-top: 13px; border-top: 1px solid var(--border); }
+.mini-action {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  min-height: 34px; padding: 0 11px; border: 1px solid var(--border-strong);
+  border-radius: 6px; color: var(--muted); background: #101313; cursor: pointer;
+  font-size: 10px; font-weight: 700; transition: border-color .18s ease, color .18s ease;
+}
+.mini-action:hover, .mini-action.is-active { border-color: rgba(245,160,0,.5); color: var(--gold); }
+.mini-action span { font-size: 14px; }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+.collection-page { padding-top: 58px; padding-bottom: 80px; }
+.local-collection .section-heading { align-items: end; }
+.local-collection .section-heading h1 { margin: 10px 0 0; font-size: clamp(32px,4vw,46px); letter-spacing: -.05em; }
+.local-collection .section-heading p { max-width: 620px; }
+.collection-message { padding: 18px 0; color: var(--muted); font-size: 13px; }
+.collection-message button { color: var(--gold); background: transparent; border: 0; cursor: pointer; text-decoration: underline; }
+.collection-card { display: flex; flex-direction: column; gap: 14px; padding: 20px; border: 1px solid var(--border); border-radius: 11px; background: var(--surface); }
+.collection-card-title { display: grid; gap: 6px; }
+.collection-card-title > span { color: var(--gold); font-size: 10px; text-transform: uppercase; letter-spacing: .1em; }
+.collection-card-title strong { font-size: 17px; line-height: 1.3; }
+.collection-card-details { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; color: var(--muted); font-size: 11px; }
+.collection-card-details > span:last-of-type { color: var(--ivory); font-weight: 750; }
+.collection-card-details small { grid-column: 1 / -1; color: #ffd78b; }
+.comparison-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; }
+.demo-notice { margin-top: 25px; color: var(--subtle); font-size: 11px; line-height: 1.7; }
+.badge-reserved { display: inline-flex; width: fit-content; padding: 6px 9px; border: 1px solid rgba(245,160,0,.35); border-radius: 5px; color: #ffd78b; background: rgba(245,160,0,.08); font-size: 10px; }
+@media (max-width: 800px) {
+  .header-shortcut { display: none; }
+  .comparison-grid { grid-template-columns: 1fr; }
+  .local-collection .section-heading { align-items: start; }
+  .vehicle-card-action-wrap { padding-inline: 16px; }
+}
