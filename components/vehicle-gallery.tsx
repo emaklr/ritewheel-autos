@@ -31,8 +31,12 @@ export function VehicleGallery({ images, badge }: Props) {
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") setLightboxOpen(false);
-      if (event.key === "ArrowLeft" && images.length > 1) showPrevious();
-      if (event.key === "ArrowRight" && images.length > 1) showNext();
+      if (event.key === "ArrowLeft" && images.length > 1) {
+        setActiveIndex((current) => (current - 1 + images.length) % images.length);
+      }
+      if (event.key === "ArrowRight" && images.length > 1) {
+        setActiveIndex((current) => (current + 1) % images.length);
+      }
     }
 
     window.addEventListener("keydown", handleKeyDown);
