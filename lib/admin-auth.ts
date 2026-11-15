@@ -44,12 +44,6 @@ export async function clearAdminSessionCookie(response: NextResponse): Promise<v
   const cookieStore = await cookies();
   const token = cookieStore.get(ADMIN_COOKIE)?.value;
 
-  if (token && /^[A-Za-z0-9_-]{40,60}$/.test(token)) {
-    await getPrismaClient().adminSession.deleteMany({
-      where: { tokenHash: hashSessionToken(token) },
-    });
-  }
-
   response.cookies.set({
     name: ADMIN_COOKIE,
     value: "",
@@ -59,6 +53,12 @@ export async function clearAdminSessionCookie(response: NextResponse): Promise<v
     path: "/",
     maxAge: 0,
   });
+
+  if (token && /^[A-Za-z0-9_-]{40,60}$/.test(token)) {
+    await getPrismaClient().adminSession.deleteMany({
+      where: { tokenHash: hashSessionToken(token) },
+    });
+  }
 }
 
 export async function getCurrentAdmin() {
