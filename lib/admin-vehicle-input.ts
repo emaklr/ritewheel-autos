@@ -25,7 +25,7 @@ export const adminVehicleInputSchema = z.object({
   year: z.number().int().min(1886).max(2100),
   bodyType: z.string().trim().min(2).max(40),
   description: z.string().trim().min(10).max(4_000),
-  price: z.string().regex(/^\d{1,14}(\.\d{1,2})?$/, "Enter a valid price or leave it blank.").nullable(),
+  price: z.string().regex(/^\d{1,14}(\.\d{1,2})?$/, "Enter a valid price or leave it blank.").nullable().refine((value) => value === null || Number(value) > 0, "Price must be greater than zero."),
   currency: z.enum(currencies),
   condition: z.string().trim().min(2).max(60),
   mileage: z.number().int().min(0).max(2_000_000).nullable(),
