@@ -25,7 +25,7 @@ function readSlugs(key: string): string[] {
 export function LocalVehicleCollection({ mode }: { mode: Mode }) {
   const [slugs, setSlugs] = useState<string[]>([]);
   const [vehicles, setVehicles] = useState<VehicleSummary[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loadedKey, setLoadedKey] = useState("");
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -39,31 +39,33 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
     };
   }, [mode]);
 
+  const currentKey = slugs.join(",");
+  const isLoading = currentKey.length > 0 && loadedKey !== currentKey;
+  const currentVehicles = currentKey.length > 0 && loadedKey === currentKey ? vehicles : [];
+  const currentError = loadedKey === currentKey ? error : "";
+
   useEffect(() => {
+    if (slugs.length === 0) return;
+
     const controller = new AbortController();
+    const key = slugs.join(",");
 
-    if (slugs.length === 0) {
-      setVehicles([]);
-      setLoading(false);
-      setError("");
-      return () => controller.abort();
-    }
-
-    setLoading(true);
-    fetch(`/api/vehicles?slugs=${encodeURIComponent(slugs.join(","))}`, { signal: controller.signal })
+    fetch(`/api/vehicles?slugs=${encodeURIComponent(key)}`, { signal: controller.signal })
       .then(async (response) => {
         if (!response.ok) throw new Error("Vehicles could not be loaded.");
         return response.json() as Promise<{ items: VehicleSummary[] }>;
       })
       .then((data) => {
+        if (controller.signal.aborted) return;
         setVehicles(data.items);
         setError("");
+        setLoadedKey(key);
       })
       .catch((reason: unknown) => {
-        if (reason instanceof Error && reason.name === "AbortError") return;
+        if (controller.signal.aborted || (reason instanceof Error && reason.name === "AbortError")) return;
         setError(reason instanceof Error ? reason.message : "Something went wrong.");
-      })
-      .finally(() => setLoading(false));
+        setLoadedKey(key);
+      });
 
     return () => controller.abort();
   }, [slugs]);
@@ -73,6 +75,12 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
     window.localStorage.setItem(KEYS[mode], JSON.stringify(next));
     window.dispatchEvent(new Event("ritewheel-local-collection-updated"));
     setSlugs(next);
+  }
+
+  function retry() {
+    setLoadedKey("");
+    setError("");
+    setSlugs([...slugs]);
   }
 
   const isSaved = mode === "saved";
@@ -90,14 +98,14 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
         <Link href="/inventory" className="button button-outline button-small">Explore inventory</Link>
       </div>
 
-      {loading ? <p className="collection-message">Loading your vehicles…</p> : null}
-      {error ? (
+      {isLoading ? <p className="collection-message">Loading your vehicles…</p> : null}
+      {currentError ? (
         <p className="collection-message">
-          {error} <button type="button" onClick={() => setSlugs([...slugs])}>Retry</button>
+          {currentError} <button type="button" onClick={retry}>Retry</button>
         </p>
       ) : null}
 
-      {!loading && !error && vehicles.length === 0 ? (
+      {!isLoading && !currentError && currentVehicles.length === 0 ? (
         <div className="empty-state">
           <h3>{isSaved ? "Your Garage is ready." : "Nothing to compare yet."}</h3>
           <p>{isSaved
@@ -107,9 +115,9 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
         </div>
       ) : null}
 
-      {vehicles.length > 0 ? (
+      {currentVehicles.length > 0 ? (
         <div className={isSaved ? "vehicle-grid" : "comparison-grid"}>
-          {vehicles.map((vehicle) => (
+          {currentVehicles.map((vehicle) => (
             <article key={vehicle.slug} className="collection-card">
               <Link href={`/vehicles/${vehicle.slug}`} className="collection-card-title">
                 <span>{vehicle.year} · {vehicle.bodyType}</span>
