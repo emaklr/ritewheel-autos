@@ -753,3 +753,144 @@ img { display: block; max-width: 100%; }
   .admin-form-actions { flex-direction:column-reverse; }
   .admin-form-actions .button { width:100%; }
 }
+
+
+/* Release 1 enquiry management */
+.admin-enquiry-customer,
+.admin-enquiry-vehicle {
+  display: grid;
+  gap: 3px;
+  min-width: 185px;
+}
+.admin-enquiry-customer strong,
+.admin-enquiry-vehicle strong {
+  color: #f0f1ec;
+  font-size: 11px;
+  font-weight: 700;
+}
+.admin-enquiry-customer small,
+.admin-enquiry-vehicle small {
+  color: #929b94;
+  font-size: 9px;
+  overflow-wrap: anywhere;
+}
+.admin-enquiry-detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.25fr) minmax(280px, .75fr);
+  gap: 16px;
+  align-items: start;
+}
+.admin-detail-side {
+  display: grid;
+  gap: 16px;
+}
+.admin-detail-panel {
+  min-width: 0;
+  padding: 21px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #121716;
+}
+.admin-detail-panel h2 {
+  margin: 7px 0 15px;
+  font-size: 17px;
+  letter-spacing: -.03em;
+}
+.admin-detail-panel-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--line);
+}
+.admin-detail-panel-heading h2 { margin-bottom: 0; }
+.admin-detail-date {
+  color: #929b94;
+  font-size: 10px;
+  text-align: right;
+}
+.admin-enquiry-message {
+  min-height: 110px;
+  padding: 20px 0;
+  color: #d0d6d0;
+  font-size: 13px;
+  line-height: 1.85;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.admin-detail-meta {
+  display: grid;
+  grid-template-columns: 110px minmax(0, 1fr);
+  gap: 10px 14px;
+  padding-top: 15px;
+  border-top: 1px solid var(--line);
+  font-size: 10px;
+}
+.admin-detail-meta span,
+.admin-contact-detail span { color: #89938c; }
+.admin-detail-meta strong {
+  color: #d8ded8;
+  font-weight: 650;
+}
+.admin-contact-detail {
+  display: grid;
+  gap: 5px;
+  margin-top: 14px;
+  font-size: 11px;
+}
+.admin-contact-detail a {
+  color: var(--gold-light);
+  overflow-wrap: anywhere;
+}
+.admin-contact-detail strong {
+  color: #c5ccc6;
+  font-weight: 550;
+}
+.admin-status-editor {
+  display: grid;
+  gap: 12px;
+}
+.admin-status-editor .button { width: 100%; }
+.admin-status-feedback {
+  margin: 0;
+  color: #f0aaa4;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.admin-status-feedback.is-success { color: #8fd4ad; }
+.admin-detail-vehicle-meta {
+  margin: 6px 0;
+  color: #aab3ac;
+  font-size: 10px;
+  line-height: 1.6;
+}
+.admin-detail-panel .text-link { margin-top: 12px; }
+.admin-status-new {
+  color: #f0d08d;
+  border-color: rgba(245,160,0,.28);
+  background: rgba(245,160,0,.075);
+}
+.admin-status-contacted {
+  color: #a9c9e8;
+  border-color: rgba(104,159,208,.28);
+  background: rgba(104,159,208,.075);
+}
+.admin-status-qualified {
+  color: #a9d8c1;
+  border-color: rgba(61,187,129,.28);
+  background: rgba(61,187,129,.075);
+}
+.admin-status-closed,
+.admin-status-spam {
+  color: #a0aaa3;
+  border-color: rgba(150,160,153,.22);
+  background: rgba(150,160,153,.055);
+}
+@media (max-width: 760px) {
+  .admin-sidebar-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .admin-enquiry-detail-grid { grid-template-columns: 1fr; }
+  .admin-detail-panel { padding: 17px; }
+  .admin-detail-panel-heading { flex-direction: column; }
+  .admin-detail-date { text-align: left; }
+}
