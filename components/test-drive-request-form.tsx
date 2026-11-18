@@ -71,8 +71,6 @@ export function TestDriveRequestForm({ vehicleSlug }: { vehicleSlug: string }) {
     );
   }
 
-  const localToday = new Date(Date.now() - new Date().getTimezoneOffset() * 60_000).toISOString().slice(0, 10);
-
   return (
     <form className="contact-form test-drive-form" onSubmit={handleSubmit}>
       <label className="field">
@@ -93,7 +91,7 @@ export function TestDriveRequestForm({ vehicleSlug }: { vehicleSlug: string }) {
       <div className="test-drive-fields-grid">
         <label className="field">
           <span>Preferred date</span>
-          <input name="preferredDate" type="date" required min={localToday} />
+          <input name="preferredDate" type="date" required />
         </label>
         <label className="field">
           <span>Preferred time (WAT)</span>
