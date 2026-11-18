@@ -5,6 +5,7 @@ const links = [
   { href: "/inventory", label: "Inventory" },
   { href: "/concierge", label: "AI Concierge" },
   { href: "/studio", label: "Design Studio" },
+  { href: "/source-vehicle", label: "Source a vehicle" },
   { href: "/about", label: "About" },
 ];
 
