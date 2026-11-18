@@ -19,6 +19,7 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 - Protected single-administrator sign-in using salted scrypt password hashes, opaque database-backed sessions and HttpOnly cookies.
 - Local-only administrator bootstrap command; no public administrator registration.
 - Database-derived admin overview and searchable/status-filtered inventory list.
+- Protected admin enquiry queue with search, status filtering, customer/vehicle details and audited status updates.
 - Vehicle create/edit, publication/status changes, price/currency, specifications, features and ordered image URL management.
 - Transactional vehicle/image writes and audit records for inventory changes.
 - Server-side Zod validation and admin-session checks on protected API mutations.
@@ -26,7 +27,7 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 - Browser-local My Garage and compare selection (maximum three vehicles).
 
 ### Not yet implemented
-- Admin enquiry, test-drive and sourcing-request queues and dealership settings.
+- Admin test-drive and sourcing-request queues and dealership settings.
 - Binary image uploads; inventory currently stores approved CDN/object-storage URLs or local asset paths.
 - Working Gemini AI Concierge and grounded inventory tools.
 - Interactive vehicle Design Studio and administration of vehicle-specific option sets.

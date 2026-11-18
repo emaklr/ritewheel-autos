@@ -7,6 +7,7 @@ import { useState } from "react";
 const navigation = [
   { href: "/admin", label: "Overview", icon: "⌂" },
   { href: "/admin/vehicles", label: "Inventory", icon: "▣" },
+  { href: "/admin/enquiries", label: "Enquiries", icon: "✉" },
 ];
 
 export function AdminShell({
