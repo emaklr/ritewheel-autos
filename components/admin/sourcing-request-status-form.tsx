@@ -39,7 +39,7 @@ export function SourcingRequestStatusForm({
   if (!supportedStatus) {
     return (
       <p className="admin-field-help">
-        This request is in the later-stage status "{statusLabel(initialStatus)}". Release 1 does not edit quote or purchase states here.
+        This request is in the later-stage status &quot;{statusLabel(initialStatus)}&quot;. Release 1 does not edit quote or purchase states here.
       </p>
     );
   }
