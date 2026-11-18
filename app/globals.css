@@ -966,3 +966,89 @@ img { display: block; max-width: 100%; }
   .admin-appointment-block { grid-template-columns:1fr; gap:5px; }
   .admin-appointment-block > strong { margin-bottom:7px; }
 }
+
+
+/* Release 1 vehicle sourcing request and review workspace */
+.sourcing-page .contact-page-layout { grid-template-columns:minmax(0,.8fr) minmax(420px,1.2fr); }
+.sourcing-back-link { display:inline-flex; margin-top:22px; }
+.sourcing-request-form { gap:22px; }
+.sourcing-form-section { display:grid; gap:15px; padding-bottom:19px; border-bottom:1px solid var(--line); }
+.sourcing-form-section:last-of-type { padding-bottom:0; border-bottom:0; }
+.sourcing-form-section-heading { display:grid; gap:4px; }
+.sourcing-form-section-heading p { margin:0; color:#89928c; font-size:10px; line-height:1.6; }
+.sourcing-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:14px; }
+.sourcing-field-wide { grid-column:1 / -1; }
+.sourcing-form-grid .field select,.sourcing-request-form .field select {
+  width:100%; min-height:47px; padding:11px 13px;
+  border:1px solid var(--line-strong); border-radius:8px;
+  color:var(--text); background:#202524;
+}
+.sourcing-request-form .button { margin-top:1px; }
+.admin-sourcing-table td { vertical-align:middle; }
+.admin-sourcing-closed-count { margin:-8px 0 18px; color:#929b94; font-size:10px; }
+.admin-status-reviewing { color:#c3d8e8; border-color:rgba(114,165,206,.28); background:rgba(114,165,206,.07); }
+.admin-status-sourcing { color:#e8c789; border-color:rgba(245,160,0,.25); background:rgba(245,160,0,.07); }
+.admin-status-match_found { color:#9dd9b9; border-color:rgba(61,187,129,.28); background:rgba(61,187,129,.08); }
+.admin-status-unavailable,.admin-status-declined { color:#f0aaa4; border-color:rgba(217,107,99,.28); background:rgba(217,107,99,.07); }
+.admin-status-cancelled,.admin-status-closed { color:#9ba49e; }
+.admin-sourcing-detail-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(280px,.8fr);
+  gap:17px;
+  align-items:start;
+}
+.admin-sourcing-facts {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:15px;
+}
+.admin-sourcing-facts > div {
+  display:grid;
+  gap:6px;
+  min-width:0;
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#171d1b;
+}
+.admin-sourcing-facts span,.admin-sourcing-text-block > span {
+  color:#929b94;
+  font-size:9px;
+  font-weight:750;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+}
+.admin-sourcing-facts strong {
+  color:#e0e4e0;
+  font-size:11px;
+  overflow-wrap:anywhere;
+}
+.admin-sourcing-text-block {
+  margin-top:13px;
+  padding:14px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  background:#171d1b;
+}
+.admin-sourcing-text-block p {
+  margin:8px 0 0;
+  color:#c4cbc6;
+  font-size:11px;
+  line-height:1.75;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+@media (max-width:1050px) {
+  .sourcing-page .contact-page-layout { grid-template-columns:minmax(0,.75fr) minmax(360px,1.25fr); gap:26px; }
+}
+@media (max-width:760px) {
+  .sourcing-page .contact-page-layout { grid-template-columns:1fr; }
+  .sourcing-form-grid { grid-template-columns:1fr; }
+  .sourcing-field-wide { grid-column:auto; }
+  .admin-sourcing-detail-grid { grid-template-columns:1fr; }
+  .admin-sourcing-facts { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:420px) {
+  .admin-sourcing-facts { grid-template-columns:1fr; }
+}
