@@ -6,9 +6,10 @@ type FormState = "idle" | "submitting" | "success" | "error";
 
 type Props = {
   vehicleSlug?: string;
+  initialMessage?: string;
 };
 
-export function EnquiryForm({ vehicleSlug }: Props) {
+export function EnquiryForm({ vehicleSlug, initialMessage }: Props) {
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
 
@@ -94,7 +95,8 @@ export function EnquiryForm({ vehicleSlug }: Props) {
 
       <label className="field">
         <span>How can we help?</span>
-        <textarea name="message" maxLength={2000} rows={5} placeholder="Tell us what you would like to know…" />
+        {initialMessage ? <p className="concierge-handover-prefill-note">You reviewed this Concierge handover summary. You can edit it before sending.</p> : null}
+        <textarea name="message" maxLength={2000} rows={5} defaultValue={initialMessage ?? ""} placeholder="Tell us what you would like to know…" />
       </label>
 
       <div className="enquiry-honeypot" aria-hidden="true">

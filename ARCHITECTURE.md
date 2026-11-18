@@ -964,6 +964,17 @@ The complete dashboard UI and workflow specification is in [docs/VISUAL_BLUEPRIN
 - `/admin/settings` is protected by the admin workspace layout. `PATCH /api/admin/settings` independently verifies the admin session and same-origin request, validates all fields, persists changes transactionally, writes an audit record containing changed field names (not the entered contact values), and revalidates the public layout.
 - Payment credentials, gateway secrets, staff accounts and complex business rules are explicitly outside Release 1 settings.
 
+## 34. Release 1 AI Concierge implementation
+
+- The dedicated `/concierge` route loads the client conversation workspace only on the Concierge page and streams replies from `POST /api/concierge` using the Vercel AI SDK and the Google Gemini provider (`gemini-3.8-flash`).
+- The server-side tool set is read-only: `searchVehicles`, `getVehicleDetails`, `compareVehicles` and `getVehicleOptions`. Each query is validated and resolves against published PostgreSQL vehicle records; search returns at most three listings and a database count.
+- A record with `isDemo=true` is always labelled as an illustration and is never described as real dealer stock. When the database or Gemini provider is unavailable, the UI displays a truthful fallback instead of simulated AI output.
+- The route bounds request size, conversation length, output tokens, tool steps, request time and per-process request frequency. It strips tool-result parts from subsequent model requests and removes common email/phone patterns from prompt text. Customer contact details are collected only in the normal contact/request forms, not as chat inputs.
+- Guest conversation display is stored in the current browser tab session only. No server-side conversation history or customer profile is created in Release 1.
+- Local Garage/Compare actions require explicit customer clicks. Human handover summaries are reviewed and edited before the normal enquiry form is shown; the full transcript is not shared. Sourcing opens the normal sourcing form with a few preference fields prefilled for customer review.
+- The Concierge has no write tools and cannot create or change vehicles, enquiries, test-drive bookings, sourcing records, quotes, reservations, purchases or payment records.
+
+
 
 ## 33. Enquiry persistence and vehicle gallery implementation
 
@@ -979,3 +990,4 @@ The initial customer enquiry workflow is implemented on the Release 1 branch as 
 - When `DATABASE_URL` is absent, the Contact page explains that submission is disabled; it does not pretend to accept or store requests.
 
 Vehicle Details now resolves all ordered VehicleImage records for its gallery. The lead image is prioritised, thumbnails load normally, and the full-screen viewer is only rendered after the customer opens it. Three small local demo photos are stored under `public/images/vehicles/`; they are explicitly demo imagery and are not claims of dealer stock.
+

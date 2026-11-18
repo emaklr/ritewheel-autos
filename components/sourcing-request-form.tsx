@@ -4,7 +4,21 @@ import { useState, type FormEvent } from "react";
 
 type FormState = "idle" | "submitting" | "success" | "error";
 
-export function SourcingRequestForm() {
+type InitialValues = {
+  requestedMake?: string;
+  requestedModel?: string;
+  requestedTrim?: string;
+  minYear?: number;
+  maxYear?: number;
+  conditionPreference?: "No preference" | "Brand new" | "Used";
+  budget?: number;
+  currency?: "NGN" | "USD" | "GBP" | "EUR";
+  mileagePreference?: "No preference" | "Under 30,000 km" | "Under 60,000 km" | "Under 100,000 km";
+  requiredSpecifications?: string;
+  notes?: string;
+};
+
+export function SourcingRequestForm({ initialValues }: { initialValues?: InitialValues } = {}) {
   const [state, setState] = useState<FormState>("idle");
   const [message, setMessage] = useState("");
 
@@ -93,19 +107,19 @@ export function SourcingRequestForm() {
         <div className="sourcing-form-grid">
           <label className="field">
             <span>Make</span>
-            <input name="requestedMake" maxLength={80} placeholder="e.g. Toyota" />
+            <input name="requestedMake" maxLength={80} defaultValue={initialValues?.requestedMake ?? ""} placeholder="e.g. Toyota" />
           </label>
           <label className="field">
             <span>Model</span>
-            <input name="requestedModel" maxLength={80} placeholder="e.g. Land Cruiser" />
+            <input name="requestedModel" maxLength={80} defaultValue={initialValues?.requestedModel ?? ""} placeholder="e.g. Land Cruiser" />
           </label>
           <label className="field">
             <span>Trim or variant <small>(Optional)</small></span>
-            <input name="requestedTrim" maxLength={100} placeholder="e.g. Prado VX-L" />
+            <input name="requestedTrim" maxLength={100} defaultValue={initialValues?.requestedTrim ?? ""} placeholder="e.g. Prado VX-L" />
           </label>
           <label className="field">
             <span>Condition</span>
-            <select name="conditionPreference" defaultValue="No preference">
+            <select name="conditionPreference" defaultValue={initialValues?.conditionPreference ?? "No preference"}>
               <option>No preference</option>
               <option>Brand new</option>
               <option>Used</option>
@@ -113,19 +127,19 @@ export function SourcingRequestForm() {
           </label>
           <label className="field">
             <span>Earliest year <small>(Optional)</small></span>
-            <input name="minYear" type="number" min="1900" max="2100" step="1" placeholder="e.g. 2020" />
+            <input name="minYear" type="number" min="1900" max="2100" step="1" defaultValue={initialValues?.minYear ?? ""} placeholder="e.g. 2020" />
           </label>
           <label className="field">
             <span>Latest year <small>(Optional)</small></span>
-            <input name="maxYear" type="number" min="1900" max="2100" step="1" placeholder="e.g. 2025" />
+            <input name="maxYear" type="number" min="1900" max="2100" step="1" defaultValue={initialValues?.maxYear ?? ""} placeholder="e.g. 2025" />
           </label>
           <label className="field">
             <span>Budget <small>(Optional)</small></span>
-            <input name="budget" type="number" min="1" max="999999999999" step="any" placeholder="Enter amount" />
+            <input name="budget" type="number" min="1" max="999999999999" step="any" defaultValue={initialValues?.budget ?? ""} placeholder="Enter amount" />
           </label>
           <label className="field">
             <span>Budget currency</span>
-            <select name="currency" defaultValue="NGN">
+            <select name="currency" defaultValue={initialValues?.currency ?? "NGN"}>
               <option value="NGN">NGN · Nigerian naira</option>
               <option value="USD">USD · US dollar</option>
               <option value="GBP">GBP · British pound</option>
@@ -134,7 +148,7 @@ export function SourcingRequestForm() {
           </label>
           <label className="field">
             <span>Mileage preference</span>
-            <select name="mileagePreference" defaultValue="No preference">
+            <select name="mileagePreference" defaultValue={initialValues?.mileagePreference ?? "No preference"}>
               <option>No preference</option>
               <option>Under 30,000 km</option>
               <option>Under 60,000 km</option>
@@ -147,7 +161,7 @@ export function SourcingRequestForm() {
           </label>
           <label className="field sourcing-field-wide">
             <span>Must-have specifications <small>(Optional)</small></span>
-            <textarea name="requiredSpecifications" maxLength={2000} rows={3} placeholder="Seats, transmission, fuel, colour, features or anything important…" />
+            <textarea name="requiredSpecifications" maxLength={2000} rows={3} defaultValue={initialValues?.requiredSpecifications ?? ""} placeholder="Seats, transmission, fuel, colour, features or anything important…" />
           </label>
         </div>
       </div>
@@ -171,7 +185,7 @@ export function SourcingRequestForm() {
         </label>
         <label className="field">
           <span>Anything else? <small>(Optional)</small></span>
-          <textarea name="notes" maxLength={1500} rows={4} placeholder="Timing, delivery expectations or other context…" />
+          <textarea name="notes" maxLength={1500} rows={4} defaultValue={initialValues?.notes ?? ""} placeholder="Timing, delivery expectations or other context…" />
         </label>
       </div>
 

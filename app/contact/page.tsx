@@ -9,12 +9,13 @@ import { getPublicDealershipSettings } from "@/lib/dealership-settings";
 export const metadata: Metadata = { title: "Contact Ritewheel" };
 
 type Props = {
-  searchParams: Promise<{ vehicle?: string; type?: string }>;
+  searchParams: Promise<{ vehicle?: string; type?: string; summary?: string }>;
 };
 
 export default async function ContactPage({ searchParams }: Props) {
   const [params, settings] = await Promise.all([searchParams, getPublicDealershipSettings()]);
   const vehicleSlug = params.vehicle?.trim().slice(0, 100) || undefined;
+  const initialMessage = params.summary?.trim().slice(0, 1_900) || undefined;
   const isTestDrive = params.type === "test-drive";
   const vehicle = isTestDrive && vehicleSlug ? await getVehicleBySlug(vehicleSlug) : null;
   const canRequestTestDrive = Boolean(
@@ -92,7 +93,7 @@ export default async function ContactPage({ searchParams }: Props) {
                 </div>
               )
             ) : process.env.DATABASE_URL ? (
-              <EnquiryForm vehicleSlug={vehicleSlug} />
+              <EnquiryForm vehicleSlug={vehicleSlug} initialMessage={initialMessage} />
             ) : (
               <div className="enquiry-disabled" role="status">
                 <strong>Enquiry submissions are not connected yet.</strong>

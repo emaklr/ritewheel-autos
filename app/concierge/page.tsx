@@ -1,25 +1,33 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { FeatureComingSoon } from "@/components/feature-coming-soon";
+import { ConciergeWorkspace } from "@/components/concierge/concierge-workspace";
 
-export const metadata: Metadata = { title: "AI Car Concierge" };
+export const metadata: Metadata = {
+  title: "AI Car Concierge",
+  description: "Find real Ritewheel vehicle matches, understand the trade-offs and choose your next step with dealership help.",
+};
 
 export default function ConciergePage() {
   const ready = Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
+
   return (
     <>
       <SiteHeader />
-      <main className="feature-page container">
-        <FeatureComingSoon
-          eyebrow="RITEWHEEL AI CONCIERGE"
-          title="Find the car that fits your life."
-          description="Describe what matters to you. The Concierge will help narrow the search, compare real Ritewheel listings and explain the trade-offs."
-          detail={ready
-            ? "The AI provider key is configured. The conversational inventory tools and recommendation workspace are the next implementation milestone."
-            : "The AI provider is not connected in this preview yet. You can still search, filter and compare the catalogue using the normal inventory experience."}
-        />
-      </main>
+      {ready ? (
+        <ConciergeWorkspace />
+      ) : (
+        <main className="container feature-page">
+          <section className="feature-coming-soon concierge-unavailable">
+            <span className="eyebrow">RITEWHEEL AI CONCIERGE</span>
+            <h1>Find the car that fits your life.</h1>
+            <p className="feature-coming-lead">The AI provider is not configured in this environment yet. The Concierge will become available when the server-side Google Gemini API key is set.</p>
+            <div className="feature-coming-detail">You can still search, filter, view real listings and compare vehicles using the normal inventory experience. This page will not imitate an AI response while the provider is unavailable.</div>
+            <Link href="/inventory" className="button button-gold">Browse inventory →</Link>
+          </section>
+        </main>
+      )}
       <SiteFooter />
     </>
   );
