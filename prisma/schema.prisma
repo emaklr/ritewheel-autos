@@ -232,6 +232,21 @@ model SourcingRequest {
   @@index([requestedMake, requestedModel])
 }
 
+model DealershipSetting {
+  id             String   @id @default("default")
+  displayName    String   @default("Ritewheel Autos")
+  contactPhone   String?
+  contactEmail   String?
+  whatsappNumber String?
+  addressLine    String?
+  city           String?
+  state          String?
+  country        String?
+  openingHours   String?  @db.Text
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
 model AdminAuditLog {
   id          String   @id @default(cuid())
   adminUserId String

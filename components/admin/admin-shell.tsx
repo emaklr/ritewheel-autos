@@ -10,6 +10,7 @@ const navigation = [
   { href: "/admin/enquiries", label: "Enquiries", icon: "✉" },
   { href: "/admin/test-drives", label: "Test Drives", icon: "◷" },
   { href: "/admin/sourcing-requests", label: "Sourcing Requests", icon: "⌕" },
+  { href: "/admin/settings", label: "Settings", icon: "⚙" },
 ];
 
 export function AdminShell({

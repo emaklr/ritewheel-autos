@@ -959,6 +959,10 @@ The complete dashboard UI and workflow specification is in [docs/VISUAL_BLUEPRIN
 - Each protected route and API handler checks the server-side admin session; hiding UI is not authorisation.
 - Paginate queues in PostgreSQL; do not load every record or add charts/table libraries without a demonstrated need.
 - Image binaries belong in configured object storage/CDN; PostgreSQL holds image references and metadata.
+- Release 1 dealership settings use a single `DealershipSetting` record keyed by `default`; only the public display name, contact channels, optional WhatsApp number, address/location and opening hours are stored.
+- Public components read the saved profile through a server-only helper and display only values actually configured; unset contact information remains absent rather than being replaced with placeholder details.
+- `/admin/settings` is protected by the admin workspace layout. `PATCH /api/admin/settings` independently verifies the admin session and same-origin request, validates all fields, persists changes transactionally, writes an audit record containing changed field names (not the entered contact values), and revalidates the public layout.
+- Payment credentials, gateway secrets, staff accounts and complex business rules are explicitly outside Release 1 settings.
 
 
 ## 33. Enquiry persistence and vehicle gallery implementation

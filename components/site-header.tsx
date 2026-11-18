@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getPublicDealershipSettings } from "@/lib/dealership-settings";
 
 const links = [
   { href: "/", label: "Home" },
@@ -9,13 +10,15 @@ const links = [
   { href: "/about", label: "About" },
 ];
 
-export function SiteHeader() {
+export async function SiteHeader() {
+  const settings = await getPublicDealershipSettings();
+
   return (
     <header className="site-header">
       <div className="site-header-inner">
-        <Link href="/" className="brand" aria-label="Ritewheel Autos home">
+        <Link href="/" className="brand" aria-label={settings.displayName + " home"}>
           <span className="brand-mark" aria-hidden="true">R</span>
-          <span className="brand-name">RITEWHEEL<span> AUTOS</span></span>
+          <span className="brand-name">{settings.displayName}</span>
         </Link>
 
         <nav className="desktop-nav" aria-label="Main navigation">
