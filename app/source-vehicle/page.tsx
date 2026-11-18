@@ -30,11 +30,11 @@ export default async function SourceVehiclePage({ searchParams }: { searchParams
   const currencyRaw = first(params.currency);
   const currency = currencyRaw === "NGN" || currencyRaw === "USD" || currencyRaw === "GBP" || currencyRaw === "EUR" ? currencyRaw : undefined;
   const conditionRaw = first(params.condition);
-  const conditionPreference = conditionRaw === "Brand new" || conditionRaw === "New"
+  const conditionPreference: "No preference" | "Brand new" | "Used" = conditionRaw === "Brand new" || conditionRaw === "New"
     ? "Brand new"
     : conditionRaw === "Used" ? "Used" : "No preference";
   const mileageRaw = first(params.mileagePreference);
-  const mileagePreference = mileageRaw === "Under 30,000 km" || mileageRaw === "Under 60,000 km" || mileageRaw === "Under 100,000 km"
+  const mileagePreference: "No preference" | "Under 30,000 km" | "Under 60,000 km" | "Under 100,000 km" = mileageRaw === "Under 30,000 km" || mileageRaw === "Under 60,000 km" || mileageRaw === "Under 100,000 km"
     ? mileageRaw
     : "No preference";
   const initialValues = {

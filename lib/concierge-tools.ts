@@ -3,6 +3,7 @@ import "server-only";
 import { tool } from "ai";
 import { z } from "zod";
 import { getPrismaClient } from "@/lib/db";
+import type { Prisma } from "@/generated/prisma/client";
 
 const currencies = ["NGN", "USD", "GBP", "EUR"] as const;
 
@@ -58,7 +59,7 @@ const publicVehicleSelect = {
     take: 1,
     select: { url: true, altText: true },
   },
-} as const;
+} satisfies Prisma.VehicleSelect;
 
 function formatVehicle(row: {
   id: string;
