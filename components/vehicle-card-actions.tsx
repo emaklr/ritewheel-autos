@@ -19,7 +19,7 @@ function writeIds(key: string, ids: string[]) {
   window.dispatchEvent(new Event("ritewheel-local-collection-updated"));
 }
 
-export function VehicleCardActions({ vehicleSlug }: { vehicleSlug: string }) {
+export function VehicleCardActions({ vehicleSlug, variant = "default" }: { vehicleSlug: string; variant?: "default" | "concierge" }) {
   const [saved, setSaved] = useState(false);
   const [compared, setCompared] = useState(false);
   const [message, setMessage] = useState("");
@@ -68,7 +68,7 @@ export function VehicleCardActions({ vehicleSlug }: { vehicleSlug: string }) {
   return (
     <div className="vehicle-card-actions">
       <button type="button" className={saved ? "mini-action is-active" : "mini-action"} onClick={toggleSaved} aria-pressed={saved}>
-        <span aria-hidden="true">{saved ? "♥" : "♡"}</span> {saved ? "Saved" : "Save"}
+        <span aria-hidden="true">{saved ? "♥" : "♡"}</span> {saved ? (variant === "concierge" ? "Saved to My Garage" : "Saved") : (variant === "concierge" ? "Save to My Garage" : "Save")}
       </button>
       <button type="button" className={compared ? "mini-action is-active" : "mini-action"} onClick={toggleCompare} aria-pressed={compared}>
         <span aria-hidden="true">⇄</span> {compared ? "Comparing" : "Compare"}

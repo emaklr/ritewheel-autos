@@ -22,6 +22,7 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 - Protected admin enquiry queue with search, status filtering, customer/vehicle details and audited status updates.
 - Public test-drive request form for eligible live vehicles, with future-slot validation and submission rate limiting.
 - Protected admin test-drive queue with search, status filtering, customer/vehicle details, confirmed appointment management and audit logs.
+- Gemini-powered AI Car Concierge with streamed guest chat, read-only grounded inventory/detail/compare/option tools, real-vs-demo separation, preference editing and customer-approved handover.
 - Public vehicle sourcing request form for customer vehicle briefs, with validated year ranges, budget/currency, contact details and submission rate limiting.
 - Protected admin sourcing-request queue with search, status filtering, customer requirements, and audited status progression.
 - Single-record dealership profile settings for public display name, contact phone/email, WhatsApp, address/location and opening hours, with public footer/contact integration and audited updates.
@@ -33,7 +34,6 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 
 ### Not yet implemented
 - Binary image uploads; inventory currently stores approved CDN/object-storage URLs or local asset paths.
-- Working Gemini AI Concierge and grounded inventory tools.
 - Interactive vehicle Design Studio and administration of vehicle-specific option sets.
 - Customer accounts and cross-device Garage sync.
 - Staff roles, lead assignment and CRM (Release 2).
