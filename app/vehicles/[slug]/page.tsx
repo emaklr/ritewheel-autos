@@ -92,7 +92,7 @@ export default async function VehicleDetailPage({ params }: Props) {
             ) : (
               <>
                 <Link href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}`} className="button button-gold">Enquire about this vehicle →</Link>
-                <Link href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}&type=test-drive`} className="button button-outline">Request a test drive</Link>
+                {vehicle.status === "AVAILABLE" ? <Link href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}&type=test-drive`} className="button button-outline">Request a test drive</Link> : null}
               </>
             )}
             <Link href="/inventory" className="text-link detail-back">← Back to inventory</Link>

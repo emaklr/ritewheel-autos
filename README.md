@@ -20,6 +20,8 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 - Local-only administrator bootstrap command; no public administrator registration.
 - Database-derived admin overview and searchable/status-filtered inventory list.
 - Protected admin enquiry queue with search, status filtering, customer/vehicle details and audited status updates.
+- Public test-drive request form for eligible live vehicles, with future-slot validation and submission rate limiting.
+- Protected admin test-drive queue with search, status filtering, customer/vehicle details, confirmed appointment management and audit logs.
 - Vehicle create/edit, publication/status changes, price/currency, specifications, features and ordered image URL management.
 - Transactional vehicle/image writes and audit records for inventory changes.
 - Server-side Zod validation and admin-session checks on protected API mutations.
@@ -27,7 +29,7 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 - Browser-local My Garage and compare selection (maximum three vehicles).
 
 ### Not yet implemented
-- Admin test-drive and sourcing-request queues and dealership settings.
+- Admin sourcing-request queue and dealership settings.
 - Binary image uploads; inventory currently stores approved CDN/object-storage URLs or local asset paths.
 - Working Gemini AI Concierge and grounded inventory tools.
 - Interactive vehicle Design Studio and administration of vehicle-specific option sets.
