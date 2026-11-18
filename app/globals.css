@@ -894,3 +894,75 @@ img { display: block; max-width: 100%; }
   .admin-detail-panel-heading { flex-direction: column; }
   .admin-detail-date { text-align: left; }
 }
+
+
+/* Release 1 test-drive request and appointment management */
+.test-drive-vehicle-summary {
+  margin:-10px 0 18px;
+  padding:11px 13px;
+  border:1px solid var(--line);
+  border-radius:8px;
+  color:#e2d0a8;
+  background:rgba(245,160,0,.045);
+  font-size:12px;
+  font-weight:700;
+}
+.test-drive-fields-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:13px;
+}
+.test-drive-form .field small { color:#8c968f; font-size:10px; font-weight:450; }
+.admin-status-requested { color:#e8c789; border-color:rgba(245,160,0,.25); background:rgba(245,160,0,.07); }
+.admin-status-accepted { color:#9dd9b9; border-color:rgba(61,187,129,.28); background:rgba(61,187,129,.08); }
+.admin-status-declined { color:#f0a8a0; border-color:rgba(217,107,99,.3); background:rgba(217,107,99,.08); }
+.admin-status-completed { color:#b7c7d2; }
+.admin-status-cancelled { color:#9ba49e; }
+.admin-test-drive-table td > strong { display:block; color:#dce1dc; font-size:11px; }
+.admin-confirmed-slot { display:block; margin-top:5px; color:#9dd9b9; font-size:9px; }
+.admin-test-drive-detail-grid {
+  display:grid;
+  grid-template-columns:minmax(0,1.45fr) minmax(280px,.8fr);
+  gap:17px;
+  align-items:start;
+}
+.admin-appointment-block {
+  display:grid;
+  grid-template-columns:130px 1fr;
+  gap:9px 14px;
+  padding:16px;
+  border:1px solid var(--line);
+  border-radius:9px;
+  background:#171d1b;
+  font-size:11px;
+}
+.admin-appointment-block > span { color:#929b94; }
+.admin-appointment-block > strong { color:#e0e4e0; }
+.admin-appointment-block.is-confirmed {
+  margin-top:12px;
+  border-color:rgba(61,187,129,.24);
+  background:rgba(61,187,129,.055);
+}
+.admin-appointment-block.is-confirmed > span,
+.admin-appointment-block.is-confirmed > strong { color:#a8d9bc; }
+.admin-confirmed-appointment {
+  display:grid;
+  gap:11px;
+  margin:4px 0 13px;
+  padding:13px;
+  border:1px solid rgba(61,187,129,.24);
+  border-radius:8px;
+  background:rgba(61,187,129,.045);
+}
+.admin-confirmed-appointment > p {
+  margin:0;
+  color:#a8d9bc;
+  font-size:10px;
+  line-height:1.6;
+}
+@media (max-width:760px) {
+  .test-drive-fields-grid { grid-template-columns:1fr; }
+  .admin-test-drive-detail-grid { grid-template-columns:1fr; }
+  .admin-appointment-block { grid-template-columns:1fr; gap:5px; }
+  .admin-appointment-block > strong { margin-bottom:7px; }
+}
