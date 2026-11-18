@@ -16,7 +16,11 @@ const transitions = {
 
 type SourcingStatus = keyof typeof transitions;
 
-function statusLabel(status: SourcingStatus) {
+function isSupportedStatus(status: string): status is SourcingStatus {
+  return Object.prototype.hasOwnProperty.call(transitions, status);
+}
+
+function statusLabel(status: string) {
   return status.split("_").map((part) => part.charAt(0) + part.slice(1).toLowerCase()).join(" ");
 }
 
@@ -25,12 +29,21 @@ export function SourcingRequestStatusForm({
   initialStatus,
 }: {
   requestId: string;
-  initialStatus: SourcingStatus;
+  initialStatus: string;
 }) {
   const router = useRouter();
-  const [status, setStatus] = useState<SourcingStatus>(initialStatus);
+  const supportedStatus = isSupportedStatus(initialStatus);
+  const [status, setStatus] = useState<SourcingStatus>(supportedStatus ? initialStatus : "CLOSED");
   const [saving, setSaving] = useState(false);
   const [feedback, setFeedback] = useState("");
+  if (!supportedStatus) {
+    return (
+      <p className="admin-field-help">
+        This request is in the later-stage status "{statusLabel(initialStatus)}". Release 1 does not edit quote or purchase states here.
+      </p>
+    );
+  }
+
   const options = [initialStatus, ...transitions[initialStatus]];
 
   async function save() {
