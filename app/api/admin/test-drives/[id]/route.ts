@@ -11,12 +11,17 @@ const datePattern = /^\d{4}-\d{2}-\d{2}$/;
 const timePattern = /^(?:[01]\d|2[0-3]):[0-5]\d$/;
 const updateSchema = z.object({
   status: z.enum(["REQUESTED", "ACCEPTED", "DECLINED", "COMPLETED", "CANCELLED"]),
-  confirmedDate: z.string().regex(datePattern).optional(),
+  confirmedDate: z.string().regex(datePattern).refine(isValidDateOnly, "Choose a real calendar date.").optional(),
   confirmedTime: z.string().regex(timePattern).optional(),
 }).strict();
 
 function badRequest(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
+}
+
+function isValidDateOnly(value: string) {
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 function nigeriaNow() {

@@ -15,7 +15,7 @@ const testDriveSchema = z.object({
   customerName: z.string().trim().min(2).max(100),
   email: z.email().max(254).transform((value) => value.toLowerCase()),
   phone: z.string().trim().min(7).max(30),
-  preferredDate: z.string().regex(datePattern, "Choose a valid preferred date."),
+  preferredDate: z.string().regex(datePattern, "Choose a valid preferred date.").refine(isValidDateOnly, "Choose a real calendar date."),
   preferredTime: z.string().regex(timePattern, "Choose a valid preferred time."),
   notes: z.string().trim().max(1_200).optional().default(""),
   website: z.string().max(200).optional().default(""),
@@ -23,6 +23,11 @@ const testDriveSchema = z.object({
 
 function badRequest(message: string, status: number) {
   return NextResponse.json({ error: message }, { status });
+}
+
+function isValidDateOnly(value: string) {
+  const date = new Date(`${value}T00:00:00.000Z`);
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0, 10) === value;
 }
 
 function nigeriaNow() {
