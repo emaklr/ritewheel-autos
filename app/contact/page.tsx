@@ -4,6 +4,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { EnquiryForm } from "@/components/enquiry-form";
 import { TestDriveRequestForm } from "@/components/test-drive-request-form";
 import { getVehicleBySlug } from "@/lib/vehicles";
+import { getPublicDealershipSettings } from "@/lib/dealership-settings";
 
 export const metadata: Metadata = { title: "Contact Ritewheel" };
 
@@ -12,7 +13,7 @@ type Props = {
 };
 
 export default async function ContactPage({ searchParams }: Props) {
-  const params = await searchParams;
+  const [params, settings] = await Promise.all([searchParams, getPublicDealershipSettings()]);
   const vehicleSlug = params.vehicle?.trim().slice(0, 100) || undefined;
   const isTestDrive = params.type === "test-drive";
   const vehicle = isTestDrive && vehicleSlug ? await getVehicleBySlug(vehicleSlug) : null;
@@ -47,6 +48,29 @@ export default async function ContactPage({ searchParams }: Props) {
             <p className="contact-privacy-note">
               Your contact details are used to respond to this request. Do not include payment details or passwords.
             </p>
+
+            {settings.contactPhone || settings.contactEmail || settings.whatsappNumber || settings.addressLine || settings.city || settings.state || settings.country || settings.openingHours ? (
+              <div className="public-contact-details" aria-label="Dealership contact details">
+                <span className="eyebrow">DEALERSHIP CONTACT</span>
+                {settings.contactPhone ? <a href={"tel:" + settings.contactPhone}>Call {settings.contactPhone}</a> : null}
+                {settings.contactEmail ? <a href={"mailto:" + settings.contactEmail}>{settings.contactEmail}</a> : null}
+                {settings.whatsappNumber ? <a href={"https://wa.me/" + settings.whatsappNumber} target="_blank" rel="noreferrer">Chat on WhatsApp ↗</a> : null}
+                {[
+                  settings.addressLine,
+                  settings.city,
+                  settings.state,
+                  settings.country,
+                ].filter(Boolean).length ? (
+                  <p>{[
+                    settings.addressLine,
+                    settings.city,
+                    settings.state,
+                    settings.country,
+                  ].filter(Boolean).join(", ")}</p>
+                ) : null}
+                {settings.openingHours ? <p className="public-opening-hours">{settings.openingHours}</p> : null}
+              </div>
+            ) : null}
           </section>
 
           <section className="contact-form-panel" aria-label={isTestDrive ? "Request a test drive" : "Send an enquiry"}>

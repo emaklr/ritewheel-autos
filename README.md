@@ -24,6 +24,7 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 - Protected admin test-drive queue with search, status filtering, customer/vehicle details, confirmed appointment management and audit logs.
 - Public vehicle sourcing request form for customer vehicle briefs, with validated year ranges, budget/currency, contact details and submission rate limiting.
 - Protected admin sourcing-request queue with search, status filtering, customer requirements, and audited status progression.
+- Single-record dealership profile settings for public display name, contact phone/email, WhatsApp, address/location and opening hours, with public footer/contact integration and audited updates.
 - Vehicle create/edit, publication/status changes, price/currency, specifications, features and ordered image URL management.
 - Transactional vehicle/image writes and audit records for inventory changes.
 - Server-side Zod validation and admin-session checks on protected API mutations.
@@ -31,7 +32,6 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 - Browser-local My Garage and compare selection (maximum three vehicles).
 
 ### Not yet implemented
-- Dealership settings.
 - Binary image uploads; inventory currently stores approved CDN/object-storage URLs or local asset paths.
 - Working Gemini AI Concierge and grounded inventory tools.
 - Interactive vehicle Design Studio and administration of vehicle-specific option sets.
