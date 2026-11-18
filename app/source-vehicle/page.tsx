@@ -28,7 +28,7 @@ export default async function SourceVehiclePage({ searchParams }: { searchParams
   const yearRangeValid = minYear === undefined || maxYear === undefined || minYear <= maxYear;
   const budget = Number.isFinite(budgetRaw) && budgetRaw > 0 && budgetRaw <= 999_999_999_999 ? budgetRaw : undefined;
   const currencyRaw = first(params.currency);
-  const currency = currencyRaw === "NGN" || currencyRaw === "USD" || currencyRaw === "GBP" || currencyRaw === "EUR" ? currencyRaw : undefined;
+  const currency: "NGN" | "USD" | "GBP" | "EUR" | undefined = currencyRaw === "NGN" || currencyRaw === "USD" || currencyRaw === "GBP" || currencyRaw === "EUR" ? currencyRaw : undefined;
   const conditionRaw = first(params.condition);
   const conditionPreference: "No preference" | "Brand new" | "Used" = conditionRaw === "Brand new" || conditionRaw === "New"
     ? "Brand new"
