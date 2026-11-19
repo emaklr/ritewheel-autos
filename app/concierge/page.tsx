@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 };
 
 export default function ConciergePage() {
-  const ready = Boolean(process.env.GOOGLE_GENERATIVE_AI_API_KEY);
+  const ready = Boolean(process.env.NVIDIA_API_KEY);
 
   return (
     <>
@@ -22,7 +22,7 @@ export default function ConciergePage() {
           <section className="feature-coming-soon concierge-unavailable">
             <span className="eyebrow">RITEWHEEL AI CONCIERGE</span>
             <h1>Find the car that fits your life.</h1>
-            <p className="feature-coming-lead">The AI provider is not configured in this environment yet. The Concierge will become available when the server-side Google Gemini API key is set.</p>
+            <p className="feature-coming-lead">The AI provider is not configured in this environment yet. The Concierge will become available when the server-side NVIDIA NIM API key is set.</p>
             <div className="feature-coming-detail">You can still search, filter, view real listings and compare vehicles using the normal inventory experience. This page will not imitate an AI response while the provider is unavailable.</div>
             <Link href="/inventory" className="button button-gold">Browse inventory →</Link>
           </section>

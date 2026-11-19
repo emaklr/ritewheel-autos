@@ -136,7 +136,7 @@ Design rules:
 | Validation | Zod | Runtime validation for forms, API inputs, and AI tool arguments |
 | Database | PostgreSQL | Persistent inventory, configurations, enquiries, bookings, and admin records |
 | ORM | Prisma | Schema, migrations, typed queries, and database access |
-| AI | Google Gemini through Vercel AI SDK | Natural-language concierge and tool calling |
+| AI | NVIDIA Nemotron through NVIDIA NIM and Vercel AI SDK | Natural-language concierge and tool calling |
 | Authentication | Application-owned opaque database sessions | HttpOnly cookies, session expiry, and server-side access checks |
 | Password hashing | Node.js crypto.scrypt | Salted one-way administrator password hashing |
 | Hosting | Vercel | Application hosting and deployment |
@@ -152,7 +152,7 @@ Use a pooled connection for serverless runtime queries where supported and a dir
 
 ### AI provider
 
-Use Google Gemini through the Vercel AI SDK behind a server-only provider adapter. The model and provider should be replaceable without changing the UI or vehicle service layer.
+Use NVIDIA Nemotron through NVIDIA NIM via the Vercel AI SDK behind a server-only provider adapter. The model and provider should be replaceable without changing the UI or vehicle service layer.
 
 The application must work in a useful non-AI mode if the AI key is absent: inventory browsing, filters, vehicle details, configuration selection, and enquiries remain available. The concierge should display a clear unavailable state rather than silently pretending to be AI-powered.
 
@@ -190,7 +190,7 @@ Browser
           |     +-- Test-drive service
           |     +-- Admin service
           +-- AI concierge service
-                +-- Gemini model adapter
+                +-- NVIDIA NIM model adapter
                 +-- Read-only inventory tools
                 +-- Structured response validation
                 |
@@ -344,7 +344,7 @@ Filters: make, body type, price range, year, mileage, transmission, fuel type, c
 
 1. The browser sends the recent conversation and current search context to `POST /api/concierge`.
 2. The server validates message size, history length, and request rate.
-3. Gemini receives a system instruction and a limited set of read-only tools.
+3. Nemotron receives a system instruction and a limited set of read-only tools.
 4. When needed, the model calls a tool such as `searchVehicles`, `getVehicleDetails`, `compareVehicles`, or `getVehicleOptions`.
 5. Tool implementations call the same server-side services used by the normal UI.
 6. Results are returned to the model as grounded facts.
@@ -450,7 +450,7 @@ The AI is Ritewheel's car-shopping concierge. It helps customers discover and un
 - Add rate limits to login, AI, enquiry, test-drive, and build creation endpoints.
 - Apply server-side allowlists for sort fields, filter values, and image URL protocols/hosts.
 - Use parameterised Prisma queries; never construct SQL from AI output or raw user strings.
-- Keep `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, and the Gemini key server-only.
+- Keep `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, and the NVIDIA NIM key server-only.
 - Do not commit secrets, real customer records, or production database snapshots.
 - Avoid logging phone numbers, emails, message bodies, API keys, or authentication tokens.
 - Add safe error responses; detailed stack traces belong in server logs only.
@@ -480,7 +480,7 @@ The actual values must be created in local environment files or the hosting prov
 | `DATABASE_URL` | Yes | Pooled PostgreSQL connection for runtime |
 | `DIRECT_URL` | Yes | Direct PostgreSQL connection for migrations, if required by provider |
 | `AUTH_SECRET` | Yes | Auth.js signing/encryption secret |
-| `GOOGLE_GENERATIVE_AI_API_KEY` | For AI | Server-side Gemini API key |
+| `NVIDIA_API_KEY` | For AI | Server-side NVIDIA NIM API key |
 | `NEXT_PUBLIC_SITE_URL` | Yes in production | Canonical public application URL |
 | `ADMIN_EMAIL` | Initial seed only | Initial administrator identity |
 | `ADMIN_PASSWORD` | Initial seed only | Used by the seed/bootstrap process to hash the initial admin password; do not expose or commit it |
@@ -535,7 +535,7 @@ If the AI key is not configured, the main marketplace must remain operational an
 - Public deployment.
 
 ### Phase 2 — AI Concierge
-- Gemini integration through the AI SDK.
+- NVIDIA NIM integration through the AI SDK.
 - Read-only inventory search, detail, and comparison tools.
 - Conversational preference collection and grounded recommendations.
 - AI failure fallback and request limits.
@@ -555,7 +555,7 @@ The first release should prioritise a finished customer journey over a long list
 | --- | --- |
 | PostgreSQL + Prisma | Demonstrates relational modelling, migrations, queries, and backend ownership |
 | Next.js route handlers and service layer | Keeps deployment simple while retaining clear backend boundaries |
-| Gemini via AI SDK | Avoids dependency on an OpenAI key and keeps the model provider replaceable |
+| NVIDIA Nemotron via NVIDIA NIM and the AI SDK | Avoids dependency on an OpenAI key and keeps the model provider replaceable |
 | AI tools are read-only | Prevents the model from directly changing business records |
 | Asset-backed configurator | Delivers a convincing interactive V1 without a 3D/generative pipeline |
 | Guest shopping and enquiries | Reduces friction and keeps authentication scope small |
@@ -640,7 +640,7 @@ Before application implementation, review the six-screen concept and `docs/VISUA
 - Deploy and verify the public marketplace.
 
 ### Gate 3 — AI Concierge
-- Add Gemini via the provider adapter and Vercel AI SDK.
+- Add NVIDIA Nemotron via the provider adapter and Vercel AI SDK.
 - Expose read-only, validated inventory tools.
 - Build the dedicated Concierge screen and recommendation UI.
 - Verify grounded results and the no-provider fallback.
@@ -752,7 +752,7 @@ Use transforms and opacity for motion where possible. Respect `prefers-reduced-m
 - Use server-side timeouts, rate limits, and clear provider-unavailable states.
 - AI inventory tools return small structured records and reuse the same indexed search services as ordinary inventory.
 - Do not send vehicle images to a vision model or generate custom images in V1.
-- Never place the Gemini API key in the browser bundle.
+- Never place the NVIDIA NIM API key in the browser bundle.
 
 ### 21.8 Design Studio performance
 
@@ -966,9 +966,9 @@ The complete dashboard UI and workflow specification is in [docs/VISUAL_BLUEPRIN
 
 ## 34. Release 1 AI Concierge implementation
 
-- The dedicated `/concierge` route loads the client conversation workspace only on the Concierge page and streams replies from `POST /api/concierge` using the Vercel AI SDK and the Google Gemini provider (`gemini-3.8-flash`).
+- The dedicated `/concierge` route loads the client conversation workspace only on the Concierge page and streams replies from `POST /api/concierge` using the Vercel AI SDK and the NVIDIA NIM provider (`nvidia/nemotron-3.5-super-vl-120b-a12b`).
 - The server-side tool set is read-only: `searchVehicles`, `getVehicleDetails`, `compareVehicles` and `getVehicleOptions`. Each query is validated and resolves against published PostgreSQL vehicle records; search returns at most three listings and a database count.
-- A record with `isDemo=true` is always labelled as an illustration and is never described as real dealer stock. When the database or Gemini provider is unavailable, the UI displays a truthful fallback instead of simulated AI output.
+- A record with `isDemo=true` is always labelled as an illustration and is never described as real dealer stock. When the database or NVIDIA NIM provider is unavailable, the UI displays a truthful fallback instead of simulated AI output.
 - The route bounds request size, conversation length, output tokens, tool steps, request time and per-process request frequency. It strips tool-result parts from subsequent model requests and removes common email/phone patterns from prompt text. Customer contact details are collected only in the normal contact/request forms, not as chat inputs.
 - Guest conversation display is stored in the current browser tab session only. No server-side conversation history or customer profile is created in Release 1.
 - Local Garage/Compare actions require explicit customer clicks. Human handover summaries are reviewed and edited before the normal enquiry form is shown; the full transcript is not shared. Sourcing opens the normal sourcing form with a few preference fields prefilled for customer review.

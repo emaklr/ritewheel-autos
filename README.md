@@ -22,7 +22,7 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 - Protected admin enquiry queue with search, status filtering, customer/vehicle details and audited status updates.
 - Public test-drive request form for eligible live vehicles, with future-slot validation and submission rate limiting.
 - Protected admin test-drive queue with search, status filtering, customer/vehicle details, confirmed appointment management and audit logs.
-- Gemini-powered AI Car Concierge with streamed guest chat, read-only grounded inventory/detail/compare/option tools, real-vs-demo separation, preference editing and customer-approved handover.
+- NVIDIA Nemotron-powered AI Car Concierge with streamed guest chat, read-only grounded inventory/detail/compare/option tools, real-vs-demo separation, preference editing and customer-approved handover.
 - Public vehicle sourcing request form for customer vehicle briefs, with validated year ranges, budget/currency, contact details and submission rate limiting.
 - Protected admin sourcing-request queue with search, status filtering, customer requirements, and audited status progression.
 - Single-record dealership profile settings for public display name, contact phone/email, WhatsApp, address/location and opening hours, with public footer/contact integration and audited updates.
@@ -49,7 +49,7 @@ The documentation is the product source of truth: [Product Experience](./docs/PR
 - PostgreSQL
 - Prisma ORM 7 with `@prisma/adapter-pg`
 - Zod validation
-- Google Gemini through Vercel AI SDK (next AI milestone)
+- NVIDIA Nemotron through NVIDIA NIM using the Vercel AI SDK
 - Vercel hosting
 
 ## Local setup
@@ -82,7 +82,7 @@ Check the backend at `/api/health`. Inventory JSON is available from `/api/vehic
 | DATABASE_URL | PostgreSQL runtime connection (pooled URL where available) |
 | DIRECT_URL | Direct PostgreSQL connection for Prisma migrations |
 | AUTH_SECRET | Reserved for future signed customer/CSRF tokens; admin sessions are database-backed |
-| GOOGLE_GENERATIVE_AI_API_KEY | Gemini key for the Concierge (not yet used by the coming-soon page) |
+| NVIDIA_API_KEY | Server-side NVIDIA NIM API key for the Nemotron Concierge |
 | NEXT_PUBLIC_SITE_URL | Canonical public URL |
 
 Never commit .env, .env.local, session tokens, passwords or real database credentials.
