@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import { google } from "@ai-sdk/google";
 import { isStepCount, streamText, type ModelMessage } from "ai";
 import { z } from "zod";
 import { createConciergeTools } from "@/lib/concierge-tools";
+import { getConciergeModel } from "@/lib/concierge-model";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -89,9 +89,9 @@ function getMessageText(message: unknown): { role: "user" | "assistant"; text: s
 }
 
 export async function POST(request: Request) {
-  if (!process.env.GOOGLE_GENERATIVE_AI_API_KEY) {
+  if (!process.env.NVIDIA_API_KEY) {
     return NextResponse.json(
-      { error: "The AI Concierge is unavailable because the model provider is not configured. You can still browse Inventory normally." },
+      { error: "The AI Concierge is unavailable because the NVIDIA NIM is not configured. You can still browse Inventory normally." },
       { status: 503 },
     );
   }
@@ -152,13 +152,15 @@ export async function POST(request: Request) {
 
   try {
     const result = streamText({
-      model: google("gemini-3.8-flash"),
+      model: getConciergeModel(),
       system: systemPrompt,
       messages,
       tools: createConciergeTools(),
       stopWhen: isStepCount(5),
       maxOutputTokens: 900,
-      temperature: 0.25,
+      providerOptions: {
+        nim: { reasoningEffort: "low" },
+      },
       timeout: { totalMs: 25_000, toolMs: 8_000 },
       abortSignal: request.signal,
     });
