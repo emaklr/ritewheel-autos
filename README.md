@@ -22,7 +22,7 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 - Protected admin enquiry queue with search, status filtering, customer/vehicle details and audited status updates.
 - Public test-drive request form for eligible live vehicles, with future-slot validation and submission rate limiting.
 - Protected admin test-drive queue with search, status filtering, customer/vehicle details, confirmed appointment management and audit logs.
-- NVIDIA Nemotron-powered AI Car Concierge with streamed guest chat, read-only grounded inventory/detail/compare/option tools, real-vs-demo separation, preference editing and customer-approved handover.
+- Multi-provider AI Car Concierge with NVIDIA Nemotron primary, optional OpenRouter/Groq fallbacks, streamed guest chat, read-only grounded inventory/detail/compare/option tools, real-vs-demo separation, preference editing and customer-approved handover.
 - Public vehicle sourcing request form for customer vehicle briefs, with validated year ranges, budget/currency, contact details and submission rate limiting.
 - Protected admin sourcing-request queue with search, status filtering, customer requirements, and audited status progression.
 - Single-record dealership profile settings for public display name, contact phone/email, WhatsApp, address/location and opening hours, with public footer/contact integration and audited updates.
@@ -49,7 +49,7 @@ The documentation is the product source of truth: [Product Experience](./docs/PR
 - PostgreSQL
 - Prisma ORM 7 with `@prisma/adapter-pg`
 - Zod validation
-- NVIDIA Nemotron through NVIDIA NIM using the Vercel AI SDK
+- Vercel AI SDK with a server-side provider router for NVIDIA NIM, OpenRouter and Groq
 - Vercel hosting
 
 ## Local setup
@@ -82,10 +82,16 @@ Check the backend at `/api/health`. Inventory JSON is available from `/api/vehic
 | DATABASE_URL | PostgreSQL runtime connection (pooled URL where available) |
 | DIRECT_URL | Direct PostgreSQL connection for Prisma migrations |
 | AUTH_SECRET | Reserved for future signed customer/CSRF tokens; admin sessions are database-backed |
-| NVIDIA_API_KEY | Server-side NVIDIA NIM API key for the Nemotron Concierge |
+| NVIDIA_API_KEY | Optional NVIDIA NIM key (Nemotron primary) |
+| OPENROUTER_API_KEY | Optional OpenRouter key (free-model router fallback) |
+| GROQ_API_KEY | Optional Groq key (compatible-model fallback) |
+| RITEWHEEL_AI_PROVIDER_ORDER | Provider priority, default: nvidia,openrouter,groq |
+| NVIDIA_MODEL | Optional NVIDIA model override |
+| OPENROUTER_MODEL | Optional OpenRouter model/router override; default: openrouter/free |
+| GROQ_MODEL | Optional Groq model override; default: openai/gpt-oss-120b |
 | NEXT_PUBLIC_SITE_URL | Canonical public URL |
 
-Never commit .env, .env.local, session tokens, passwords or real database credentials.
+Never commit .env, .env.local, session tokens, passwords or real database credentials. The Concierge tries configured providers in order and falls back after provider errors or a first-response timeout. OpenRouter's free router and Groq's free tier have their own changing rate limits; fallback does not create unlimited free usage.
 
 ## Creating the first administrator
 
