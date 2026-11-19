@@ -190,7 +190,7 @@ Browser
           |     +-- Test-drive service
           |     +-- Admin service
           +-- AI concierge service
-                +-- NVIDIA NIM model adapter
+                +-- Provider/model router (NVIDIA NIM, OpenRouter, Groq)
                 +-- Read-only inventory tools
                 +-- Structured response validation
                 |
@@ -344,7 +344,7 @@ Filters: make, body type, price range, year, mileage, transmission, fuel type, c
 
 1. The browser sends the recent conversation and current search context to `POST /api/concierge`.
 2. The server validates message size, history length, and request rate.
-3. Nemotron receives a system instruction and a limited set of read-only tools.
+3. The selected compatible model receives a system instruction and a limited set of read-only tools.
 4. When needed, the model calls a tool such as `searchVehicles`, `getVehicleDetails`, `compareVehicles`, or `getVehicleOptions`.
 5. Tool implementations call the same server-side services used by the normal UI.
 6. Results are returned to the model as grounded facts.

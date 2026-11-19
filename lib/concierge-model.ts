@@ -11,7 +11,7 @@ import type {
 import { wrapLanguageModel } from "ai";
 
 const DEFAULT_PROVIDER_ORDER = ["nvidia", "openrouter", "groq"] as const;
-const FIRST_RESPONSE_TIMEOUT_MS = 6_500;
+const FIRST_RESPONSE_TIMEOUT_MS = 5_000;
 const PROVIDER_COOLDOWN_MS = 90_000;
 
 type ProviderId = (typeof DEFAULT_PROVIDER_ORDER)[number];
@@ -47,7 +47,11 @@ function createConfiguredProviders(): ProviderCandidate[] {
   const candidates: ProviderCandidate[] = [];
 
   for (const id of readProviderOrder()) {
-    if (id === "nvidia" && process.env.NVIDIA_API_KEY?.trim()) {
+    const nvidiaApiKey = process.env.NVIDIA_API_KEY?.trim();
+    const openRouterApiKey = process.env.OPENROUTER_API_KEY?.trim();
+    const groqApiKey = process.env.GROQ_API_KEY?.trim();
+
+    if (id === "nvidia" && nvidiaApiKey) {
       const modelId = configuredModel(
         process.env.NVIDIA_MODEL,
         "nvidia/nemotron-3.5-super-vl-120b-a12b",
@@ -55,27 +59,27 @@ function createConfiguredProviders(): ProviderCandidate[] {
       const provider = createOpenAICompatible({
         name: "nvidia-nim",
         baseURL: "https://integrate.api.nvidia.com/v1",
-        apiKey: process.env.NVIDIA_API_KEY,
+        apiKey: nvidiaApiKey,
       });
       candidates.push({ id, modelId, model: provider.chatModel(modelId) });
     }
 
-    if (id === "openrouter" && process.env.OPENROUTER_API_KEY?.trim()) {
+    if (id === "openrouter" && openRouterApiKey) {
       const modelId = configuredModel(process.env.OPENROUTER_MODEL, "openrouter/free");
       const provider = createOpenAICompatible({
         name: "openrouter",
         baseURL: "https://openrouter.ai/api/v1",
-        apiKey: process.env.OPENROUTER_API_KEY,
+        apiKey: openRouterApiKey,
       });
       candidates.push({ id, modelId, model: provider.chatModel(modelId) });
     }
 
-    if (id === "groq" && process.env.GROQ_API_KEY?.trim()) {
+    if (id === "groq" && groqApiKey) {
       const modelId = configuredModel(process.env.GROQ_MODEL, "openai/gpt-oss-120b");
       const provider = createOpenAICompatible({
         name: "groq",
         baseURL: "https://api.groq.com/openai/v1",
-        apiKey: process.env.GROQ_API_KEY,
+        apiKey: groqApiKey,
       });
       candidates.push({ id, modelId, model: provider.chatModel(modelId) });
     }
