@@ -14,6 +14,34 @@ const MAX_MESSAGES = 14;
 const MAX_MESSAGE_LENGTH = 2_500;
 const MAX_TOTAL_TEXT = 14_000;
 
+function summarizeStreamError(error: unknown) {
+  const value = typeof error === "object" && error !== null
+    ? error as Record<string, unknown>
+    : {};
+  const rawMessage = error instanceof Error
+    ? error.message
+    : typeof error === "string"
+      ? error
+      : typeof value.message === "string"
+        ? value.message
+        : "Unknown stream error";
+  const message = rawMessage
+    .replace(/Bearer\s+\S+/gi, "Bearer [REDACTED]")
+    .replace(/(?:api[_-]?key|authorization)\s*[:=]\s*["']?[^,\s"']+/gi, "credential=[REDACTED]")
+    .slice(0, 500);
+  const status = value.statusCode ?? value.status;
+
+  return {
+    name: error instanceof Error
+      ? error.name
+      : typeof value.name === "string"
+        ? value.name
+        : typeof error,
+    message,
+    statusCode: typeof status === "number" ? status : null,
+  };
+}
+
 const requestSchema = z.object({
   messages: z.array(z.unknown()).min(1).max(40),
 }).strict();
@@ -156,14 +184,27 @@ export async function POST(request: Request) {
       system: systemPrompt,
       messages,
       tools: createConciergeTools(),
+      // Nemotron 3.5 enables reasoning by default. Disable hidden reasoning
+      // for this customer-facing chat so the output budget is reserved for
+      // the answer and the router can fail over before visible text starts.
+      providerOptions: {
+        nvidiaNim: {
+          chat_template_kwargs: { enable_thinking: false },
+        },
+      },
       stopWhen: isStepCount(5),
-      maxOutputTokens: 900,
+      maxOutputTokens: 1_200,
       timeout: { totalMs: 25_000, toolMs: 8_000 },
       abortSignal: request.signal,
     });
 
     return result.toUIMessageStreamResponse({
       headers: { "Cache-Control": "no-store" },
+      onError: (error) => {
+        const details = summarizeStreamError(error);
+        console.error("Ritewheel Concierge stream failed.", details);
+        return "The AI Concierge could not complete this response. Please try again.";
+      },
     });
   } catch (error) {
     console.error("Concierge generation failed:", error instanceof Error ? error.message : "Unknown error");

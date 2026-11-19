@@ -569,7 +569,11 @@ export function ConciergeWorkspace() {
       api: "/api/concierge",
       credentials: "same-origin",
     }),
-    onError: () => undefined,
+    onError: (chatError) => {
+      // Keep the customer-facing message generic, but preserve the actual
+      // fetch/stream error in the browser console for debugging.
+      console.error("[Ritewheel Concierge] Chat request failed.", chatError);
+    },
   });
 
   const [input, setInput] = useState("");

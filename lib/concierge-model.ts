@@ -153,23 +153,23 @@ function beforeDeadline<T>(promise: PromiseLike<T>, deadline: number) {
 }
 
 function isMeaningfulOutput(part: LanguageModelV4StreamPart) {
-  return (
-    part.type === "text-start" ||
-    part.type === "text-delta" ||
-    part.type === "text-end" ||
-    part.type === "reasoning-start" ||
-    part.type === "reasoning-delta" ||
-    part.type === "reasoning-end" ||
-    part.type === "tool-input-start" ||
-    part.type === "tool-input-delta" ||
-    part.type === "tool-input-end" ||
-    part.type === "tool-call" ||
-    part.type === "tool-result" ||
-    part.type === "file" ||
-    part.type === "reasoning-file" ||
-    part.type === "source" ||
-    part.type === "custom"
-  );
+  // Hidden reasoning is not a customer-facing response. Keep the provider
+  // eligible for fallback until it emits actual text, a tool call/result,
+  // or another user-visible payload.
+  switch (part.type) {
+    case "text-delta":
+      return part.delta.length > 0;
+    case "tool-input-delta":
+      return part.delta.length > 0;
+    case "tool-call":
+    case "tool-result":
+    case "file":
+    case "source":
+    case "custom":
+      return true;
+    default:
+      return false;
+  }
 }
 
 function replayStream(
@@ -250,12 +250,7 @@ async function streamWithFallback(
         const next = await beforeDeadline(reader.read(), deadline);
 
         if (next.done) {
-          clearTimeout(timeout);
-          recordProviderSuccess(candidate);
-          return {
-            ...result,
-            stream: replayStream(buffered, reader, candidate, params.abortSignal),
-          };
+          throw new Error("Provider completed without a customer-visible response.");
         }
 
         if (next.value.type === "error" && !buffered.some(isMeaningfulOutput)) {
