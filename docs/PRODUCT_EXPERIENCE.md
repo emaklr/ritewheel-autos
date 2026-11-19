@@ -87,19 +87,20 @@ A sourcing request is not a listing, purchase or guarantee that the dealership c
 
 ## 6. AI Car Concierge
 
-One conversational interface provides specialised capabilities:
-- Understand needs and ask concise follow-ups.
+The AI Concierge is a discovery assistant for customers who are unsure what vehicle they need. It should:
+- Understand needs and ask concise follow-up questions.
 - Search real inventory with server-side read-only tools.
 - Rank a small set of genuine listings and explain matches.
-- Identify compromises and missing listing information.
-- Compare two or three inventory records.
+- Identify trade-offs and missing listing information.
 - Answer questions using supplied listing facts.
 - Suggest unlisted model ideas with clear availability/source caveats.
-- Map a style request to supported Design Studio option IDs.
+- Explain supported Design Studio capabilities and direct customers to the Studio.
 - Prepare an editable customer requirement summary for human handover.
 - Offer explicit save actions for recommendations/preferences.
 
-Customer actions include View Vehicle, Compare, Save to My Garage, Open Design Studio, Find Similar, Request Sourcing, and Talk to a Sales Specialist.
+**Product boundary:** Concierge is not the comparison workspace and must not perform a side-by-side comparison workflow. When customers already have vehicles in mind, it links to the separate /compare page. Compare buttons populate that workspace; they never route a customer into the AI conversation.
+
+A persistent floating **Talk to AI** launcher is available across public storefront pages. It opens the same Concierge conversation in a compact panel and links to the full /concierge page. The launcher must not cover primary actions, interrupt forms, or appear inside the admin workspace. Reuse a maintained chat component/runtime rather than building message transport, retries, accessibility and streaming UI from scratch.
 
 The customer must confirm each save or submission in the normal UI. AI does not silently mutate Garage data, submit forms, reserve vehicles, issue quotes or charge money.
 
@@ -149,11 +150,20 @@ Revalidate listing status and price on the server whenever Garage loads. Browser
 
 ## 8. Compare and shortlist
 
-Compare up to three actual listings using fields that exist: price/currency, year, body type, seating, mileage, transmission, fuel, engine, drivetrain, features and condition. Mark missing fields clearly. Do not compare NGN and USD as if they were equivalent. Saved comparison sets become account-scoped in Release 2. If a saved vehicle sells, retain history and flag the status.
+Compare is a standalone, non-AI workspace inspired by specification comparison sites such as GSMArena. It compares up to three actual Ritewheel listings in a **row-by-row specification matrix**, with one vehicle per column and grouped rows for overview, engine/drivetrain, comfort and appearance.
+
+The matrix displays every supported field returned by the listing record, including make, model, trim, year, body type, condition, asking price/currency, listing status, mileage, engine, transmission, fuel, drivetrain, seating, exterior/interior colour and recorded features. Missing values are shown as **Not provided**; never fill gaps with model-generated or guessed facts. Price values retain their original currency and are never converted or ranked across NGN, USD, GBP or EUR.
+
+The comparison selection is local to the guest browser and limited to three vehicles in Release 1. Vehicle cards provide a separate **View comparison** action after a car is selected. Saved comparison sets become account-scoped in Release 2. If a saved vehicle sells, retain history and flag the status. More detailed technical specifications (for example power, torque, acceleration, dimensions and economy) are added only when the listing schema and verified source data support them.
 
 ## 9. Design Studio
 
-V1 uses curated image assets and supported vehicle-specific options: exterior colour/finish, wheels, interior, brake calipers and appearance package. AI proposes only valid option IDs. The customer reviews/applies them. Preview assets are curated; do not claim arbitrary real-time repainting or 3D rendering. A build can be saved locally/shareably in Release 1 and synced to My Garage in Release 2.
+Design Studio is a creative build workspace, separate from Concierge and Compare. It has two complementary experiences:
+
+1. **AI visual concept builder (first):** let a customer start from a prompt, an uploaded reference photo, or a selected Ritewheel vehicle, then describe imaginative changes such as paint, wheels, body kits, spoilers, stance, tint, lighting and interior styling. Reuse a proven photo-editing workflow and a currently supported image-generation/editing model. The output is a visual concept only, not proof of mechanical fitment, road legality, cost, stock, or build feasibility. Keep the original image and generated result visible for before/after review. Rate-limit generation, validate uploads, protect the API key, and show usage/cost limits before generation.
+2. **Asset-backed 3D configurator (later/curated):** reuse a proven React Three Fiber/Three.js studio for specific vehicle models where Ritewheel has a licensed GLB and verified material/part mappings. Paint, finish, wheels and separate parts can be interactive only where the model actually supports them. Never imply any make/model can be fully configured in 3D without a suitable model asset.
+
+The customer can save a concept/build locally/shareably in Release 1 and sync it to My Garage in Release 2. Clearly label AI concepts as illustrative.
 
 ## 10. Human dealership experience
 

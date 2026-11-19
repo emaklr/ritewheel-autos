@@ -249,44 +249,6 @@ export function createConciergeTools() {
       },
     }),
 
-    compareVehicles: tool({
-      description:
-        "Compare two or three actual published Ritewheel vehicle records by their IDs. Never convert currencies. Call this only when the customer asks for a comparison or needs help choosing between specific listings.",
-      inputSchema: z.object({
-        vehicleIds: z.array(z.string().min(1).max(40)).min(2).max(3),
-      }).strict().superRefine((value, context) => {
-        if (new Set(value.vehicleIds).size !== value.vehicleIds.length) {
-          context.addIssue({ code: "custom", path: ["vehicleIds"], message: "Vehicle IDs must be unique." });
-        }
-      }),
-      execute: async ({ vehicleIds }) => {
-        if (!process.env.DATABASE_URL) return { source: "not_connected" as const, items: [], missingIds: vehicleIds };
-        try {
-          const rows = await getPrismaClient().vehicle.findMany({
-            where: {
-              id: { in: vehicleIds },
-              publishedAt: { not: null },
-              status: { in: ["AVAILABLE", "RESERVED", "SOLD"] },
-            },
-            select: publicVehicleSelect,
-          });
-          const byId = new Map(rows.map((row) => [row.id, formatVehicle(row)]));
-          const items = vehicleIds.map((id) => byId.get(id)).filter((item): item is NonNullable<typeof item> => Boolean(item));
-          const currenciesInResult = [...new Set(items.map((item) => item.currency))];
-          return {
-            source: "database" as const,
-            items,
-            missingIds: vehicleIds.filter((id) => !byId.has(id)),
-            pricesComparable: items.length === vehicleIds.length && currenciesInResult.length === 1 && items.every((item) => item.price !== null),
-            currency: currenciesInResult.length === 1 ? currenciesInResult[0] : null,
-          };
-        } catch (error) {
-          console.error("Concierge vehicle comparison failed:", error instanceof Error ? error.message : "Unknown error");
-          return { source: "error" as const, items: [], missingIds: vehicleIds, pricesComparable: false, currency: null };
-        }
-      },
-    }),
-
     getVehicleOptions: tool({
       description:
         "Retrieve valid Design Studio choices and exact preview-asset mappings for a published vehicle. Return only options currently marked available. If there are none, say the vehicle has no supported Design Studio configuration. Never invent options, preview assets or price adjustments.",

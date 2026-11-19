@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 
 const SAVED_KEY = "ritewheel.garage.saved.v1";
@@ -22,12 +23,15 @@ function writeIds(key: string, ids: string[]) {
 export function VehicleCardActions({ vehicleSlug, variant = "default" }: { vehicleSlug: string; variant?: "default" | "concierge" }) {
   const [saved, setSaved] = useState(false);
   const [compared, setCompared] = useState(false);
+  const [compareCount, setCompareCount] = useState(0);
   const [message, setMessage] = useState("");
 
   useEffect(() => {
     const sync = () => {
       setSaved(readIds(SAVED_KEY).includes(vehicleSlug));
-      setCompared(readIds(COMPARE_KEY).includes(vehicleSlug));
+      const compareIds = readIds(COMPARE_KEY);
+      setCompared(compareIds.includes(vehicleSlug));
+      setCompareCount(compareIds.length);
     };
     sync();
     window.addEventListener("storage", sync);
@@ -73,6 +77,7 @@ export function VehicleCardActions({ vehicleSlug, variant = "default" }: { vehic
       <button type="button" className={compared ? "mini-action is-active" : "mini-action"} onClick={toggleCompare} aria-pressed={compared}>
         <span aria-hidden="true">⇄</span> {compared ? "Comparing" : "Compare"}
       </button>
+      {compareCount > 0 ? <Link href="/compare" className="mini-action vehicle-compare-link">View comparison ({compareCount}) →</Link> : null}
       <span className="sr-only" role="status" aria-live="polite">{message}</span>
     </div>
   );

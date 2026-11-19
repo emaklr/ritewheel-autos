@@ -741,10 +741,10 @@ export function ConciergeWorkspace() {
                   {[
                     "Find a family SUV within my budget.",
                     "Help me choose an economical daily driver.",
-                    "Compare two luxury SUVs.",
                     "Find a comfortable car for long journeys.",
                   ].map((prompt) => <button type="button" key={prompt} onClick={() => submitPrompt(prompt)} disabled={isBusy}>{prompt}</button>)}
                 </div>
+                <Link href="/compare" className="concierge-compare-link">Already have vehicles in mind? Compare their specifications →</Link>
                 <p className="concierge-privacy-hint">Please don’t share passwords, payment details or personal contact information here. You can provide contact details separately if you choose to contact the dealership.</p>
               </div>
             ) : (

@@ -320,6 +320,24 @@ img { display: block; max-width: 100%; }
 .collection-card-title strong { font-size:18px; }
 .collection-card-details { display:grid; gap:7px; color:#c0c6c1; font-size:11px; }
 .collection-card-details small { color:#b08a4a; }
+.comparison-table-wrap { width:100%; overflow:auto; border:1px solid var(--line); border-radius:14px; background:#111414; }
+.comparison-table { width:100%; min-width:760px; border-collapse:separate; border-spacing:0; text-align:left; }
+.comparison-table th,.comparison-table td { padding:15px 17px; border-bottom:1px solid var(--line); vertical-align:top; font-size:13px; }
+.comparison-table thead th { background:#191e1d; }
+.comparison-table .comparison-label-cell { position:sticky; left:0; z-index:2; min-width:170px; width:190px; background:#171b1a; color:var(--muted); font-weight:600; }
+.comparison-table thead .comparison-label-cell { z-index:3; background:#191e1d; }
+.comparison-table thead th:not(:first-child) { min-width:220px; }
+.comparison-vehicle-heading { display:grid; gap:8px; }
+.comparison-vehicle-heading a { display:grid; gap:5px; }
+.comparison-vehicle-heading a span { color:var(--gold); font-size:10px; text-transform:uppercase; letter-spacing:.1em; }
+.comparison-vehicle-heading a strong { color:var(--text); font-size:16px; }
+.comparison-vehicle-heading a small,.comparison-demo-label { color:var(--muted); font-size:11px; }
+.comparison-demo-label { color:#c49a52; }
+.comparison-group-row th { position:static; padding:11px 17px; background:#202524; color:var(--gold); font-size:10px; letter-spacing:.13em; text-transform:uppercase; }
+.comparison-missing { color:#828985; font-style:italic; }
+.comparison-table tbody tr:last-child th,.comparison-table tbody tr:last-child td { border-bottom:0; }
+.vehicle-compare-link { color:var(--gold); }
+.concierge-compare-link { display:inline-flex; margin-top:10px; color:var(--gold); font-size:12px; text-decoration:underline; text-underline-offset:4px; }
 .comparison-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:16px; align-items:start; }
 .feature-page { min-height:65vh; padding-top:48px; padding-bottom:70px; }
 .feature-coming-soon { max-width:900px; margin:40px auto; padding:54px; border:1px solid var(--line); border-radius:18px; background:radial-gradient(circle at 85% 15%,rgba(245,160,0,.09),transparent 32%),linear-gradient(145deg,#171b1a,#101313); }

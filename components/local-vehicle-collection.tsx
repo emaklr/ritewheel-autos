@@ -11,6 +11,18 @@ const KEYS = {
   compare: "ritewheel.compare.v1",
 } as const;
 
+function formatVehiclePrice(price: number, currency: string) {
+  try {
+    return new Intl.NumberFormat("en-NG", {
+      style: "currency",
+      currency,
+      maximumFractionDigits: 0,
+    }).format(price);
+  } catch {
+    return currency + " " + price.toLocaleString("en-NG");
+  }
+}
+
 function readSlugs(key: string): string[] {
   try {
     const value: unknown = JSON.parse(window.localStorage.getItem(key) ?? "[]");
@@ -93,7 +105,7 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
           <h1>{isSaved ? "My Garage" : "Compare vehicles"}</h1>
           <p>{isSaved
             ? "Your saved vehicles, kept on this browser. Account sync will arrive in a later release."
-            : "Review up to three vehicles side by side. Your comparison is stored on this browser."}</p>
+            : "Compare key specifications in a side-by-side matrix. Missing listing details are marked; prices stay in their original currencies."}</p>
         </div>
         <Link href="/inventory" className="button button-outline button-small">Explore inventory</Link>
       </div>
@@ -116,28 +128,91 @@ export function LocalVehicleCollection({ mode }: { mode: Mode }) {
       ) : null}
 
       {currentVehicles.length > 0 ? (
-        <div className={isSaved ? "vehicle-grid" : "comparison-grid"}>
-          {currentVehicles.map((vehicle) => (
-            <article key={vehicle.slug} className="collection-card">
-              <Link href={`/vehicles/${vehicle.slug}`} className="collection-card-title">
-                <span>{vehicle.year} · {vehicle.bodyType}</span>
-                <strong>{vehicle.make} {vehicle.model}</strong>
-              </Link>
-              <div className="collection-card-details">
-                <span>{vehicle.condition}</span>
-                <span>{vehicle.transmission ?? "Transmission not provided"}</span>
-                <span>{vehicle.fuelType ?? "Fuel not provided"}</span>
-                <span>{vehicle.seats ? `${vehicle.seats} seats` : "Seating not provided"}</span>
-                <span>{vehicle.price === null
-                  ? "Price on request"
-                  : new Intl.NumberFormat("en-NG", { style: "currency", currency: vehicle.currency, maximumFractionDigits: 0 }).format(vehicle.price)}</span>
-                {vehicle.isDemo ? <small>Demo listing · Illustrative data</small> : null}
-              </div>
-              {vehicle.status !== "AVAILABLE" ? <span className="badge badge-reserved">{vehicle.status}</span> : null}
-              <button type="button" className="mini-action" onClick={() => remove(vehicle.slug)}>Remove</button>
-            </article>
-          ))}
-        </div>
+        isSaved ? (
+          <div className="vehicle-grid">
+            {currentVehicles.map((vehicle) => (
+              <article key={vehicle.slug} className="collection-card">
+                <Link href={"/vehicles/" + vehicle.slug} className="collection-card-title">
+                  <span>{vehicle.year} · {vehicle.bodyType}</span>
+                  <strong>{vehicle.make} {vehicle.model}</strong>
+                </Link>
+                <div className="collection-card-details">
+                  <span>{vehicle.condition}</span>
+                  <span>{vehicle.transmission ?? "Transmission not provided"}</span>
+                  <span>{vehicle.fuelType ?? "Fuel not provided"}</span>
+                  <span>{vehicle.seats ? vehicle.seats + " seats" : "Seating not provided"}</span>
+                  <span>{vehicle.price === null ? "Price on request" : formatVehiclePrice(vehicle.price, vehicle.currency)}</span>
+                  {vehicle.isDemo ? <small>Demo listing · Illustrative data</small> : null}
+                </div>
+                {vehicle.status !== "AVAILABLE" ? <span className="badge badge-reserved">{vehicle.status}</span> : null}
+                <button type="button" className="mini-action" onClick={() => remove(vehicle.slug)}>Remove</button>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="comparison-table-wrap" role="region" aria-label="Vehicle specification comparison" tabIndex={0}>
+            <table className="comparison-table">
+              <thead>
+                <tr>
+                  <th scope="col" className="comparison-label-cell">Specification</th>
+                  {currentVehicles.map((vehicle) => (
+                    <th scope="col" key={vehicle.slug}>
+                      <div className="comparison-vehicle-heading">
+                        <Link href={"/vehicles/" + vehicle.slug}>
+                          <span>{vehicle.year} · {vehicle.bodyType}</span>
+                          <strong>{vehicle.make} {vehicle.model}</strong>
+                          {vehicle.trim ? <small>{vehicle.trim}</small> : null}
+                        </Link>
+                        {vehicle.isDemo ? <small className="comparison-demo-label">Demo · illustrative</small> : null}
+                        <button type="button" className="mini-action" onClick={() => remove(vehicle.slug)}>Remove</button>
+                      </div>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              {[
+                { title: "Overview", rows: [
+                  ["Model year", (v: VehicleSummary) => String(v.year)],
+                  ["Make", (v: VehicleSummary) => v.make],
+                  ["Model", (v: VehicleSummary) => v.model],
+                  ["Trim", (v: VehicleSummary) => v.trim],
+                  ["Body type", (v: VehicleSummary) => v.bodyType],
+                  ["Condition", (v: VehicleSummary) => v.condition],
+                  ["Availability", (v: VehicleSummary) => v.status],
+                  ["Asking price", (v: VehicleSummary) => v.price === null ? "Price on request" : formatVehiclePrice(v.price, v.currency)],
+                ]},
+                { title: "Engine & drivetrain", rows: [
+                  ["Engine", (v: VehicleSummary) => v.engine],
+                  ["Fuel type", (v: VehicleSummary) => v.fuelType],
+                  ["Transmission", (v: VehicleSummary) => v.transmission],
+                  ["Drivetrain", (v: VehicleSummary) => v.drivetrain],
+                  ["Mileage", (v: VehicleSummary) => v.mileage === null ? null : v.mileage.toLocaleString("en-NG") + " km"],
+                ]},
+                { title: "Comfort & appearance", rows: [
+                  ["Seating", (v: VehicleSummary) => v.seats === null ? null : String(v.seats) + " seats"],
+                  ["Exterior colour", (v: VehicleSummary) => v.exteriorColour],
+                  ["Interior colour", (v: VehicleSummary) => v.interiorColour],
+                  ["Recorded features", (v: VehicleSummary) => v.features?.length ? v.features.join(", ") : null],
+                ]},
+              ].map((group) => (
+                <tbody key={group.title}>
+                  <tr className="comparison-group-row">
+                    <th scope="colgroup" colSpan={currentVehicles.length + 1}>{group.title}</th>
+                  </tr>
+                  {group.rows.map(([label, value]) => (
+                    <tr key={label as string}>
+                      <th scope="row" className="comparison-label-cell">{label as string}</th>
+                      {currentVehicles.map((vehicle) => {
+                        const cellValue = (value as (v: VehicleSummary) => string | null)(vehicle);
+                        return <td key={vehicle.slug}>{cellValue || <span className="comparison-missing">Not provided</span>}</td>;
+                      })}
+                    </tr>
+                  ))}
+                </tbody>
+              ))}
+            </table>
+          </div>
+        )
       ) : null}
 
       <p className="demo-notice">Guest Garage and comparison are local to this browser in Release 1. Clearing browser storage or using another device will not preserve these items.</p>

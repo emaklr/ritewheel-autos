@@ -13,6 +13,10 @@ export type VehicleSummary = {
   transmission: string | null;
   fuelType: string | null;
   engine: string | null;
+  drivetrain?: string | null;
+  exteriorColour?: string | null;
+  interiorColour?: string | null;
+  features?: string[];
   seats: number | null;
   price: number | null;
   currency: string;
@@ -274,6 +278,10 @@ function formatVehicle(row: {
   transmission: string | null;
   fuelType: string | null;
   engine: string | null;
+  drivetrain?: string | null;
+  exteriorColour?: string | null;
+  interiorColour?: string | null;
+  features?: string[];
   seats: number | null;
   price: { toNumber(): number } | null;
   currency: string;
@@ -290,6 +298,10 @@ function formatVehicle(row: {
 
   return {
     ...row,
+    drivetrain: row.drivetrain ?? null,
+    exteriorColour: row.exteriorColour ?? null,
+    interiorColour: row.interiorColour ?? null,
+    features: row.features ?? [],
     price: row.price?.toNumber() ?? null,
     image: images[0]?.url ?? "/images/vehicle-placeholder.svg",
     imageAlt: images[0]?.altText ?? `${row.make} ${row.model}`,
@@ -427,6 +439,7 @@ export async function getVehiclesBySlugs(slugs: string[]): Promise<{ items: Vehi
       bodyType: true, condition: true, mileage: true, transmission: true,
       fuelType: true, engine: true, seats: true, price: true, currency: true,
       status: true, featured: true, isDemo: true, description: true,
+      drivetrain: true, exteriorColour: true, interiorColour: true, features: true,
       images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], take: 1, select: { url: true, altText: true } },
     },
   });
