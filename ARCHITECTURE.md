@@ -966,7 +966,7 @@ The complete dashboard UI and workflow specification is in [docs/VISUAL_BLUEPRIN
 
 ## 34. Release 1 AI Concierge implementation
 
-- The dedicated `/concierge` route loads the client conversation workspace only on the Concierge page and streams replies from `POST /api/concierge` using the Vercel AI SDK and the Google NVIDIA NIM provider (`gemini-3.8-flash`).
+- The dedicated `/concierge` route loads the client conversation workspace only on the Concierge page and streams replies from `POST /api/concierge` using the Vercel AI SDK and the NVIDIA NIM provider (`nvidia/nemotron-3.5-super-vl-120b-a12b`).
 - The server-side tool set is read-only: `searchVehicles`, `getVehicleDetails`, `compareVehicles` and `getVehicleOptions`. Each query is validated and resolves against published PostgreSQL vehicle records; search returns at most three listings and a database count.
 - A record with `isDemo=true` is always labelled as an illustration and is never described as real dealer stock. When the database or NVIDIA NIM provider is unavailable, the UI displays a truthful fallback instead of simulated AI output.
 - The route bounds request size, conversation length, output tokens, tool steps, request time and per-process request frequency. It strips tool-result parts from subsequent model requests and removes common email/phone patterns from prompt text. Customer contact details are collected only in the normal contact/request forms, not as chat inputs.
