@@ -480,7 +480,13 @@ The actual values must be created in local environment files or the hosting prov
 | `DATABASE_URL` | Yes | Pooled PostgreSQL connection for runtime |
 | `DIRECT_URL` | Yes | Direct PostgreSQL connection for migrations, if required by provider |
 | `AUTH_SECRET` | Yes | Auth.js signing/encryption secret |
-| `NVIDIA_API_KEY` | Optional for AI | Server-side NVIDIA NIM key (primary) |\n| `OPENROUTER_API_KEY` | Optional for AI | Server-side OpenRouter key (fallback) |\n| `GROQ_API_KEY` | Optional for AI | Server-side Groq key (fallback) |\n| `RITEWHEEL_AI_PROVIDER_ORDER` | Optional for AI | Comma-separated provider priority; defaults to `nvidia,openrouter,groq` |\n| `NVIDIA_MODEL` | Optional for AI | NVIDIA model ID override |\n| `OPENROUTER_MODEL` | Optional for AI | OpenRouter model/router ID; defaults to `openrouter/free` |\n| `GROQ_MODEL` | Optional for AI | Groq model ID; defaults to `openai/gpt-oss-120b` |
+| `NVIDIA_API_KEY` | Optional for AI | Server-side NVIDIA NIM key (primary) |
+| `OPENROUTER_API_KEY` | Optional for AI | Server-side OpenRouter key (fallback) |
+| `GROQ_API_KEY` | Optional for AI | Server-side Groq key (fallback) |
+| `RITEWHEEL_AI_PROVIDER_ORDER` | Optional for AI | Comma-separated provider priority; defaults to `nvidia,openrouter,groq` |
+| `NVIDIA_MODEL` | Optional for AI | NVIDIA model ID override |
+| `OPENROUTER_MODEL` | Optional for AI | OpenRouter model/router ID; defaults to `openrouter/free` |
+| `GROQ_MODEL` | Optional for AI | Groq model ID; defaults to `openai/gpt-oss-120b` |
 | `NEXT_PUBLIC_SITE_URL` | Yes in production | Canonical public application URL |
 | `ADMIN_EMAIL` | Initial seed only | Initial administrator identity |
 | `ADMIN_PASSWORD` | Initial seed only | Used by the seed/bootstrap process to hash the initial admin password; do not expose or commit it |
