@@ -136,7 +136,7 @@ Design rules:
 | Validation | Zod | Runtime validation for forms, API inputs, and AI tool arguments |
 | Database | PostgreSQL | Persistent inventory, configurations, enquiries, bookings, and admin records |
 | ORM | Prisma | Schema, migrations, typed queries, and database access |
-| AI | NVIDIA Nemotron through NVIDIA NIM and Vercel AI SDK | Natural-language concierge and tool calling |
+| AI | Vercel AI SDK with NVIDIA NIM, OpenRouter and Groq provider adapters | Natural-language concierge, tool calling and provider failover |
 | Authentication | Application-owned opaque database sessions | HttpOnly cookies, session expiry, and server-side access checks |
 | Password hashing | Node.js crypto.scrypt | Salted one-way administrator password hashing |
 | Hosting | Vercel | Application hosting and deployment |
@@ -152,7 +152,7 @@ Use a pooled connection for serverless runtime queries where supported and a dir
 
 ### AI provider
 
-Use NVIDIA Nemotron through NVIDIA NIM via the Vercel AI SDK behind a server-only provider adapter. The model and provider should be replaceable without changing the UI or vehicle service layer.
+Use a server-only model router behind the Vercel AI SDK. It tries providers in the order configured by RITEWHEEL_AI_PROVIDER_ORDER (default: NVIDIA NIM, OpenRouter, then Groq). Only configured providers are eligible. NVIDIA Nemotron is the primary model; OpenRouter's free-model router and Groq are optional independent fallbacks. Model IDs can be overridden with provider-specific environment variables without changing the UI or vehicle service layer.
 
 The application must work in a useful non-AI mode if the AI key is absent: inventory browsing, filters, vehicle details, configuration selection, and enquiries remain available. The concierge should display a clear unavailable state rather than silently pretending to be AI-powered.
 
@@ -450,7 +450,7 @@ The AI is Ritewheel's car-shopping concierge. It helps customers discover and un
 - Add rate limits to login, AI, enquiry, test-drive, and build creation endpoints.
 - Apply server-side allowlists for sort fields, filter values, and image URL protocols/hosts.
 - Use parameterised Prisma queries; never construct SQL from AI output or raw user strings.
-- Keep `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, and the NVIDIA NIM key server-only.
+- Keep `DATABASE_URL`, `DIRECT_URL`, `AUTH_SECRET`, and all model-provider keys server-only.
 - Do not commit secrets, real customer records, or production database snapshots.
 - Avoid logging phone numbers, emails, message bodies, API keys, or authentication tokens.
 - Add safe error responses; detailed stack traces belong in server logs only.
@@ -480,7 +480,7 @@ The actual values must be created in local environment files or the hosting prov
 | `DATABASE_URL` | Yes | Pooled PostgreSQL connection for runtime |
 | `DIRECT_URL` | Yes | Direct PostgreSQL connection for migrations, if required by provider |
 | `AUTH_SECRET` | Yes | Auth.js signing/encryption secret |
-| `NVIDIA_API_KEY` | For AI | Server-side NVIDIA NIM API key |
+| `NVIDIA_API_KEY` | Optional for AI | Server-side NVIDIA NIM key (primary) |\n| `OPENROUTER_API_KEY` | Optional for AI | Server-side OpenRouter key (fallback) |\n| `GROQ_API_KEY` | Optional for AI | Server-side Groq key (fallback) |\n| `RITEWHEEL_AI_PROVIDER_ORDER` | Optional for AI | Comma-separated provider priority; defaults to `nvidia,openrouter,groq` |\n| `NVIDIA_MODEL` | Optional for AI | NVIDIA model ID override |\n| `OPENROUTER_MODEL` | Optional for AI | OpenRouter model/router ID; defaults to `openrouter/free` |\n| `GROQ_MODEL` | Optional for AI | Groq model ID; defaults to `openai/gpt-oss-120b` |
 | `NEXT_PUBLIC_SITE_URL` | Yes in production | Canonical public application URL |
 | `ADMIN_EMAIL` | Initial seed only | Initial administrator identity |
 | `ADMIN_PASSWORD` | Initial seed only | Used by the seed/bootstrap process to hash the initial admin password; do not expose or commit it |
@@ -966,10 +966,10 @@ The complete dashboard UI and workflow specification is in [docs/VISUAL_BLUEPRIN
 
 ## 34. Release 1 AI Concierge implementation
 
-- The dedicated `/concierge` route loads the client conversation workspace only on the Concierge page and streams replies from `POST /api/concierge` using the Vercel AI SDK and the NVIDIA NIM provider (`nvidia/nemotron-3.5-super-vl-120b-a12b`).
+- The dedicated `/concierge` route streams replies from `POST /api/concierge` through a server-side Vercel AI SDK model router. Default order is NVIDIA NIM (`nvidia/nemotron-3.5-super-vl-120b-a12b`), OpenRouter (`openrouter/free`), then Groq (`openai/gpt-oss-120b`); only providers with configured keys participate.
 - The server-side tool set is read-only: `searchVehicles`, `getVehicleDetails`, `compareVehicles` and `getVehicleOptions`. Each query is validated and resolves against published PostgreSQL vehicle records; search returns at most three listings and a database count.
-- A record with `isDemo=true` is always labelled as an illustration and is never described as real dealer stock. When the database or NVIDIA NIM provider is unavailable, the UI displays a truthful fallback instead of simulated AI output.
-- The route bounds request size, conversation length, output tokens, tool steps, request time and per-process request frequency. It strips tool-result parts from subsequent model requests and removes common email/phone patterns from prompt text. Customer contact details are collected only in the normal contact/request forms, not as chat inputs.
+- A record with `isDemo=true` is always labelled as an illustration and is never described as real dealer stock. When the database or all configured model providers are unavailable, the UI displays a truthful fallback instead of simulated AI output.
+- The route bounds request size, conversation length, output tokens, tool steps, request time and per-process request frequency. It strips tool-result parts from subsequent model requests and removes common email/phone patterns from prompt text. The model router skips providers in a temporary per-instance cooldown and retries another configured provider only before meaningful streamed text/tool output is emitted; it does not replay a partially delivered answer. Cooldowns are best-effort on warm serverless instances, not shared durable quota tracking. Customer contact details are collected only in the normal contact/request forms, not as chat inputs.
 - Guest conversation display is stored in the current browser tab session only. No server-side conversation history or customer profile is created in Release 1.
 - Local Garage/Compare actions require explicit customer clicks. Human handover summaries are reviewed and edited before the normal enquiry form is shown; the full transcript is not shared. Sourcing opens the normal sourcing form with a few preference fields prefilled for customer review.
 - The Concierge has no write tools and cannot create or change vehicles, enquiries, test-drive bookings, sourcing records, quotes, reservations, purchases or payment records.

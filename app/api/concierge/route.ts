@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { isStepCount, streamText, type ModelMessage } from "ai";
 import { z } from "zod";
 import { createConciergeTools } from "@/lib/concierge-tools";
-import { getConciergeModel } from "@/lib/concierge-model";
+import { getConciergeModel, isConciergeConfigured } from "@/lib/concierge-model";
 import { checkRateLimit } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
@@ -89,9 +89,9 @@ function getMessageText(message: unknown): { role: "user" | "assistant"; text: s
 }
 
 export async function POST(request: Request) {
-  if (!process.env.NVIDIA_API_KEY) {
+  if (!isConciergeConfigured()) {
     return NextResponse.json(
-      { error: "The AI Concierge is unavailable because the NVIDIA NIM is not configured. You can still browse Inventory normally." },
+      { error: "The AI Concierge is unavailable because no supported model provider is configured. You can still browse Inventory normally." },
       { status: 503 },
     );
   }
@@ -158,9 +158,6 @@ export async function POST(request: Request) {
       tools: createConciergeTools(),
       stopWhen: isStepCount(5),
       maxOutputTokens: 900,
-      providerOptions: {
-        nim: { reasoningEffort: "low" },
-      },
       timeout: { totalMs: 25_000, toolMs: 8_000 },
       abortSignal: request.signal,
     });
