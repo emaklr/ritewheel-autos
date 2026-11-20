@@ -43,6 +43,11 @@ function summarizeStreamError(error: unknown) {
 }
 
 const requestSchema = z.object({
+  // DefaultChatTransport sends these metadata fields alongside messages.
+  // Keep the schema strict, but explicitly accept the SDK's request contract.
+  id: z.string().max(100).optional(),
+  trigger: z.enum(["submit-message", "regenerate-message"]).optional(),
+  messageId: z.string().max(100).optional(),
   messages: z.array(z.unknown()).min(1).max(40),
 }).strict();
 
