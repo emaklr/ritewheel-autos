@@ -48,7 +48,6 @@ It must be able to:
 - Retrieve a vehicle's stored specifications and answer questions from those facts.
 - Compare two or three vehicles using stored data.
 - Explain when there are no exact matches and offer sensible search relaxations.
-- Do not offer vehicle configuration or Design Studio styling in Releases 1–3.
 
 It must not:
 
@@ -56,6 +55,7 @@ It must not:
 - Claim a vehicle is available unless the database says it is published and available.
 - submit an enquiry, reserve a vehicle, or book a test drive without the customer reviewing and confirming a normal form.
 - Treat model-generated text as trusted data or execute arbitrary SQL, URLs, or code.
+- Offer vehicle configuration or Design Studio styling in Releases 1–3.
 
 ### 3.3 Vehicle Design Studio — Option A
 
