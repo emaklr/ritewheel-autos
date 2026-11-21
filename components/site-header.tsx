@@ -10,41 +10,61 @@ const links = [
   { href: "/about", label: "About" },
 ];
 
-export async function SiteHeader() {
+type SiteHeaderProps = {
+  showConciergeLauncher?: boolean;
+};
+
+export async function SiteHeader({ showConciergeLauncher = true }: SiteHeaderProps = {}) {
   const settings = await getPublicDealershipSettings();
 
   return (
-    <header className="site-header">
-      <div className="site-header-inner">
-        <Link href="/" className="brand" aria-label={settings.displayName + " home"}>
-          <span className="brand-mark" aria-hidden="true">R</span>
-          <span className="brand-name">{settings.displayName}</span>
-        </Link>
+    <>
+      <header className="site-header">
+        <div className="site-header-inner">
+          <Link href="/" className="brand" aria-label={settings.displayName + " home"}>
+            <span className="brand-mark" aria-hidden="true">R</span>
+            <span className="brand-name">{settings.displayName}</span>
+          </Link>
 
-        <nav className="desktop-nav" aria-label="Main navigation">
-          {links.map((link) => (
-            <Link key={link.href} href={link.href}>{link.label}</Link>
-          ))}
-        </nav>
-
-        <div className="header-actions">
-          <Link href="/garage" className="header-compare">My Garage</Link>
-          <Link href="/compare" className="header-compare">Compare</Link>
-          <Link href="/contact" className="button button-gold button-small">Get in touch <span aria-hidden="true">↗</span></Link>
-        </div>
-
-        <details className="mobile-menu">
-          <summary aria-label="Open navigation menu"><span/><span/><span/></summary>
-          <nav aria-label="Mobile navigation">
+          <nav className="desktop-nav" aria-label="Main navigation">
             {links.map((link) => (
               <Link key={link.href} href={link.href}>{link.label}</Link>
             ))}
-            <Link href="/garage">My Garage</Link>
-            <Link href="/compare">Compare vehicles</Link>
-            <Link href="/contact">Get in touch</Link>
           </nav>
-        </details>
-      </div>
-    </header>
+
+          <div className="header-actions">
+            <Link href="/garage" className="header-compare">My Garage</Link>
+            <Link href="/compare" className="header-compare">Compare</Link>
+            <Link href="/contact" className="button button-gold button-small">Get in touch <span aria-hidden="true">↗</span></Link>
+          </div>
+
+          <details className="mobile-menu">
+            <summary aria-label="Open navigation menu"><span/><span/><span/></summary>
+            <nav aria-label="Mobile navigation">
+              {links.map((link) => (
+                <Link key={link.href} href={link.href}>{link.label}</Link>
+              ))}
+              <Link href="/garage">My Garage</Link>
+              <Link href="/compare">Compare vehicles</Link>
+              <Link href="/contact">Get in touch</Link>
+            </nav>
+          </details>
+        </div>
+      </header>
+      {showConciergeLauncher ? (
+        <Link
+          href="/concierge"
+          className="floating-concierge-cta"
+          aria-label="Talk to the Ritewheel AI Concierge"
+        >
+          <span className="floating-concierge-icon" aria-hidden="true">R</span>
+          <span className="floating-concierge-copy">
+            <strong>Talk to AI</strong>
+            <small>Find your next car</small>
+          </span>
+          <span className="floating-concierge-arrow" aria-hidden="true">↗</span>
+        </Link>
+      ) : null}
+    </>
   );
 }
