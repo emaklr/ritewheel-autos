@@ -34,7 +34,7 @@ The current catalogue contains illustrative demo records only. Demo vehicles, ph
 
 ### Not yet implemented
 - Binary image uploads; inventory currently stores approved CDN/object-storage URLs or local asset paths.
-- Interactive vehicle Design Studio and administration of vehicle-specific option sets.
+- Vehicle Design Studio and vehicle-specific option administration (deferred until after Releases 1–3).
 - Customer accounts and cross-device Garage sync.
 - Staff roles, lead assignment and CRM (Release 2).
 - Quotes, reservations and online payments (Release 3).
@@ -135,9 +135,10 @@ The bootstrap command refuses to overwrite an existing administrator. Use the ap
 
 ## Release roadmap
 
-- **Release 1:** public marketplace, AI Concierge, asset-backed Design Studio, guest/local Garage, enquiry/test-drive/sourcing intake and basic dealership operations.
+- **Release 1:** actionable public marketplace, AI Concierge, guest/local Garage and comparison, enquiry/test-drive/sourcing intake, and basic dealership operations. Design Studio is explicitly excluded.
 - **Release 2:** customer accounts, synchronised My Garage, saved recommendations, preferences, notifications, staff roles and CRM.
 - **Release 3:** verified quotations, vehicle reservation holds, hosted payments, webhooks, refunds, reconciliation and purchase handover.
+- **After Release 3:** reassess and, if still valuable, build the deferred Vehicle Design Studio as a separate enhancement.
 
 Payments are architected in [docs/PAYMENTS_AND_TRANSACTIONS.md](./docs/PAYMENTS_AND_TRANSACTIONS.md); live payment processing is deliberately reserved for Release 3.
 
