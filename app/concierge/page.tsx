@@ -15,7 +15,7 @@ export default function ConciergePage() {
 
   return (
     <>
-      <SiteHeader />
+      <SiteHeader showConciergeLauncher={false} />
       {ready ? (
         <ConciergeWorkspace />
       ) : (
