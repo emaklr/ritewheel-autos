@@ -31,8 +31,7 @@ This document describes the intended system. It is not a claim that every compon
 - Vehicle detail page with image gallery, price, condition, specifications, features, availability, and enquiry actions.
 - Side-by-side comparison of up to three vehicles.
 - AI Car Concierge for natural-language discovery and vehicle questions.
-- Vehicle Design Studio with supported preset appearance options.
-- Save a configuration and continue to an enquiry.
+- Save vehicles and comparisons locally, then continue through a direct enquiry or test-drive request.
 - Submit a general vehicle enquiry or test-drive request as a guest.
 - Responsive desktop, tablet, and mobile layouts.
 
@@ -49,7 +48,7 @@ It must be able to:
 - Retrieve a vehicle's stored specifications and answer questions from those facts.
 - Compare two or three vehicles using stored data.
 - Explain when there are no exact matches and offer sensible search relaxations.
-- Translate a customer's design request into supported Design Studio selections.
+- Do not offer vehicle configuration or Design Studio styling in Releases 1–3.
 
 It must not:
 
@@ -908,9 +907,10 @@ Invariants:
 
 | Release | Scope | Payment status |
 | --- | --- | --- |
-| Release 1 | Marketplace, AI, Design Studio, guest/local Garage, enquiries, sourcing, basic admin queues | No live payments |
+| Release 1 | Actionable public marketplace, AI Concierge, guest/local Garage and comparison, enquiries, test drives, sourcing, basic admin queues | No live payments |
 | Release 2 | Customer accounts, persistent Garage, notifications, staff roles, CRM and lead management | Quote preparation may be modelled; no live charges |
 | Release 3 | Verified quotes, reservation holds, payment obligations, hosted checkout, signed webhooks, transaction records, refunds, reconciliation and handover | Live payment implementation after release gates |
+| After Release 3 | Reassess the deferred Vehicle Design Studio as a separate enhancement | No dependency on Releases 1–3 |
 
 Payment structure is designed now to avoid redesign. Gateway integration and real money movement are explicitly deferred to Release 3.
 
@@ -938,18 +938,13 @@ The approved design mockups are visual-only references. They do not authorise co
 Keep mockups in `docs/design-reference/`, not `public/`. Keep actual approved vehicle photography, thumbnails and Design Studio previews in `public/images/` or an approved CDN/object store with appropriate rights, optimisation, alt text and stable references. Never use screen mockups as listing photographs.
 
 
-## 31. Approved Vehicle Design Studio implementation decisions
+## 31. Deferred Vehicle Design Studio concept — post-Release 3
 
-The detailed Design Studio screen contract is in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md#8-screen-5--vehicle-design-studio).
+The detailed concept is retained in [docs/VISUAL_BLUEPRINT.md](./docs/VISUAL_BLUEPRINT.md#8-screen-5--vehicle-design-studio) for future reference only. It is not part of Release 1, Release 2 or Release 3, and must not block delivery of the actionable marketplace or the three approved releases.
 
-- V1 is an asset-backed configurator, not a 3D/WebGL renderer or generative image editor.
-- Option groups and valid choices are vehicle-specific and stored in VehicleOption records.
-- AI styling is a proposal-only helper. The server supplies allowed option IDs, validates model output, and the customer explicitly applies or dismisses the proposal.
-- Preview resolver selects exact mapped asset, closest supported variant or base-image fallback; the UI must identify non-exact previews.
-- Option price deltas are server-stored and currency-safe. No AI-invented or browser-calculated prices.
-- Guest builds can be persisted with an unguessable public ID in Release 1; cross-device account ownership arrives in Release 2.
-- Build enquiry links the VehicleBuild and Vehicle; it does not create a quote, reservation or payment.
-- Load the base image first, fetch variants on demand, and lazy-load the AI helper/model only after an explicit action.
+Do not implement Studio routes, option administration, AI styling, preview assets, saved builds or Studio-specific enquiry flows during Releases 1–3. Do not expose Studio navigation, promotional panels or calls to action in the live product during those releases. Reassess the concept only after Release 3 is complete and the core website is fully actionable.
+
+If approved after Release 3, the existing concept remains a possible direction: asset-backed previews rather than 3D/WebGL or generative image editing; vehicle-specific options; server-validated selections and currency-safe prices; and explicit labelling where a preview is not an exact match. These are future design notes, not current implementation requirements.
 
 
 ## 32. Release 1 Dealership Workspace contract
