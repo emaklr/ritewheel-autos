@@ -286,7 +286,7 @@ Release 2 may notify customers of enquiry acknowledgement, lead assignment, addi
 - PostgreSQL/Prisma backend and real vehicle CRUD.
 - Guest/local favourites, shortlist and shareable builds.
 - AI Concierge with grounded current-inventory search/comparison.
-- Asset-backed Design Studio.
+- Clear customer actions to enquire, request a test drive, save locally and compare vehicles.
 - Enquiries, callback and test-drive requests.
 - Basic vehicle sourcing request and protected staff review queue.
 - Basic dealership dashboard and configured human contact paths.
@@ -300,6 +300,9 @@ Release 2 may notify customers of enquiry acknowledgement, lead assignment, addi
 - Staff roles, lead assignment, customer records, sales activity and internal notes.
 - Customer-approved AI handover summaries.
 - Draft quote preparation can be introduced without accepting payments.
+
+### After Release 3 — Deferred Vehicle Design Studio
+The Design Studio is intentionally excluded from all three releases to keep delivery focused on a fully actionable marketplace and dealership workflow. Reassess it only after Release 3 is complete. The retained screen concept is reference material, not a delivery commitment.
 
 ### Release 3 — Quotations, reservations and payments
 - Versioned formal quotes and customer acceptance.
@@ -334,7 +337,7 @@ Release 2 may notify customers of enquiry acknowledgement, lead assignment, addi
 
 ## 20. Product acceptance
 
-Release 1 succeeds when a guest can discover a real listing, inspect and compare it, use AI to find a grounded match, configure supported options, save locally, submit enquiry/test-drive/sourcing request, and the dealership can review it in a protected workspace.
+Release 1 succeeds when a guest can discover a real listing, inspect and compare it, use AI to find a grounded match, save locally, submit an enquiry/test-drive/sourcing request, and the dealership can review it in a protected workspace. Vehicle configuration/Design Studio is deferred until after Release 3.
 
 The long-term product succeeds when customers can continue across devices in My Garage, staff can manage human relationships in CRM, and customers can review verified quotes and complete a secure, auditable payment lifecycle.
 
