@@ -1,5 +1,7 @@
 # Ritewheel Autos — Visual Blueprint
 
+> **Scope notice (current release decision):** The Vehicle Design Studio concept documented in Screen 5 is deferred until after Release 3. It is retained as future reference only. Do not implement it, expose its navigation/promotional links, or treat its screen/asset requirements as Release 1, 2 or 3 acceptance criteria. The live website must prioritise a complete, actionable marketplace and dealership workflow.
+
 **Version:** 1.0  
 **Status:** Design direction for review; not implemented  
 **Date:** 14 November 2026  
