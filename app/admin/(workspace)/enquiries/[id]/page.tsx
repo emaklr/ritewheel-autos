@@ -13,6 +13,7 @@ function formatDate(date: Date) {
 }
 
 function sourceLabel(source: string) {
+  if (source === "PURCHASE_INTENT") return "Purchase interest";
   return source === "VEHICLE_DETAIL" ? "Vehicle detail page" : "Contact page";
 }
 
@@ -65,7 +66,7 @@ export default async function AdminEnquiryDetailPage({
       <div className="admin-page-heading">
         <div>
           <Link className="admin-back-link" href="/admin/enquiries">← Back to enquiries</Link>
-          <span className="eyebrow">ENQUIRY DETAILS</span>
+          <span className="eyebrow">{enquiry.source === "PURCHASE_INTENT" ? "PURCHASE INTEREST" : "ENQUIRY DETAILS"}</span>
           <h1>{enquiry.customerName}</h1>
           <p>Reference: {enquiry.reference}</p>
         </div>
@@ -123,7 +124,7 @@ export default async function AdminEnquiryDetailPage({
               <p className="admin-detail-vehicle-meta">
                 {enquiry.vehicle.year}{enquiry.vehicle.trim ? " · " + enquiry.vehicle.trim : ""}
               </p>
-              <p className="admin-detail-vehicle-meta">Listed price: {vehiclePrice}</p>
+              <p className="admin-detail-vehicle-meta">Current listed price: {vehiclePrice}</p>
               <p className="admin-detail-vehicle-meta">Current listing status: {enquiry.vehicle.status}</p>
               <Link
                 className="text-link"

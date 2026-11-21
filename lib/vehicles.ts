@@ -19,6 +19,7 @@ export type VehicleSummary = {
   status: "AVAILABLE" | "RESERVED" | "SOLD" | "DRAFT" | "ARCHIVED";
   featured: boolean;
   isDemo: boolean;
+  isPublished?: boolean;
   description: string;
   image: string;
   imageAlt: string;
@@ -398,13 +399,13 @@ export async function getVehicleBySlug(slug: string): Promise<VehicleSummary | n
       id: true, slug: true, make: true, model: true, trim: true, year: true,
       bodyType: true, condition: true, mileage: true, transmission: true,
       fuelType: true, engine: true, seats: true, price: true, currency: true,
-      status: true, featured: true, isDemo: true, description: true,
+      status: true, featured: true, isDemo: true, description: true, publishedAt: true,
       images: { orderBy: [{ isPrimary: "desc" }, { sortOrder: "asc" }], select: { url: true, altText: true } },
     },
   });
 
   if (!row || row.status === "DRAFT" || row.status === "ARCHIVED") return null;
-  return formatVehicle(row);
+  return { ...formatVehicle(row), isPublished: Boolean(row.publishedAt) };
 }
 
 

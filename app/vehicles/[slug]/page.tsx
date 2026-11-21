@@ -53,6 +53,12 @@ export default async function VehicleDetailPage({ params }: Props) {
     ["Seats", vehicle.seats === null ? null : String(vehicle.seats)],
   ].filter((item): item is [string, string] => Boolean(item[1]));
 
+  const canStartPurchase = Boolean(
+    process.env.DATABASE_URL &&
+    vehicle.isPublished &&
+    !vehicle.isDemo &&
+    vehicle.status === "AVAILABLE",
+  );
 
   return (
     <>
@@ -88,11 +94,33 @@ export default async function VehicleDetailPage({ params }: Props) {
               ))}
             </div>
             {vehicle.isDemo ? (
-              <div className="demo-notice">This is an illustrative listing. Customer enquiries and purchase actions are not enabled for demo records.</div>
+              <div className="demo-notice">
+                This is an illustrative listing, not confirmed stock or a live offer. Interested in this model?
+                <Link
+                  href={`/source-vehicle?make=${encodeURIComponent(vehicle.make)}&model=${encodeURIComponent(vehicle.model)}`}
+                  className="button button-outline"
+                >
+                  Request this vehicle →
+                </Link>
+              </div>
             ) : (
               <>
-                <Link href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}`} className="button button-gold">Enquire about this vehicle →</Link>
-                {vehicle.status === "AVAILABLE" ? <Link href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}&type=test-drive`} className="button button-outline">Request a test drive</Link> : null}
+                {canStartPurchase ? (
+                  <Link href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}&type=purchase`} className="button button-gold">
+                    Start purchase →
+                  </Link>
+                ) : null}
+                <Link
+                  href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}`}
+                  className={canStartPurchase ? "button button-outline" : "button button-gold"}
+                >
+                  {vehicle.status === "AVAILABLE" ? "Enquire about this vehicle →" : "Enquire about availability →"}
+                </Link>
+                {canStartPurchase ? (
+                  <Link href={`/contact?vehicle=${encodeURIComponent(vehicle.slug)}&type=test-drive`} className="button button-outline">
+                    Request a test drive
+                  </Link>
+                ) : null}
               </>
             )}
             <Link href="/inventory" className="text-link detail-back">← Back to inventory</Link>

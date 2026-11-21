@@ -4,6 +4,7 @@ import { getPrismaClient } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 const statuses = ["NEW", "CONTACTED", "QUALIFIED", "CLOSED", "SPAM"] as const;
+const sources = ["PURCHASE_INTENT", "VEHICLE_DETAIL", "CONTACT_PAGE"] as const;
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 function first(value: string | string[] | undefined) {
@@ -15,6 +16,7 @@ function statusLabel(status: string) {
 }
 
 function sourceLabel(source: string) {
+  if (source === "PURCHASE_INTENT") return "Purchase interest";
   return source === "VEHICLE_DETAIL" ? "Vehicle enquiry" : "General enquiry";
 }
 
@@ -39,12 +41,17 @@ export default async function AdminEnquiriesPage({
   const status = statuses.includes(statusRaw as (typeof statuses)[number])
     ? (statusRaw as (typeof statuses)[number])
     : undefined;
+  const sourceRaw = first(params.source);
+  const source = sources.includes(sourceRaw as (typeof sources)[number])
+    ? (sourceRaw as (typeof sources)[number])
+    : undefined;
   const pageRaw = Number(first(params.page) ?? "1");
   const page = Number.isInteger(pageRaw) && pageRaw > 0 ? Math.min(pageRaw, 1000) : 1;
   const pageSize = 20;
 
   const where = {
     ...(status ? { status } : {}),
+    ...(source ? { source } : {}),
     ...(q
       ? {
           OR: [
@@ -90,6 +97,7 @@ export default async function AdminEnquiriesPage({
     const query = new URLSearchParams();
     if (q) query.set("q", q);
     if (status) query.set("status", status);
+    if (source) query.set("source", source);
     query.set("page", String(nextPage));
     return "/admin/enquiries?" + query.toString();
   };
@@ -147,8 +155,17 @@ export default async function AdminEnquiriesPage({
               ))}
             </select>
           </label>
+          <label className="admin-select-field">
+            <span className="sr-only">Filter by request type</span>
+            <select name="source" defaultValue={source ?? ""}>
+              <option value="">All request types</option>
+              <option value="PURCHASE_INTENT">Purchase interest</option>
+              <option value="VEHICLE_DETAIL">Vehicle enquiry</option>
+              <option value="CONTACT_PAGE">General enquiry</option>
+            </select>
+          </label>
           <button type="submit" className="button button-outline button-small">Apply filters</button>
-          {(q || status) ? (
+          {(q || status || source) ? (
             <Link className="admin-clear-filter" href="/admin/enquiries">Clear</Link>
           ) : null}
           <span className="admin-filter-count">
@@ -220,13 +237,13 @@ export default async function AdminEnquiriesPage({
         ) : (
           <div className="admin-empty-state">
             <span className="admin-empty-icon">✉</span>
-            <h3>{q || status ? "No enquiries match those filters." : "No enquiries yet."}</h3>
+            <h3>{q || status || source ? "No enquiries match those filters." : "No enquiries yet."}</h3>
             <p>
-              {q || status
+              {q || status || source
                 ? "Try another search or clear the filters."
                 : "Customer submissions from the public enquiry forms will appear here."}
             </p>
-            {q || status ? (
+            {q || status || source ? (
               <Link className="button button-outline button-small" href="/admin/enquiries">Clear filters</Link>
             ) : null}
           </div>

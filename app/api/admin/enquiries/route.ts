@@ -21,10 +21,13 @@ export async function GET(request: Request) {
     const params = new URL(request.url).searchParams;
     const q = params.get("q")?.trim().slice(0, 100) ?? "";
     const statusRaw = params.get("status");
+    const sourceRaw = params.get("source");
 
     const status = statuses.includes(statusRaw as (typeof statuses)[number])
       ? (statusRaw as (typeof statuses)[number])
       : undefined;
+    const sources = ["PURCHASE_INTENT", "VEHICLE_DETAIL", "CONTACT_PAGE"] as const;
+    const source = sources.includes(sourceRaw as (typeof sources)[number]) ? sourceRaw as (typeof sources)[number] : undefined;
 
     const pageRaw = Number(params.get("page") ?? "1");
     const page = Number.isInteger(pageRaw) && pageRaw > 0
@@ -34,6 +37,7 @@ export async function GET(request: Request) {
 
     const where = {
       ...(status ? { status } : {}),
+      ...(source ? { source } : {}),
       ...(q
         ? {
             OR: [
