@@ -151,7 +151,10 @@ Revalidate listing status and price on the server whenever Garage loads. Browser
 
 Compare up to three actual listings using fields that exist: price/currency, year, body type, seating, mileage, transmission, fuel, engine, drivetrain, features and condition. Mark missing fields clearly. Do not compare NGN and USD as if they were equivalent. Saved comparison sets become account-scoped in Release 2. If a saved vehicle sells, retain history and flag the status.
 
-## 9. Design Studio
+## 9. Deferred Design Studio concept — post-Release 3
+
+This section is retained as future reference only. The feature is excluded from Releases 1–3 and must not appear in Release 1 navigation, customer journeys, acceptance criteria or promotional placements. Reassess only after all three releases are complete.
+
 
 V1 uses curated image assets and supported vehicle-specific options: exterior colour/finish, wheels, interior, brake calipers and appearance package. AI proposes only valid option IDs. The customer reviews/applies them. Preview assets are curated; do not claim arbitrary real-time repainting or 3D rendering. A build can be saved locally/shareably in Release 1 and synced to My Garage in Release 2.
 
@@ -284,7 +287,7 @@ Release 2 may notify customers of enquiry acknowledgement, lead assignment, addi
 ### Release 1 — Public marketplace and lead capture
 - Homepage, Inventory, vehicle details and comparison.
 - PostgreSQL/Prisma backend and real vehicle CRUD.
-- Guest/local favourites, shortlist and shareable builds.
+- Guest/local saved vehicles and comparisons; no configured builds or Design Studio.
 - AI Concierge with grounded current-inventory search/comparison.
 - Clear customer actions to enquire, request a test drive, save locally and compare vehicles.
 - Enquiries, callback and test-drive requests.
