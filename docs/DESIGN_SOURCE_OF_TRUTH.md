@@ -131,11 +131,12 @@ Do not modify application code first and document later when the change affects 
 
 ## 8. Release boundary reminder
 
-- Release 1: public marketplace, guest/local Garage, AI Concierge, Design Studio, enquiries, test-drive and sourcing intake, basic dealership queues.
-- Release 2: customer accounts, synced My Garage, preferences, notifications, staff roles and CRM.
-- Release 3: verified quotations, vehicle reservations, hosted payments, webhooks, refunds, reconciliation and purchase handover.
+- Release 1: actionable public marketplace, guest/local Garage and comparison, AI Concierge, enquiries, test-drive and sourcing intake, basic dealership queues. No Design Studio.
+- Release 2: customer accounts, synced My Garage, preferences, notifications, staff roles and CRM. No Design Studio.
+- Release 3: verified quotations, vehicle reservations, hosted payments, webhooks, refunds, reconciliation and purchase handover. No Design Studio.
+- After Release 3: only then reassess the deferred Vehicle Design Studio as a separate enhancement.
 
-Payment architecture is documented now, but live payment processing is not a Release 1 or Release 2 dependency.
+Payment architecture is documented now, but live payment processing is not a Release 1 or Release 2 dependency. The Design Studio screen concept remains reference-only and is not a delivery commitment for any of the three releases.
 
 ---
 
