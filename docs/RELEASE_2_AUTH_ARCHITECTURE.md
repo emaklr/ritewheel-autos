@@ -91,7 +91,7 @@ Centralize server-only helpers to resolve the current verified customer, require
 - Do not issue a fully privileged session before verification.
 
 ### Email verification
-Use a purpose-bound token record containing account ID, token hash, purpose, expiry, creation and consumption timestamps. Proposed expiry: **24 hours**. Replacing a token invalidates the old one. Consumption and account verification must be atomic and safe under concurrent requests. Successful verification sets emailVerifiedAt, consumes the token and triggers the guarded guest-history association in Section 7.
+Use a purpose-bound token record containing account ID, token hash, purpose, expiry, creation and consumption timestamps. Proposed expiry: **24 hours**. Replacing a token invalidates the old one. Consumption and account verification must be atomic and safe under concurrent requests. Successful verification sets emailVerifiedAt, consumes the token and triggers the guarded guest-history association in Section 6.
 
 ### Login and logout
 Use generic credential failure responses for unknown email, wrong password and disabled accounts. Apply per-IP and per-account-key rate limits, with progressive throttling rather than permanent lockouts attackers could weaponise. Do not issue a session to unverified or disabled accounts. Logout revokes the current session server-side; logout-all revokes all account sessions.
