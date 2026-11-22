@@ -36,7 +36,7 @@ if (!process.env.DATABASE_URL) {
 let databaseTarget = "unknown";
 try {
   const databaseUrl = new URL(process.env.DATABASE_URL);
-  databaseTarget = `${databaseUrl.hostname}/${databaseUrl.pathname.replace(/^\\//, "")}`;
+  databaseTarget = `${databaseUrl.hostname}/${databaseUrl.pathname.slice(1)}`;
 } catch {
   throw new Error("DATABASE_URL in the selected environment file is not a valid URL.");
 }
