@@ -1,4 +1,5 @@
 import { config as loadEnv } from "dotenv";
+import { existsSync } from "node:fs";
 import { writeFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -9,12 +10,38 @@ import {
   type ExistingCustomerForBackfill,
 } from "../lib/customer-backfill-preview";
 
-loadEnv({ path: ".env.local" });
-loadEnv();
+const args = process.argv.slice(2);
+const envFileArgument = args.find((argument) => argument.startsWith("--env-file="));
+const requestedEnvFile = envFileArgument?.slice("--env-file=".length).trim();
+
+if (!requestedEnvFile) {
+  throw new Error(
+    "Choose the database explicitly with --env-file=<path>. Use a development-only environment file; do not point this preview at production.",
+  );
+}
+
+const envFilePath = resolve(process.cwd(), requestedEnvFile);
+if (!existsSync(envFilePath)) {
+  throw new Error(`The selected environment file does not exist: ${envFilePath}`);
+}
+
+// The explicitly selected file wins over any inherited shell variables, preventing
+// a stale Production DATABASE_URL from overriding the selected development target.
+loadEnv({ path: envFilePath, override: true });
 
 if (!process.env.DATABASE_URL) {
-  throw new Error("DATABASE_URL is required. Configure the database in your private .env.local file.");
+  throw new Error(`DATABASE_URL is missing from the selected environment file: ${envFilePath}`);
 }
+
+let databaseTarget = "unknown";
+try {
+  const databaseUrl = new URL(process.env.DATABASE_URL);
+  databaseTarget = `${databaseUrl.hostname}/${databaseUrl.pathname.slice(1)}`;
+} catch {
+  throw new Error("DATABASE_URL in the selected environment file is not a valid URL.");
+}
+
+console.log(`Using explicitly selected database target: ${databaseTarget}`);
 
 const outputArgument = process.argv.slice(2).find((argument) => argument.startsWith("--out="));
 const requestedOutput = outputArgument?.slice("--out=".length).trim();

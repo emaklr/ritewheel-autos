@@ -147,13 +147,29 @@ Payments are architected in [docs/PAYMENTS_AND_TRANSACTIONS.md](./docs/PAYMENTS_
 
 ## Customer backfill preview (read-only)
 
-After the Customer identity and nullable request relations migrations are present in the target database, generate a private preview report:
+Run this against a **development database only**. Do not use Production credentials for a backfill preview.
 
-```bash
-npm run customers:backfill:preview
+First pull Vercel's Development environment variables into the git-ignored `.env` file (not `.env.local`, which may still contain Production credentials):
+
+```powershell
+vercel link
+vercel env pull .env --environment development
 ```
 
-The command reads unlinked enquiries, test-drive requests, sourcing requests and existing Customer records. It writes a timestamped `customer-backfill-preview-*.json` report in the repository root. Use `npm run customers:backfill:preview -- --out=path/to/report.json` to choose a different report path.
+Check whether the two Customer migrations are pending, then apply them to the Development database only:
+
+```powershell
+npx prisma migrate status
+npx prisma migrate deploy
+```
+
+Generate the private preview report, explicitly selecting the same Development environment file:
+
+```powershell
+npm run customers:backfill:preview -- --env-file=.env
+```
+
+The command reads unlinked enquiries, test-drive requests, sourcing requests and existing Customer records. It writes a timestamped `customer-backfill-preview-*.json` report in the repository root. Use `npm run customers:backfill:preview -- --env-file=.env --out=path/to/report.json` to choose a different report path. The script prints the selected database host and database name (never the credential) before querying.
 
 The preview groups only by trimmed, lowercased exact email addresses. It does not remove provider-specific dots or plus-addressing and does not convert phone country codes. Conflicting names, phone numbers, duplicate Customer rows, email-normalization drift, or unverified/disabled existing accounts are marked for review.
 
