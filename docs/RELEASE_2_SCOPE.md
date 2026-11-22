@@ -1,6 +1,6 @@
 # Release 2 — Customer Accounts & Dealership CRM
 
-**Status:** Scope approved; customer identity foundation in progress; public customer authentication not enabled  
+**Status:** Scope approved; Customer/CustomerAccount foundation merged; nullable request relationships in progress; public customer authentication not enabled  
 **Baseline:** `main` at the time this document was created  
 **Product principle:** Keep the platform simple and operationally useful. Extend working Release 1 capabilities instead of rebuilding them.
 
