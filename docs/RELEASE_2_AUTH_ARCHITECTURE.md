@@ -1,6 +1,6 @@
 # Release 2 — Authentication & Identity Architecture
 
-**Status:** Architecture approved; customer identity foundation in progress; public authentication remains gated  
+**Status:** Architecture approved; customer identity foundation merged; nullable request relationships in progress; public authentication remains gated  
 **Scope:** The Customer and CustomerAccount persistence foundation may be implemented independently without enabling registration or login. Public customer authentication remains gated by the prerequisites below.  
 **Related:** [Release 2 scope](./RELEASE_2_SCOPE.md) · [Tracking issue #31](https://github.com/emaklr/ritewheel-autos/issues/31)
 
@@ -119,7 +119,7 @@ Safety rules:
 - Perform linking transactionally and idempotently; repeated verification must not duplicate or corrupt associations.
 - Record an auditable system event without logging tokens or unnecessary personal data.
 
-Eligible legacy request types are Enquiry, TestDriveRequest and SourcingRequest. Today these models store contact fields directly and do not share a Customer relation. Add nullable Customer relations first, then run a controlled, reviewed backfill. For future guest submissions, resolve/create a CRM Customer conservatively and attach the request. Shared family/business email addresses and duplicate CRM records mean email matches must not trigger destructive merges.
+Eligible legacy request types are Enquiry, TestDriveRequest and SourcingRequest. These models retain their original contact snapshots and now have nullable Customer relations. Existing records remain unlinked until a controlled, reviewed backfill. For future guest submissions, resolve/create a CRM Customer conservatively and attach the request. Shared family/business email addresses and duplicate CRM records mean email matches must not trigger destructive merges.
 
 Ambiguous records remain unlinked until staff review. Phone-only or name-only matches are never automatically linked.
 
@@ -157,9 +157,9 @@ Existing admin credentials use a different hash implementation. Do not mass-rese
 - Customer 1 — 0..1 CustomerAccount
 - CustomerAccount 1 — many CustomerSession
 - CustomerAccount 1 — many verification/reset token records
-- Customer 1 — many Enquiry
-- Customer 1 — many TestDriveRequest
-- Customer 1 — many SourcingRequest
+- Customer 1 — many Enquiry (nullable customerId while guest/legacy records remain unlinked)
+- Customer 1 — many TestDriveRequest (nullable customerId while guest/legacy records remain unlinked)
+- Customer 1 — many SourcingRequest (nullable customerId while guest/legacy records remain unlinked)
 
 Request records retain existing public references and contact snapshots. Add nullable customerId relations first; do not make customer/account relations mandatory while legacy guest records remain unassociated.
 
@@ -168,7 +168,7 @@ CRM still needs a separate decision on whether Lead represents an individual enq
 ## 11. Implementation sequence
 
 1. Add Customer and CustomerAccount models and constraints without changing guest flows. This foundation introduces no public registration, login or session endpoints.
-2. Add nullable Customer relations to request records and perform a reviewed backfill.
+2. Add nullable Customer relations to request records (implemented separately); perform the reviewed backfill only after its dry-run output and duplicate-handling rules are inspected.
 3. Add customer sessions and purpose-bound token persistence.
 4. Add password hashing and email provider abstraction.
 5. Implement registration, verification, login, logout, recovery and account security.
