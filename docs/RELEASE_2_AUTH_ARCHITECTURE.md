@@ -1,7 +1,7 @@
 # Release 2 — Authentication & Identity Architecture
 
-**Status:** Architecture approved; implementation prerequisites remain outstanding  
-**Scope:** Customer-authentication rollout remains gated by the prerequisites below. The shared Upstash rate-limiting adapter may be implemented independently.  
+**Status:** Architecture approved; customer identity foundation in progress; public authentication remains gated  
+**Scope:** The Customer and CustomerAccount persistence foundation may be implemented independently without enabling registration or login. Public customer authentication remains gated by the prerequisites below.  
 **Related:** [Release 2 scope](./RELEASE_2_SCOPE.md) · [Tracking issue #31](https://github.com/emaklr/ritewheel-autos/issues/31)
 
 ## 1. Confirmed product decisions
@@ -165,9 +165,9 @@ Request records retain existing public references and contact snapshots. Add nul
 
 CRM still needs a separate decision on whether Lead represents an individual enquiry or an ongoing sales opportunity. Authentication must not prematurely decide that.
 
-## 11. Implementation sequence (proposed, not authorised)
+## 11. Implementation sequence
 
-1. Add Customer and CustomerAccount models and constraints without changing guest flows.
+1. Add Customer and CustomerAccount models and constraints without changing guest flows. This foundation introduces no public registration, login or session endpoints.
 2. Add nullable Customer relations to request records and perform a reviewed backfill.
 3. Add customer sessions and purpose-bound token persistence.
 4. Add password hashing and email provider abstraction.
@@ -211,6 +211,6 @@ The Upstash rate-limiting provider decision is approved. These remaining policy 
 
 ## 14. Explicit non-goals and approval gate
 
-This document does not authorise implementation, migrations, dependency changes or production configuration. It does not propose JWT browser authentication, a combined customer/staff identity table, social login, phone OTP, passwordless login, MFA, a device-management dashboard, Design Studio, checkout, payments, deposits or reservation holds.
+This document does not authorize public customer registration or authentication until the production prerequisites below are satisfied. The approved Upstash adapter and the foundational Customer/CustomerAccount schema may be implemented independently; neither enables customer sign-in or changes existing guest request flows. It does not propose JWT browser authentication, a combined customer/staff identity table, social login, phone OTP, passwordless login, MFA, a device-management dashboard, Design Studio, checkout, payments, deposits or reservation holds.
 
-**Implementation gate:** The Upstash provider choice is approved. Do not enable public customer authentication until email delivery, Upstash production credentials, account-closure policy, CSRF/origin enforcement and the required security tests are ready. Implement the shared rate-limiting adapter as a focused, independently testable change.
+**Implementation gate:** Do not enable public customer authentication until email delivery, Upstash credentials in local/Preview/Production environments, account-closure policy, CSRF/Origin enforcement and the required security tests are ready.

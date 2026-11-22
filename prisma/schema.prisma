@@ -45,6 +45,11 @@ enum SourcingRequestStatus {
   CLOSED
 }
 
+enum CustomerAccountStatus {
+  ACTIVE
+  DISABLED
+}
+
 model AdminUser {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -71,6 +76,41 @@ model AdminSession {
 
   @@index([adminUserId, expiresAt])
   @@index([expiresAt])
+}
+
+/// A CRM person record. It can exist without a login account.
+model Customer {
+  id              String   @id @default(cuid())
+  name            String
+  email           String?
+  /// Trimmed and case-normalized for lookup; deliberately non-unique so duplicate guest records remain reviewable.
+  emailNormalized String?
+  phone           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  account CustomerAccount?
+
+  @@index([emailNormalized, createdAt])
+  @@index([phone])
+}
+
+/// A login identity for a Customer. The email field stores the trimmed, case-normalized address.
+model CustomerAccount {
+  id                String               @id @default(cuid())
+  customerId        String               @unique
+  email             String               @unique
+  passwordHash      String
+  emailVerifiedAt   DateTime?
+  status            CustomerAccountStatus @default(ACTIVE)
+  passwordChangedAt DateTime?
+  lastLoginAt       DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+
+  @@index([status, emailVerifiedAt])
 }
 
 model Vehicle {
