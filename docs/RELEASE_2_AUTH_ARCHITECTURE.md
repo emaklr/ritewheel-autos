@@ -1,6 +1,6 @@
 # Release 2 — Authentication & Identity Architecture
 
-**Status:** Proposed; awaiting review and approval  
+**Status:** Architecture approved; implementation prerequisites remain outstanding  
 **Scope:** Architecture specification only. No implementation is authorised.  
 **Related:** [Release 2 scope](./RELEASE_2_SCOPE.md) · [Tracking issue #31](https://github.com/emaklr/ritewheel-autos/issues/31)
 
@@ -133,7 +133,7 @@ Before implementation, confirm the production sender domain, sender address and 
 
 ## 8. API security and rate limiting
 
-The current lib/rate-limit.ts is process-local and explicitly best-effort. It is not sufficient as the only protection on Vercel/serverless. Authentication endpoints need a shared/distributed rate-limiting layer or verified provider/edge controls, with distinct limits for registration, login, verification/resend, forgot-password, reset, password change and session-sensitive operations. Use privacy-conscious keyed identifiers, bounded retention and generic public responses.
+The current lib/rate-limit.ts is process-local and explicitly best-effort. It is not sufficient as the only protection on Vercel/serverless. Use **Upstash Redis with `@upstash/ratelimit` and `@upstash/redis`** as the shared application-level rate limiter. The HTTP/REST client is appropriate for this Next.js App Router application on Vercel's serverless Node.js runtime. Use distinct named policies for registration, login, verification/resend, forgot-password, reset, password change and other sensitive operations, with privacy-conscious keyed identifiers, bounded retention and generic public responses. Do not rely on the existing process-local limiter as production enforcement. Vercel Firewall may provide an additional edge layer, but it does not replace application-level limits keyed by account/email identifiers.
 
 Cookie authentication requires CSRF protection:
 - Keep SameSite=Lax.
@@ -205,12 +205,12 @@ The two policy choices in Section 1 are settled. Before implementation, review t
 4. **Account closure:** approve retention/anonymisation policy before implementation.
 5. **Email operations:** confirm production sender domain, sender address and canonical app URL.
 6. **Ambiguous guest records:** leave unlinked and send to staff review; never auto-merge conflicting Customers.
-7. **Rate limiting:** select/configure a shared production solution before public authentication launch.
+7. **Rate limiting:** Upstash Redis is selected. Create the database and configure `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` in local development and Vercel environments before enabling public authentication. Production authentication must fail closed with a temporary service error if Upstash is unavailable; it must never fall back to an instance-local in-memory limiter.
 
-These are proposals/prerequisites, not silently assumed product approvals.
+The Upstash rate-limiting provider decision is approved. These remaining policy and production-configuration items are prerequisites, not silently assumed approvals.
 
 ## 14. Explicit non-goals and approval gate
 
 This document does not authorise implementation, migrations, dependency changes or production configuration. It does not propose JWT browser authentication, a combined customer/staff identity table, social login, phone OTP, passwordless login, MFA, a device-management dashboard, Design Studio, checkout, payments, deposits or reservation holds.
 
-**Approval gate:** Do not begin implementation until this document is reviewed, the open decisions are resolved, and a focused implementation plan is agreed.
+**Implementation gate:** The Upstash provider choice is approved. Do not enable public customer authentication until email delivery, Upstash production credentials, account-closure policy, CSRF/origin enforcement and the required security tests are ready. Implement the shared rate-limiting adapter as a focused, independently testable change.
