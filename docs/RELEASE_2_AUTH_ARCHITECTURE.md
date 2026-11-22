@@ -1,7 +1,7 @@
 # Release 2 — Authentication & Identity Architecture
 
 **Status:** Architecture approved; implementation prerequisites remain outstanding  
-**Scope:** Architecture specification only. No implementation is authorised.  
+**Scope:** Customer-authentication rollout remains gated by the prerequisites below. The shared Upstash rate-limiting adapter may be implemented independently.  
 **Related:** [Release 2 scope](./RELEASE_2_SCOPE.md) · [Tracking issue #31](https://github.com/emaklr/ritewheel-autos/issues/31)
 
 ## 1. Confirmed product decisions
