@@ -168,7 +168,7 @@ CRM still needs a separate decision on whether Lead represents an individual enq
 ## 11. Implementation sequence
 
 1. Add Customer and CustomerAccount models and constraints without changing guest flows. This foundation introduces no public registration, login or session endpoints.
-2. Add nullable Customer relations to request records (implemented separately); perform the reviewed backfill only after its dry-run output and duplicate-handling rules are inspected.
+2. Add nullable Customer relations to request records (merged). Generate and inspect the read-only backfill preview. Do not write any associations until duplicate-handling rules and the complete report have been reviewed.
 3. Add customer sessions and purpose-bound token persistence.
 4. Add password hashing and email provider abstraction.
 5. Implement registration, verification, login, logout, recovery and account security.
@@ -214,3 +214,17 @@ The Upstash rate-limiting provider decision is approved. These remaining policy 
 This document does not authorize public customer registration or authentication until the production prerequisites below are satisfied. The approved Upstash adapter and the foundational Customer/CustomerAccount schema may be implemented independently; neither enables customer sign-in or changes existing guest request flows. It does not propose JWT browser authentication, a combined customer/staff identity table, social login, phone OTP, passwordless login, MFA, a device-management dashboard, Design Studio, checkout, payments, deposits or reservation holds.
 
 **Implementation gate:** Do not enable public customer authentication until email delivery, Upstash credentials in local/Preview/Production environments, account-closure policy, CSRF/Origin enforcement and the required security tests are ready.
+
+
+### Legacy request backfill preview
+
+The read-only command `npm run customers:backfill:preview` produces a private JSON report for unlinked Enquiry, TestDriveRequest and SourcingRequest records. It is intentionally separate from any write operation.
+
+Classification is conservative:
+- Group request records only by exact email after trimming and lowercasing. Do not apply provider-specific transformations.
+- Compare available names after case/whitespace normalization and phones as digits only; do not infer or rewrite country codes.
+- Suggest a link to an existing Customer only when exactly one matching Customer exists, its stored/raw email values agree, and its name/available phone details do not conflict. If it has an account, that account must be active and email-verified.
+- Suggest a new Customer candidate only when the request group has one consistent name and no conflicting phone values, and no existing Customer matches.
+- Mark duplicate Customer rows, shared emails with different names or phone numbers, invalid emails, mismatched Customer details, and unverified/disabled accounts for staff review.
+
+The output contains personal contact information and must remain in private local storage. The preview command uses database reads and writes only the report file. It does not create Customers, update request records, merge duplicate records or link accounts. A later write-enabled backfill must be a separate reviewed change and must consume an explicitly approved report rather than silently re-running candidate selection.

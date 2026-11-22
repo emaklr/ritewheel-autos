@@ -143,3 +143,18 @@ The bootstrap command refuses to overwrite an existing administrator. Use the ap
 
 Payments are architected in [docs/PAYMENTS_AND_TRANSACTIONS.md](./docs/PAYMENTS_AND_TRANSACTIONS.md); live payment processing is deliberately reserved for Release 3.
 
+
+
+## Customer backfill preview (read-only)
+
+After the Customer identity and nullable request relations migrations are present in the target database, generate a private preview report:
+
+```bash
+npm run customers:backfill:preview
+```
+
+The command reads unlinked enquiries, test-drive requests, sourcing requests and existing Customer records. It writes a timestamped `customer-backfill-preview-*.json` report in the repository root. Use `npm run customers:backfill:preview -- --out=path/to/report.json` to choose a different report path.
+
+The preview groups only by trimmed, lowercased exact email addresses. It does not remove provider-specific dots or plus-addressing and does not convert phone country codes. Conflicting names, phone numbers, duplicate Customer rows, email-normalization drift, or unverified/disabled existing accounts are marked for review.
+
+**This command is read-only. It never creates Customers or updates request records.** The report contains customer names, emails and phone numbers; keep it private and do not commit it, send it to public issue trackers, or paste it into chat. A separate, reviewed implementation is required before any backfill writes are made.

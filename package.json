@@ -15,7 +15,8 @@
     "db:seed": "tsx prisma/seed.ts",
     "db:studio": "prisma studio",
     "admin:create": "prisma generate && tsx scripts/create-admin.ts",
-    "test": "tsx --test lib/rate-limit.test.ts"
+    "test": "tsx --test lib/rate-limit.test.ts lib/customer-backfill-preview.test.ts",
+    "customers:backfill:preview": "prisma generate && tsx scripts/preview-customer-backfill.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "7.7.0",
