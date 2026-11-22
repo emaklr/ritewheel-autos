@@ -96,7 +96,14 @@ export async function POST(request: Request) {
 
   const forwardedFor = request.headers.get("x-forwarded-for");
   const clientIp = forwardedFor?.split(",").at(-1)?.trim() || "unknown";
-  const limit = checkRateLimit(`test-drive:${clientIp}`, 4, 15 * 60 * 1000);
+  const limit = await checkRateLimit(`test-drive:${clientIp}`, 4, 15 * 60 * 1000);
+
+  if (limit.unavailable) {
+    return NextResponse.json(
+      { error: "Request protection is temporarily unavailable. Please try again shortly." },
+      { status: 503, headers: { "Retry-After": "30" } },
+    );
+  }
 
   if (!limit.allowed) {
     return NextResponse.json(

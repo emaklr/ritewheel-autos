@@ -44,7 +44,14 @@ export async function POST(request: Request) {
   const clientIp = request.headers.get("x-real-ip")
     ?? request.headers.get("x-forwarded-for")?.split(",")[0]?.trim()
     ?? "unknown";
-  const limit = checkRateLimit(`admin-login:${clientIp}`, 5, 15 * 60 * 1000);
+  const limit = await checkRateLimit(`admin-login:${clientIp}`, 5, 15 * 60 * 1000);
+  if (limit.unavailable) {
+    return NextResponse.json(
+      { error: "Sign-in is temporarily unavailable. Please try again." },
+      { status: 503, headers: { "Retry-After": "30" } },
+    );
+  }
+
   if (!limit.allowed) {
     return NextResponse.json(
       { error: "Too many sign-in attempts. Please wait before trying again." },

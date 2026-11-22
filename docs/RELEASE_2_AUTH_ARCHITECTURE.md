@@ -133,7 +133,7 @@ Before implementation, confirm the production sender domain, sender address and 
 
 ## 8. API security and rate limiting
 
-The current lib/rate-limit.ts is process-local and explicitly best-effort. It is not sufficient as the only protection on Vercel/serverless. Use **Upstash Redis with `@upstash/ratelimit` and `@upstash/redis`** as the shared application-level rate limiter. The HTTP/REST client is appropriate for this Next.js App Router application on Vercel's serverless Node.js runtime. Use distinct named policies for registration, login, verification/resend, forgot-password, reset, password change and other sensitive operations, with privacy-conscious keyed identifiers, bounded retention and generic public responses. Do not rely on the existing process-local limiter as production enforcement. Vercel Firewall may provide an additional edge layer, but it does not replace application-level limits keyed by account/email identifiers.
+The shared adapter in `lib/rate-limit.ts` uses **Upstash Redis with `@upstash/ratelimit` and `@upstash/redis`** for the existing Release 1 API limits. It uses sliding-window policies, disables the SDK's default allow-on-timeout behavior, disables the SDK's process-local ephemeral cache, and HMAC-hashes client identifiers before sending them to Redis. Missing credentials or Redis failures produce a service-unavailable result in deployed production/preview; a process-local fallback is retained only for local development. The six existing policies (admin login, Concierge, enquiry, purchase-interest, sourcing request and test-drive) preserve their current limits. Add distinct policies for customer registration, verification/resend, forgot-password, reset, password change and other sensitive customer operations when those endpoints are implemented. Vercel Firewall may provide an additional edge layer, but it does not replace application-level limits keyed by account/email identifiers.
 
 Cookie authentication requires CSRF protection:
 - Keep SameSite=Lax.
@@ -205,7 +205,7 @@ The two policy choices in Section 1 are settled. Before implementation, review t
 4. **Account closure:** approve retention/anonymisation policy before implementation.
 5. **Email operations:** confirm production sender domain, sender address and canonical app URL.
 6. **Ambiguous guest records:** leave unlinked and send to staff review; never auto-merge conflicting Customers.
-7. **Rate limiting:** Upstash Redis is selected. Create the database and configure `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` in local development and Vercel environments before enabling public authentication. Production authentication must fail closed with a temporary service error if Upstash is unavailable; it must never fall back to an instance-local in-memory limiter.
+7. **Rate limiting:** Upstash Redis is selected and the shared adapter is implemented for existing Release 1 endpoints. Configure `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN` for local distributed-path testing and in Vercel Production/Preview before public authentication. Store integration credentials as Vercel Secrets, not readable Config values. Deployed production/preview requests must fail closed with a temporary service error if Upstash is missing or unavailable; only local development may use the process-local fallback.
 
 The Upstash rate-limiting provider decision is approved. These remaining policy and production-configuration items are prerequisites, not silently assumed approvals.
 
