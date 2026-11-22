@@ -157,7 +157,9 @@ function classifyGroup(
     classification = customers.length === 1
       ? "CANDIDATE_LINK_EXISTING_CUSTOMER"
       : "CANDIDATE_CREATE_CUSTOMER";
-  } else if (customers.length !== 1) {
+  }
+
+  if (classification !== "CANDIDATE_LINK_EXISTING_CUSTOMER") {
     recommendedCustomerId = null;
   }
 

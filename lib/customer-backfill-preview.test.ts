@@ -112,6 +112,7 @@ test("does not associate a request to an unverified or disabled customer account
   })]);
   assert.equal(preview.groups[0].classification, "REVIEW");
   assert.ok(preview.groups[0].reasonCodes.includes("EXISTING_CUSTOMER_ACCOUNT_NOT_VERIFIED_AND_ACTIVE"));
+  assert.equal(preview.groups[0].recommendedCustomerId, null);
 });
 
 test("flags existing Customer contact mismatches and normalization drift", () => {
@@ -124,6 +125,7 @@ test("flags existing Customer contact mismatches and normalization drift", () =>
   assert.ok(preview.groups[0].reasonCodes.includes("EXISTING_CUSTOMER_EMAIL_NORMALIZATION_MISMATCH"));
   assert.ok(preview.groups[0].reasonCodes.includes("EXISTING_CUSTOMER_NAME_MISMATCH"));
   assert.ok(preview.groups[0].reasonCodes.includes("EXISTING_CUSTOMER_PHONE_MISMATCH"));
+  assert.equal(preview.groups[0].recommendedCustomerId, null);
 });
 
 test("places missing or invalid emails into individual review groups", () => {

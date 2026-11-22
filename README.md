@@ -153,7 +153,7 @@ After the Customer identity and nullable request relations migrations are presen
 npm run customers:backfill:preview
 ```
 
-The command reads unlinked enquiries, test-drive requests, sourcing requests and existing Customer records. It writes a timestamped `customer-backfill-preview-*.json` report in the repository root. Use `--out=path/to/report.json` to choose a different report path.
+The command reads unlinked enquiries, test-drive requests, sourcing requests and existing Customer records. It writes a timestamped `customer-backfill-preview-*.json` report in the repository root. Use `npm run customers:backfill:preview -- --out=path/to/report.json` to choose a different report path.
 
 The preview groups only by trimmed, lowercased exact email addresses. It does not remove provider-specific dots or plus-addressing and does not convert phone country codes. Conflicting names, phone numbers, duplicate Customer rows, email-normalization drift, or unverified/disabled existing accounts are marked for review.
 
