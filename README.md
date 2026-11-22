@@ -90,6 +90,8 @@ Check the backend at `/api/health`. Inventory JSON is available from `/api/vehic
 | OPENROUTER_MODEL | Optional OpenRouter model/router override; default: openrouter/free |
 | GROQ_MODEL | Optional Groq model override; default: openai/gpt-oss-120b |
 | NEXT_PUBLIC_SITE_URL | Canonical public URL |
+| UPSTASH_REDIS_REST_URL | Upstash REST endpoint for shared rate limiting |
+| UPSTASH_REDIS_REST_TOKEN | Secret token for shared rate limiting |
 
 Never commit .env, .env.local, session tokens, passwords or real database credentials. The Concierge tries configured providers in order and falls back after provider errors or a first-response timeout. OpenRouter's free router and Groq's free tier have their own changing rate limits; fallback does not create unlimited free usage.
 

@@ -59,6 +59,9 @@ jobs:
       - name: Seed demo inventory
         run: npx prisma db seed
 
+      - name: Run rate-limit tests
+        run: npm test
+
       - name: Check TypeScript
         run: npm run typecheck
 

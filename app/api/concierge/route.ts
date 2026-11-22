@@ -157,7 +157,14 @@ export async function POST(request: Request) {
 
   const forwardedFor = request.headers.get("x-forwarded-for");
   const clientIp = forwardedFor?.split(",").at(-1)?.trim() || "unknown";
-  const limit = checkRateLimit("concierge:" + clientIp, 10, 10 * 60 * 1000);
+  const limit = await checkRateLimit("concierge:" + clientIp, 10, 10 * 60 * 1000);
+  if (limit.unavailable) {
+    return NextResponse.json(
+      { error: "The AI Concierge is temporarily unavailable. Please try again." },
+      { status: 503, headers: { "Retry-After": "30" } },
+    );
+  }
+
   if (!limit.allowed) {
     return NextResponse.json(
       { error: "You have sent several messages in a short time. Please wait a moment and try again." },

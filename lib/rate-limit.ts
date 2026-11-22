@@ -1,42 +1,103 @@
-type Bucket = { count: number; resetAt: number };
+import "server-only";
 
-const buckets = new Map<string, Bucket>();
-const MAX_BUCKETS = 5_000;
+import { createHmac } from "node:crypto";
+import { Ratelimit } from "@upstash/ratelimit";
+import { Redis } from "@upstash/redis";
+import {
+  createInMemoryRateLimiter,
+  createRateLimitChecker,
+} from "@/lib/rate-limit-core";
 
-/**
- * Best-effort process-local rate limiter.
- *
- * This protects a single running instance against accidental rapid repeats.
- * Serverless instances do not share memory, so production traffic must also be
- * protected by a distributed edge/provider rate limiter before public launch.
- */
-export function checkRateLimit(
+const isProduction = process.env.NODE_ENV === "production";
+const localFallback = createInMemoryRateLimiter();
+const limiters = new Map<string, Ratelimit>();
+
+let redisClient: Redis | undefined;
+let warnedAboutUnavailable = false;
+let warnedAboutLocalFallback = false;
+
+function hasUpstashCredentials(): boolean {
+  return Boolean(
+    process.env.UPSTASH_REDIS_REST_URL?.trim() &&
+    process.env.UPSTASH_REDIS_REST_TOKEN?.trim(),
+  );
+}
+
+function getRedisClient(): Redis {
+  if (redisClient) return redisClient;
+
+  const url = process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+
+  if (!url || !token) {
+    throw new Error("Upstash rate-limiting credentials are not configured.");
+  }
+
+  redisClient = new Redis({ url, token, enableTelemetry: false });
+  return redisClient;
+}
+
+function getDistributedLimiter(limit: number, windowMs: number): Ratelimit {
+  const cacheKey = `${limit}:${windowMs}`;
+  const existing = limiters.get(cacheKey);
+  if (existing) return existing;
+
+  const environment =
+    process.env.VERCEL_ENV ??
+    (isProduction ? "production" : "development");
+
+  const limiter = new Ratelimit({
+    redis: getRedisClient(),
+    limiter: Ratelimit.slidingWindow(limit, `${windowMs} ms`),
+    prefix: `ritewheel:${environment}:rate-limit:${limit}:${windowMs}`,
+    ephemeralCache: false,
+    // Upstash's default timeout is fail-open. Disable it so timeouts reach
+    // the adapter's fail-closed handling in deployed production/preview.
+    timeout: 0,
+    analytics: false,
+    enableTelemetry: false,
+  });
+
+  limiters.set(cacheKey, limiter);
+  return limiter;
+}
+
+const checkWithFallback = createRateLimitChecker({
+  isProduction,
+  hasCredentials: hasUpstashCredentials,
+  getLimiter: getDistributedLimiter,
+  fallback: localFallback,
+});
+
+function hashIdentifier(key: string): string {
+  const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+  if (!token) return key;
+
+  const environment =
+    process.env.VERCEL_ENV ??
+    (isProduction ? "production" : "development");
+
+  return createHmac("sha256", token)
+    .update(`${environment}:${key}`)
+    .digest("hex");
+}
+
+export async function checkRateLimit(
   key: string,
   limit: number,
   windowMs: number,
-): { allowed: boolean; retryAfterSeconds: number } {
-  const now = Date.now();
-  const current = buckets.get(key);
+) {
+  const result = await checkWithFallback(hashIdentifier(key), limit, windowMs);
 
-  if (!current || current.resetAt <= now) {
-    buckets.set(key, { count: 1, resetAt: now + windowMs });
-  } else if (current.count >= limit) {
-    return {
-      allowed: false,
-      retryAfterSeconds: Math.max(1, Math.ceil((current.resetAt - now) / 1000)),
-    };
-  } else {
-    current.count += 1;
+  if (result.unavailable && !warnedAboutUnavailable) {
+    warnedAboutUnavailable = true;
+    console.error("Ritewheel distributed rate limiting is unavailable; the request was rejected.");
   }
 
-  if (buckets.size > MAX_BUCKETS) {
-    for (const [entryKey, bucket] of buckets) {
-      if (bucket.resetAt <= now || buckets.size > MAX_BUCKETS) {
-        buckets.delete(entryKey);
-      }
-      if (buckets.size <= MAX_BUCKETS) break;
-    }
+  if (!isProduction && !hasUpstashCredentials() && !warnedAboutLocalFallback) {
+    warnedAboutLocalFallback = true;
+    console.warn("Ritewheel local development is using process-local rate limiting because Upstash credentials are not configured.");
   }
 
-  return { allowed: true, retryAfterSeconds: 0 };
+  return result;
 }
