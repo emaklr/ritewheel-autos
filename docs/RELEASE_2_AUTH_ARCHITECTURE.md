@@ -1,6 +1,6 @@
 # Release 2 — Authentication & Identity Architecture
 
-**Status:** Architecture approved; customer identity foundation merged; nullable request relationships in progress; public authentication remains gated  
+**Status:** Architecture approved; customer identity foundation and nullable request relationships merged; Development migrations applied; read-only backfill preview completed (no records to migrate); customer session and auth-token persistence added in the current PR; public authentication remains gated  
 **Scope:** The Customer and CustomerAccount persistence foundation may be implemented independently without enabling registration or login. Public customer authentication remains gated by the prerequisites below.  
 **Related:** [Release 2 scope](./RELEASE_2_SCOPE.md) · [Tracking issue #31](https://github.com/emaklr/ritewheel-autos/issues/31)
 
@@ -169,7 +169,7 @@ CRM still needs a separate decision on whether Lead represents an individual enq
 
 1. Add Customer and CustomerAccount models and constraints without changing guest flows. This foundation introduces no public registration, login or session endpoints.
 2. Add nullable Customer relations to request records (merged). Generate and inspect the read-only backfill preview. Do not write any associations until duplicate-handling rules and the complete report have been reviewed.
-3. Add customer sessions and purpose-bound token persistence.
+3. Add customer sessions and purpose-bound token persistence. This PR adds the database models and migration only; session/token lifecycle helpers and endpoints follow separately.
 4. Add password hashing and email provider abstraction.
 5. Implement registration, verification, login, logout, recovery and account security.
 6. Enable guarded guest-history linking after verification.
