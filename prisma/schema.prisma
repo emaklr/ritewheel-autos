@@ -50,6 +50,11 @@ enum CustomerAccountStatus {
   DISABLED
 }
 
+enum CustomerAuthTokenPurpose {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
 model AdminUser {
   id           String   @id @default(cuid())
   email        String   @unique
@@ -111,9 +116,44 @@ model CustomerAccount {
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
 
-  customer Customer @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  customer   Customer             @relation(fields: [customerId], references: [id], onDelete: Restrict)
+  sessions   CustomerSession[]
+  authTokens CustomerAuthToken[]
 
   @@index([status, emailVerifiedAt])
+}
+
+/// An opaque customer browser session. Only the SHA-256 token hash is stored.
+model CustomerSession {
+  id                String   @id @default(cuid())
+  customerAccountId String
+  tokenHash         String   @unique
+  createdAt         DateTime @default(now())
+  lastSeenAt        DateTime @default(now())
+  expiresAt         DateTime
+  absoluteExpiresAt DateTime
+
+  customerAccount CustomerAccount @relation(fields: [customerAccountId], references: [id], onDelete: Cascade)
+
+  @@index([customerAccountId, expiresAt])
+  @@index([expiresAt])
+  @@index([absoluteExpiresAt])
+}
+
+/// A single-use, purpose-bound verification or recovery token. Only its hash is stored.
+model CustomerAuthToken {
+  id                String                    @id @default(cuid())
+  customerAccountId String
+  tokenHash         String                    @unique
+  purpose           CustomerAuthTokenPurpose
+  expiresAt         DateTime
+  consumedAt        DateTime?
+  createdAt         DateTime                  @default(now())
+
+  customerAccount CustomerAccount @relation(fields: [customerAccountId], references: [id], onDelete: Cascade)
+
+  @@index([customerAccountId, purpose, expiresAt])
+  @@index([expiresAt])
 }
 
 model Vehicle {
